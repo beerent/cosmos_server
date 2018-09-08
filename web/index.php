@@ -1,4 +1,9 @@
-<?php include 'top.html';?>
+<?php 
+include 'top.html';
+include_once "./BlogManager.php";
+
+$blogManager = new BlogManager();
+;?>
 <index>
 	<head>
 		<title>Database Manager Homepage</title>
@@ -10,17 +15,26 @@
 	<body>
 		<center>
 			<hr>
-			<h4>Updates</h4>
+			<h4>Limbix Blog</h4>
 			<hr>
-
-			<p>
-				test text
-			</p>
-
-			<p>
-				test text
-			</p>
-			
 		</center>
+		<?php
+			$blogPosts = $blogManager->GetBlogs();
+			foreach ($blogPosts as $blogPost) {
+				$blog = $blogPost->GetBlog();
+				$date = $blogPost->GetDate();
+				$author = $blogPost->GetAuthor();
+
+				$paragraph = "<p style='white-space: pre-wrap;'>";
+				$paragraph .= "<p align='right'><b>" . $date . "</b></p>";
+				$paragraph .= $blog;
+				$paragraph .= "<p align='right'><b>" . $author . "</b></p>";
+				$paragraph .= "<hr></p>";
+
+				echo $paragraph;				
+			}
+
+		?>
+			
 	</body>
 <index>

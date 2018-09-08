@@ -31,12 +31,11 @@
 			// get questions for bucket
 			$sql = "select questions.id from questions join question_bucket_map on question_bucket_map.question_id = questions.id where bucket_id = '" . $bucketId . "' and questions.enabled = " . $enabledToggle;
 			$results = $this->dbm->query($sql);
+
 			$questions = array();
-			$count = 1;
 			while($row = $results->fetch_assoc()){
 				$questionId = $row['id'];
 				$question = $this->GetQuestion($questionId);
-				$count = $count + 1;
 				array_push($questions, $question);
 			}
 

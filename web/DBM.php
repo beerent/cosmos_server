@@ -3,7 +3,7 @@
 		var $conn;
 		
 		function __construct(){
-			include ("./ConfigManager.php");
+			include_once("./ConfigManager.php");
 			$this->cm = new ConfigManager();
 		}
 
@@ -23,6 +23,10 @@
 		function insert($sql){
 			$this->conn->query($sql);
 			return $this->conn->insert_id;
+		}
+
+		function GetEscapedString($string) {
+			return mysqli_real_escape_string($this->conn, $string);
 		}
 	}
 ?>

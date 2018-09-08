@@ -2,12 +2,6 @@ var game_timer = 0;
 var game_timer_on = true;
 var breakTimer = false;
 
-function setGameTimer($bool){
-  game_timer_on = $bool;
-}
-
-
-
 function loadInnerHTML(url, pageElement) {
   try {
     req = new XMLHttpRequest();
@@ -63,99 +57,304 @@ function sleep(ms){
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function startCountdown() {
-  while(!breakTimer && game_timer_on && game_timer != 0){
-    updateTimerWindow();
-    await sleep(1000);
-    game_timer -= 1;
-
-  }
-  if(breakTimer){
-    breakTimer = false;
-  }else{
-    gameover();
-  }
-}
-
-function updateTimerWindow(){
-  element = document.getElementById('progress');
-  element.innerHTML = (game_timer + " seconds remaining!");
-}
-
-function playGame(username){
-  setGameTimer(true);
-  setUsername(username);
-  loadInnerHTML('./Game.php?u=' + username + "&r=" + 1, 'maindiv');
-  
-}
-
-function registerAnswer(attempt_id, answer_id){
-  breakTimer = true;
-  execute("./registerAnswer.php?attempt_id=" + attempt_id + "&answer_id=" + answer_id, 'fakediv');
-}
-
-function gameoverWin(){
-  setGameTimer(false);
-  element = document.getElementById('progress');
-  element.innerHTML = "YOU TRULY KNOW YOUR COSMOS!!" ;
-  $("#false0").prop("disabled",true);
-  $("#false1").prop("disabled",true);
-  $("#false2").prop("disabled",true);
-  $("#correct").prop("disabled",true);
-  
-  $('#forefit').css('display', 'none');
-  $('#play_again').css('visibility', '');
-  $('#to_leaderboard').css('visibility', '');
-}
-
-function gameover(){
-  setGameTimer(false);
-  element = document.getElementById('progress');
-  element.innerHTML = "GAME OVER!" ;
-  $("#false0").attr('class', 'btn-danger');
-  $("#false0").prop("disabled",true);
-  $("#false1").attr('class', 'btn-danger');
-  $("#false1").prop("disabled",true);
-  $("#false2").attr('class', 'btn-danger');
-  $("#false2").prop("disabled",true);
-  $("#correct").attr('class', 'btn-success');
-  $("#correct").prop("disabled",true);
-  
-  $('#forefit').css('display', 'none');
-  $('#play_again').css('visibility', '');
-  $('#to_leaderboard').css('visibility', '');
-}
-
-function setRound(round){
-  document.getElementById("round_div").innerHTML=round;
+function GetObject(id) {
+  return document.getElementById(id);
 }
 
 function GetValue(id) {
-  return document.getElementById(id).value;
+  return GetObject(id).value;
 }
 
-function setUsername(username){
-  document.getElementById("username_points").innerHTML = username + " ";
-}
+/*****************/
+/***  BUCKETS  ***/
+/*****************/
 
-function nextRound(attempt_id, round, previous_question_id, remaining_questions){
-  if(remaining_questions <= 0){
-    gameoverWin();
-  }else{
-    $('#forefit').css('display', 'block');
-    $('#start').css('display', 'none');
-    loadInnerHTML("./ActiveGame.php?a=" + attempt_id + "&r=" + round + "&p=" + previous_question_id, 'gamediv');
-    setRound(round);
-    resetGameTimer();
-    updateTimerWindow();
-    startCountdown();
-  }
-}
-
-function AddBucket(bucketName){
+function AddBucket(bucketName) {
   execute("./BucketHelper.php?option=add&name=" + bucketName, 'fakediv');
 }
 
-function resetGameTimer(){
-  game_timer = 10;
+function DisableBuckets() {
+  var bucketTable = document.getElementById("enabled_bucket_table");
+    if (bucketTable == null) {
+    return;
+  }
+
+  var bucketTableCount = bucketTable.rows.length;
+
+  for (var i = 1; i < bucketTableCount; i++) {
+    var bucketId = bucketTable.rows[i].cells[0].innerHTML;
+    var bucketName = bucketTable.rows[i].cells[1].innerHTML;
+    var bucketHtml = bucketTable.rows[i].cells[3].innerHTML;
+    var start = bucketHtml.indexOf("id=") + 4;
+    var end = bucketHtml.indexOf(">") - 1;
+    
+    var id = bucketHtml.substring(start, end);
+    var isChecked = GetObject(id).checked;
+
+    if (!isChecked) {
+      continue;
+    }
+
+    //if (confirm ("disable " + bucketName + "?")) {
+    execute("./BucketHelper.php?option=disable&id=" + bucketId, 'fakediv');
+    //}
+  }
 }
+
+function EnableBuckets() {
+  var bucketTable = document.getElementById("disabled_bucket_table");
+  if (bucketTable == null) {
+    return;
+  }
+
+  var bucketTableCount = bucketTable.rows.length;
+  
+  for (var i = 1; i < bucketTableCount; i++) {
+    var bucketId = bucketTable.rows[i].cells[0].innerHTML;
+    var bucketHtml = bucketTable.rows[i].cells[2].innerHTML;
+    var start = bucketHtml.indexOf("id=") + 4;
+    var end = bucketHtml.indexOf(">") - 1;
+    
+    var id = bucketHtml.substring(start, end);
+    var isChecked = GetObject(id).checked;
+
+    if (!isChecked) {
+      continue;
+    }
+
+    execute("./BucketHelper.php?option=enable&id=" + bucketId, 'fakediv');
+  }
+}
+
+function RenameBuckets() {
+  var bucketTable = document.getElementById("enabled_bucket_table");
+    if (bucketTable == null) {
+    return;
+  }
+
+  var bucketTableCount = bucketTable.rows.length;
+  
+  for (var i = 1; i < bucketTableCount; i++) {
+    var bucketId = bucketTable.rows[i].cells[0].innerHTML;
+
+    var bucketHtml = bucketTable.rows[i].cells[2].innerHTML;
+    var start = bucketHtml.indexOf("id=") + 4;
+    var end = bucketHtml.indexOf(">") - 1;
+    
+    var id = bucketHtml.substring(start, end);
+    var newValue = GetValue(id);
+    
+    if (newValue == "") {
+      continue;
+    }
+
+    execute("./BucketHelper.php?option=rename&id=" + bucketId + "&new=" + newValue, 'fakediv');
+  }
+}
+/*****************/
+/*** QUESTIONS ***/
+/*****************/
+
+function EnableQuestions(bucketId) {
+  var questionTable = document.getElementById("disabled_question_table");
+    if (questionTable == null) {
+    return;
+  }
+
+  var questionTableCount = questionTable.rows.length;
+
+  for (var i = 1; i < questionTableCount; i++) {
+    var questionId = questionTable.rows[i].cells[0].innerHTML;
+    var questionName = questionTable.rows[i].cells[1].innerHTML;
+    var isChecked = GetObject("enable_question_id_" + questionId).checked;
+
+    if (!isChecked) {
+      continue;
+    }
+
+    execute("./QuestionHelper.php?option=enable&id=" + questionId, 'fakediv');
+  }
+}
+
+function DisableQuestions(bucketId) {
+  var questionTable = document.getElementById("enabled_question_table");
+    if (questionTable == null) {
+    return;
+  }
+
+  var questionTableCount = questionTable.rows.length;
+
+  for (var i = 1; i < questionTableCount; i++) {
+    var questionId = questionTable.rows[i].cells[0].innerHTML;
+    var questionName = questionTable.rows[i].cells[1].innerHTML;
+    var isChecked = GetObject("disable_question_id_" + questionId).checked;
+
+    if (!isChecked) {
+      continue;
+    }
+
+    //if (confirm ("disable " + questionName + "?")) {
+    execute("./QuestionHelper.php?option=disable&id=" + questionId, 'fakediv');
+    //}
+  }
+}
+
+function UpdateQuestionsPage(bucketId) {
+  window.location.replace(window.location.href.substring(0, window.location.href.indexOf("?")) + "?id=" + bucketId);
+}
+
+function UpdateQuestion() {
+  var questionTable = document.getElementById("question_table");
+    if (questionTable == null) {
+    return;
+  }
+
+  var questionId = questionTable.rows[1].cells[1].innerHTML;
+  var htmlTagId = "db_question_id_" + questionId;
+  var newQuestionValue = GetValue(htmlTagId);
+  if (newQuestionValue != "") {
+    execute("./QuestionHelper.php?option=update&id=" + questionId + "&new=" + newQuestionValue, 'fakediv');
+  }
+}
+
+function UpdateAnswers() {
+  var questionTable = document.getElementById("question_table");
+    if (questionTable == null) {
+    return;
+  }
+
+  var questionTableCount = 6;
+
+  for (var i = 2; i < questionTableCount; i++) {
+    var answerId = questionTable.rows[i].cells[1].innerHTML;
+    var htmlTagId = "db_answer_id_" + answerId;
+    var newAnswerValue = GetValue(htmlTagId);
+    if (newAnswerValue != "") {
+      execute("./AnswerHelper.php?option=update&id=" + answerId + "&new=" + newAnswerValue, 'fakediv');
+    }
+  }
+}
+
+function OnEditQuestionClicked(questionId) {
+  window.open('./question_edit.php?id=' + questionId, 'Edit Question'); 
+  GetObject('updateID').innerHTML="<h3><font color='red'>refresh page for to see changes</font></h3><br><button onclick='location.reload();'>refresh</button><br><br>";
+}
+
+function UpdateQuestionsBucket(questionId, currentBucketId) {
+  var newBucketId = GetValue('new_bucket_select');
+  
+  if (currentBucketId == newBucketId) {
+    return;
+  }
+
+  execute("./QuestionHelper.php?option=updateBucket&id=" + questionId + "&new=" + newBucketId, 'fakediv');
+
+}
+
+function AddQuestion() {
+  var question = GetValue("question");
+  var correctAnswer = GetValue("correct_answer");
+  var wrongAnswer1 = GetValue("wrong_answer1");
+  var wrongAnswer2 = GetValue("wrong_answer2");
+  var wrongAnswer3 = GetValue("wrong_answer3");
+  var wrongAnswer4 = GetValue("wrong_answer4");
+  var wrongAnswer5 = GetValue("wrong_answer5");
+  var wrongAnswer6 = GetValue("wrong_answer6");
+  var wrongAnswer7 = GetValue("wrong_answer7");
+  var wrongAnswer8 = GetValue("wrong_answer8");
+  var wrongAnswer9 = GetValue("wrong_answer9");
+  var wrongAnswer10 = GetValue("wrong_answer10");
+  var bucketId = GetValue("add_to_bucket_select");
+
+  if (question == "") {
+    alert ("missing question field!");
+    return;
+  }
+
+  if (correctAnswer == "") {
+    alert ("missing correctAnswer field!");
+    return;
+  }
+
+  if (wrongAnswer1 == "") {
+    alert ("missing wrong answer 1 field!");
+    return;
+  }
+
+  if (wrongAnswer2 == "") {
+    alert ("missing wrong answer 2 field!");
+    return;
+  }
+
+  if (wrongAnswer3 == "") {
+    alert ("missing wrong answer 3 field!");
+    return;
+  }
+
+  var urlArgs = "q=" + question;
+  urlArgs += "&c=" + correctAnswer;
+  urlArgs += "&w1=" + wrongAnswer1;
+  urlArgs += "&w2=" + wrongAnswer2;
+  urlArgs += "&w3=" + wrongAnswer3;
+  if (wrongAnswer4 != "")
+    urlArgs += "&w4=" + wrongAnswer4;
+  if (wrongAnswer5 != "")
+    urlArgs += "&w5=" + wrongAnswer5;
+  if (wrongAnswer6 != "")
+    urlArgs += "&w6=" + wrongAnswer6;
+  if (wrongAnswer7 != "")
+    urlArgs += "&w7=" + wrongAnswer7;
+  if (wrongAnswer8 != "")
+    urlArgs += "&w8=" + wrongAnswer8;
+  if (wrongAnswer9 != "")
+    urlArgs += "&w9=" + wrongAnswer9;
+  if (wrongAnswer10 != "")
+    urlArgs += "&w10=" + wrongAnswer10;
+  urlArgs+= "&b=" + bucketId;
+
+  alert("./QuestionHelper.php?option=add&" + urlArgs, 'fakediv');
+}
+
+
+function MarkAsQuestionAdded() {
+  GetObject('question_added').innerHTML = "<h3><font color='red'>Question Added!</font></h3>";
+  setTimeout(function(){ GetObject('question_added').innerHTML = ""; }, 2000);
+
+}
+
+function ClearAddQuestionFields() {
+  GetObject("question").value="";
+  GetObject("correct_answer").value="";
+  GetObject("wrong_answer1").value="";
+  GetObject("wrong_answer2").value="";
+  GetObject("wrong_answer3").value="";
+  GetObject("wrong_answer4").value="";
+  GetObject("wrong_answer5").value="";
+  GetObject("wrong_answer6").value="";
+  GetObject("wrong_answer7").value="";
+  GetObject("wrong_answer8").value="";
+  GetObject("wrong_answer9").value="";
+  GetObject("wrong_answer10").value="";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

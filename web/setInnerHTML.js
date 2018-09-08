@@ -268,27 +268,27 @@ function AddQuestion() {
 
   if (question == "") {
     alert ("missing question field!");
-    return;
+    return false;
   }
 
   if (correctAnswer == "") {
     alert ("missing correctAnswer field!");
-    return;
+    return false;
   }
 
   if (wrongAnswer1 == "") {
     alert ("missing wrong answer 1 field!");
-    return;
+    return false;
   }
 
   if (wrongAnswer2 == "") {
     alert ("missing wrong answer 2 field!");
-    return;
+    return false;
   }
 
   if (wrongAnswer3 == "") {
     alert ("missing wrong answer 3 field!");
-    return;
+    return false;
   }
 
   var urlArgs = "q=" + question;
@@ -312,7 +312,8 @@ function AddQuestion() {
     urlArgs += "&w10=" + wrongAnswer10;
   urlArgs+= "&b=" + bucketId;
 
-  alert("./QuestionHelper.php?option=add&" + urlArgs, 'fakediv');
+  execute("./QuestionHelper.php?option=add&" + urlArgs, 'fakediv');
+  return true;
 }
 
 

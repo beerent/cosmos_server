@@ -1,8 +1,9 @@
 <?php
+    $include = $_SERVER['DOCUMENT_ROOT']; $include .= "/database/DatabaseManager.php"; include_once($include);
+
 	class AnswerManager {
 		function __construct(){
-			include_once("./DBM.php");
-			$this->dbm = new DBM();
+			$this->dbm = new DatabaseManager();
 			$this->dbm->connect();
 		}
 

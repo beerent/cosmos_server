@@ -1,5 +1,6 @@
 <?php
-  include("./AnswerManager.php");
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .= "/answer/AnswerManager.php"; include_once($include);
+
   $answerManager = new AnswerManager();
   
   $option = $_GET['option'];

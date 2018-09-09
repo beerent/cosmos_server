@@ -1,21 +1,20 @@
-<?php 
-include 'top.html';
-include_once "./BlogManager.php";
+<?php
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/top.php"; include_once($include);
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/blog/BlogManager.php"; include_once($include);
+  $blogManager = new BlogManager();
+?>
 
-$blogManager = new BlogManager();
-;?>
 <index>
 	<head>
 		<title>Database Manager Homepage</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<script src="./setInnerHTML.js"></script>
+		<script src="base.js"></script>
 	</head>
 
 	<body>
 		<center>
-			<hr>
-			<h4>Limbix Blog</h4>
+			<h1>Limbix Blog</h1>
 			<hr>
 		</center>
 		<?php

@@ -1,7 +1,8 @@
 
 <?php
-  include("./BucketManager.php");
-  include("./QuestionManager.php");
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/BucketManager.php"; include_once($include);
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/question/QuestionManager.php"; include_once($include);
+
   $bucket_manager = new BucketManager();
   $questionManager = new QuestionManager();
   $buckets = $bucket_manager->GetEnabledBuckets();
@@ -12,14 +13,16 @@
     <title>Manage Questions</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="./setInnerHTML.js"></script>
+    <script src="/base.js"></script>
+    <script src="question.js"></script>
   </head>
 
   <body>
-    <?php include 'top.html';?>
+    <?php  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/top.php"; include($include); ?>
+    
     <center>
       <h1>Manage Questions</h1>
-      <br><br><br><br>
+      <hr>
 <p id="updateID"></p>
 
 <?php

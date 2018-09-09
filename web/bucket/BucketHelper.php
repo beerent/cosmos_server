@@ -1,5 +1,6 @@
 <?php
-  include("./BucketManager.php");
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/BucketManager.php"; include_once($include);
+
   $bucket_manager = new BucketManager();
   
   $option = $_GET['option'];

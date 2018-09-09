@@ -1,9 +1,10 @@
 <?php
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/database/DatabaseManager.php"; include_once($include);
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/Bucket.php"; include_once($include);
+
 	class BucketManager {
 		function __construct(){
-			include_once("./DBM.php");
-			include_once("./Bucket.php");
-			$this->dbm = new DBM();
+			$this->dbm = new DatabaseManager();
 			$this->dbm->connect();
 		}
 

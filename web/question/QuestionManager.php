@@ -1,11 +1,12 @@
 <?php
 	class QuestionManager {
 		function __construct(){
-			include_once("./DBM.php");
-			include_once("./Question.php");
-			include_once("./Answer.php");
-			include_once("./ProposedQuestion.php");
-			$this->dbm = new DBM();
+			$include = $_SERVER['DOCUMENT_ROOT']; $include .="/database/DatabaseManager.php"; include_once($include);
+			$include = $_SERVER['DOCUMENT_ROOT']; $include .="/question/ProposedQuestion.php"; include_once($include);
+			$include = $_SERVER['DOCUMENT_ROOT']; $include .="/question/Question.php"; include_once($include);
+			$include = $_SERVER['DOCUMENT_ROOT']; $include .="/answer/Answer.php"; include_once($include);
+
+			$this->dbm = new DatabaseManager();
 			$this->dbm->connect();
 		}
 
@@ -28,7 +29,6 @@
 		}
 
 		function GetQuestions($bucketId, $enabledToggle) {
-			// get questions for bucket
 			$sql = "select questions.id from questions join question_bucket_map on question_bucket_map.question_id = questions.id where bucket_id = '" . $bucketId . "' and questions.enabled = " . $enabledToggle;
 			$results = $this->dbm->query($sql);
 
@@ -97,18 +97,4 @@
 		}
 
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ?>

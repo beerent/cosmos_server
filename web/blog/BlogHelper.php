@@ -1,5 +1,6 @@
 <?php
-  include_once("./BlogManager.php");
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/blog/BlogManager.php"; include_once($include);
+
   $blogManager = new BlogManager();
   
   $option = $_GET['option'];

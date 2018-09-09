@@ -1,9 +1,10 @@
 <?php
-	class DBM {
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/conf/ConfigManager.php"; include_once($include);
+
+	class DatabaseManager {
 		var $conn;
 		
 		function __construct(){
-			include_once("./ConfigManager.php");
 			$this->cm = new ConfigManager();
 		}
 

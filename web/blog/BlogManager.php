@@ -1,9 +1,10 @@
 <?php
 	class BlogManager {
 		function __construct(){
-			include_once("./DBM.php");
-			include_once("./Blog.php");
-			$this->dbm = new DBM();
+			$include = $_SERVER['DOCUMENT_ROOT']; $include .="/database/DatabaseManager.php"; include_once($include);
+			$include = $_SERVER['DOCUMENT_ROOT']; $include .="/blog/Blog.php"; include_once($include);
+
+			$this->dbm = new DatabaseManager();
 			$this->dbm->connect();
 		}
 

@@ -24,8 +24,9 @@
 		}
 
 		function getConfigFileNameByKey($key){
+			$path = $_SERVER['DOCUMENT_ROOT'];
 			if(strcmp($key, "database") == 0){
-				return "./conf/db.conf";
+				return $path . "/conf/db.conf";
 			}
 			return NULL;
 		}

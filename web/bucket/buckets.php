@@ -1,6 +1,7 @@
 
 <?php
-  include("./BucketManager.php");
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/BucketManager.php"; include_once($include);
+
   $bucket_manager = new BucketManager();
   $enabledBuckets = $bucket_manager->GetEnabledBuckets();
   $disabledBuckets = $bucket_manager->GetDisabledBuckets();
@@ -11,15 +12,16 @@
     <title>Buckets</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="./setInnerHTML.js"></script>
+    <script src="/base.js"></script>
+    <script src="bucket.js"></script>
   </head>
 
   <body>
-    <?php include 'top.html';?>
+    <?php $include = $_SERVER['DOCUMENT_ROOT']; $include .="/top.php"; include($include); ?>
     
     <center>
       <h1>Buckets</h1>
-      <br><br><br><br>
+      <hr>
 
       <?php
         if (count($enabledBuckets) > 0) {

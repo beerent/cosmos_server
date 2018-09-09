@@ -3,48 +3,6 @@ function AddNewWrongAnswerField() {
   wrongAnswersHtml.insertAdjacentHTML('beforeend', 'Wrong Answer<input type="text" name="extra_wrong_answer" value="" maxlength="150"> <br>');
 }
 
-function EnableQuestions(bucketId) {
-  var questionTable = document.getElementById("disabled_question_table");
-    if (questionTable == null) {
-    return;
-  }
-
-  var questionTableCount = questionTable.rows.length;
-
-  for (var i = 1; i < questionTableCount; i++) {
-    var questionId = questionTable.rows[i].cells[0].innerHTML;
-    var questionName = questionTable.rows[i].cells[1].innerHTML;
-    var isChecked = GetObject("enable_question_id_" + questionId).checked;
-
-    if (!isChecked) {
-      continue;
-    }
-
-    execute("/question/QuestionHelper.php?option=enable&id=" + questionId, 'fakediv');
-  }
-}
-
-function DisableQuestions(bucketId) {
-  var questionTable = document.getElementById("enabled_question_table");
-    if (questionTable == null) {
-    return;
-  }
-
-  var questionTableCount = questionTable.rows.length;
-
-  for (var i = 1; i < questionTableCount; i++) {
-    var questionId = questionTable.rows[i].cells[0].innerHTML;
-    var questionName = questionTable.rows[i].cells[1].innerHTML;
-    var isChecked = GetObject("disable_question_id_" + questionId).checked;
-
-    if (!isChecked) {
-      continue;
-    }
-
-    execute("/question/QuestionHelper.php?option=disable&id=" + questionId, 'fakediv');
-  }
-}
-
 function UpdateQuestionsPage(bucketId) {
   window.location.replace(window.location.href.substring(0, window.location.href.indexOf("?")) + "?id=" + bucketId);
 }
@@ -153,29 +111,132 @@ function ClearAddQuestionFields() {
   }
 }
 
-function UpdateQuestion(questionId, elementId, originalText) {
+function AddToQuestionUpdateQueue(questionId, elementId, originalText) {
+  var questionsToUpdate = GetObject("questions_to_update");
   var textObject = GetObject(elementId);
   var newText = GetValue(elementId);
-  execute("/question/QuestionHelper.php?option=update&id=" + questionId + "&new=" + newText, 'fakediv');
 
+  var queryString = "";
+  if (questionsToUpdate.innerHTML != "") {
+    queryString += "(())";
+  } 
+
+  queryString += questionId + "{{}}" + newText;
+  questionsToUpdate.innerHTML = questionsToUpdate.innerHTML + queryString;
   UpdateTextColorIfChanged(textObject, originalText);
 }
 
-function UpdateAnswer(answerId, elementId, originalText) {
+function AddToQuestionEnableUpdateQueue(questionId, elementId, originalText) {
+  var questionsToToggleEnable = GetObject("questions_to_toggle_enable");
   var textObject = GetObject(elementId);
-  var newText = GetValue(elementId);
-  execute("/answer/AnswerHelper.php?option=update&id=" + answerId + "&new=" + newText, 'fakediv');
+  var newValue = GetValue(elementId);
+
+  var queryString = "";
+  if (questionsToToggleEnable.innerHTML != "") {
+    queryString += "(())";
+  } 
+
+  queryString += questionId + "{{}}" + newValue;
+  questionsToToggleEnable.innerHTML = questionsToToggleEnable.innerHTML + queryString;
+
+  if (newValue == "enabled") {
+    textObject.value="DISABLED";
+  } else {
+    textObject.value="enabled";
+  }
   UpdateTextColorIfChanged(textObject, originalText);
 }
+
+function AddToAnswerUpdateQueue(answerId, elementId, originalText) {
+  var answersToUpdate = GetObject("answers_to_update");
+  var textObject = GetObject(elementId);
+  var newText = GetValue(elementId);
+
+  var queryString = "";
+  if (answersToUpdate.innerHTML != "") {
+    queryString += "(())";
+  } 
+
+  queryString += answerId + "{{}}" + newText;
+  answersToUpdate.innerHTML = answersToUpdate.innerHTML + queryString;
+  UpdateTextColorIfChanged(textObject, originalText);
+}
+
+function CommitQuestionUpdates() {
+  var questionsToUpdate = GetObject("questions_to_update");
+  var entries = questionsToUpdate.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    map[entry[0]] = entry[1];
+  });
+
+  Object.keys(map).forEach(function(id) {
+    var newValue = map[id];
+    execute("/question/QuestionHelper.php?option=update&id=" + id + "&new=" + newValue, 'fakediv');
+  });
+
+  return true;
+}
+
+function CommitToggleEnableUpdates() {
+  var questionsToUpdate = GetObject("questions_to_toggle_enable");
+  var entries = questionsToUpdate.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    map[entry[0]] = entry[1];
+  });
+
+  Object.keys(map).forEach(function(id) {
+    var newValue = map[id];
+    if (newValue == "enabled") {
+      execute("/question/QuestionHelper.php?option=disable&id=" + id, 'fakediv');    
+    } else {
+      execute("/question/QuestionHelper.php?option=enable&id=" + id, 'fakediv');    
+    }
+  });
+
+  return true;
+}
+
+function CommitAnswerUpdates() {
+  var questionsToUpdate = GetObject("answers_to_update");
+  var entries = questionsToUpdate.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    map[entry[0]] = entry[1];
+  });
+
+  Object.keys(map).forEach(function(id) {
+    var newValue = map[id];
+    execute("/answer/AnswerHelper.php?option=update&id=" + id + "&new=" + newValue, 'fakediv');
+  });
+
+  return true;
+}
+
 
 function UpdateTextColorIfChanged(textObject, originalText) {
   var newText = textObject.value;
 
   if (originalText == newText) {
-    textObject.style.color = "black";
+    UpdateTextToBlack(textObject);
   } else {
-    textObject.style.color = "red";
+    UpdateTextToRed(textObject);
   }
+}
+
+function UpdateTextToBlack(textObject) {
+    textObject.style.color = "black";
+}
+
+function UpdateTextToRed(textObject) {
+    textObject.style.color = "red";
 }
 
 

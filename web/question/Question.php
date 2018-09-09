@@ -1,9 +1,10 @@
 <?php
 	class Question {
-		function __construct($id, $question, $answers){
+		function __construct($id, $question, $answers, $enabled){
 			$this->id = $id;
 			$this->question = $question;
 			$this->answers = $answers;
+			$this->enabled = $enabled;
 		}
 
 		function GetId(){
@@ -24,6 +25,10 @@
 					return $answer;
 				}
 			}
+		}
+
+		function IsEnabled() {
+			return $this->enabled;
 		}
 
 		function GetwrongAnswers() {

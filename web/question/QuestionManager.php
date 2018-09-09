@@ -28,8 +28,22 @@
 			$this->dbm->insert($sql);
 		}
 
+		function GetAllQuestions($bucketId) {
+			$sql = "select questions.id from questions join question_bucket_map on question_bucket_map.question_id = questions.id where bucket_id = '" . $bucketId . "' order by questions.id desc";
+			$results = $this->dbm->query($sql);
+
+			$questions = array();
+			while($row = $results->fetch_assoc()){
+				$questionId = $row['id'];
+				$question = $this->GetQuestion($questionId);
+				array_push($questions, $question);
+			}
+
+			return $questions;			
+		}
+
 		function GetQuestions($bucketId, $enabledToggle) {
-			$sql = "select questions.id from questions join question_bucket_map on question_bucket_map.question_id = questions.id where bucket_id = '" . $bucketId . "' and questions.enabled = " . $enabledToggle;
+			$sql = "select questions.id from questions join question_bucket_map on question_bucket_map.question_id = questions.id where bucket_id = '" . $bucketId . "' and questions.enabled = " . $enabledToggle . " order by questions.id desc";
 			$results = $this->dbm->query($sql);
 
 			$questions = array();
@@ -43,10 +57,11 @@
 		}
 
 		function GetQuestion($questionId) {
-			$sql = "select question from questions where id = '". $questionId ."'";
+			$sql = "select question, enabled from questions where id = '". $questionId ."'";
 			$questionResult = $this->dbm->query($sql);
 			$questionRow = $questionResult->fetch_assoc();
 			$questionText = $questionRow['question'];
+			$questionEnabled = $questionRow['enabled'];
 
 			$sql = "select * from answers where question_id = '". $questionId ."'";
 			$answerResults = $this->dbm->query($sql);
@@ -62,7 +77,7 @@
 				array_push($answers, $answer);					
 			}
 
-			$question = new Question($questionId, $questionText, $answers);	
+			$question = new Question($questionId, $questionText, $answers, $questionEnabled);	
 			return $question;		
 		}
 

@@ -49,38 +49,6 @@ function UpdateQuestionsPage(bucketId) {
   window.location.replace(window.location.href.substring(0, window.location.href.indexOf("?")) + "?id=" + bucketId);
 }
 
-function UpdateQuestion() {
-  var questionTable = document.getElementById("question_table");
-    if (questionTable == null) {
-    return;
-  }
-
-  var questionId = questionTable.rows[1].cells[1].innerHTML;
-  var htmlTagId = "db_question_id_" + questionId;
-  var newQuestionValue = GetValue(htmlTagId);
-  if (newQuestionValue != "") {
-    execute("/question/QuestionHelper.php?option=update&id=" + questionId + "&new=" + newQuestionValue, 'fakediv');
-  }
-}
-
-function UpdateAnswers() {
-  var questionTable = document.getElementById("question_table");
-    if (questionTable == null) {
-    return;
-  }
-
-  var questionTableCount = 6;
-
-  for (var i = 2; i < questionTableCount; i++) {
-    var answerId = questionTable.rows[i].cells[1].innerHTML;
-    var htmlTagId = "db_answer_id_" + answerId;
-    var newAnswerValue = GetValue(htmlTagId);
-    if (newAnswerValue != "") {
-      execute("/answer/AnswerHelper.php?option=update&id=" + answerId + "&new=" + newAnswerValue, 'fakediv');
-    }
-  }
-}
-
 function UpdateQuestionsBucket(questionId, currentBucketId) {
   var newBucketId = GetValue('new_bucket_select');
   
@@ -184,6 +152,42 @@ function ClearAddQuestionFields() {
     extraWrongAnswerFields[i].value = "";
   }
 }
+
+function UpdateQuestion(questionId, elementId, originalText) {
+  var textObject = GetObject(elementId);
+  var newText = GetValue(elementId);
+  execute("/question/QuestionHelper.php?option=update&id=" + questionId + "&new=" + newText, 'fakediv');
+
+  UpdateTextColorIfChanged(textObject, originalText);
+}
+
+function UpdateAnswer(answerId, elementId, originalText) {
+  var textObject = GetObject(elementId);
+  var newText = GetValue(elementId);
+  execute("/answer/AnswerHelper.php?option=update&id=" + answerId + "&new=" + newText, 'fakediv');
+  UpdateTextColorIfChanged(textObject, originalText);
+}
+
+function UpdateTextColorIfChanged(textObject, originalText) {
+  var newText = textObject.value;
+
+  if (originalText == newText) {
+    textObject.style.color = "black";
+  } else {
+    textObject.style.color = "red";
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

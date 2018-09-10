@@ -10,4 +10,9 @@
     $blogAuthor = $_GET['name'];
   	$blogManager->AddBlog($blogPost, $blogAuthor);
   }
+
+  else if ($option == "disable") {
+  	$id = $_GET['id'];
+  	$blogManager->DisableBlog($id);
+  }
 ?>

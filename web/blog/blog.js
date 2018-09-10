@@ -1,4 +1,4 @@
-function AddBlogPost() {
+function AddBlog() {
   var blogPost = GetValue("add_blog_text");
   var blogAuthor = GetValue("add_blog_name");
 
@@ -13,7 +13,13 @@ function AddBlogPost() {
 
   GetObject('blog_post_post').innerHTML = "<h3><font color='red'>Blog Post Added :)</font></h3>";
   setTimeout(function(){ GetObject('blog_post_post').innerHTML = ""; }, 3000);
-  GetObject('add_blog_text').value = "enter blog post here...";
+  GetObject('add_blog_text').value = "";
   GetObject('add_blog_name').value = "";
 
+}
+
+function DisableBlog(id) {
+  if(confirm ("delete blog post?")) {
+    execute("/blog/BlogHelper.php?option=disable&id=" + id, 'fakediv');
+  }
 }

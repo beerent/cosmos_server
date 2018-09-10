@@ -13,11 +13,11 @@
 			<hr>
 
 			<p style="white-space:pre" id="blog_post_post"></p><br>
-			<textarea rows="4" cols="50" id="add_blog_text">enter blog post here...</textarea>
+			<textarea rows="4" cols="50" placeholder="enter blog post here..." id="add_blog_text"></textarea>
 			<br><br>
 			name <input type="text" id="add_blog_name">
 			<br><br>
-			<button onclick="AddBlogPost();">add blog post</button>
+			<button onclick="AddBlog();">add blog post</button>
 		</center>
 	</body>
 </html>

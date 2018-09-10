@@ -162,6 +162,51 @@ function AddToAnswerUpdateQueue(answerId, elementId, originalText) {
   UpdateTextColorIfChanged(textObject, originalText);
 }
 
+function AddAnswerToDeleteQueue(answerId, elementId, elementDeleteId) {
+  var answersToDelete = GetObject("answers_to_delete");
+  var textObject = GetObject(elementId);
+  var deleteObject = GetObject(elementDeleteId);
+
+  if (!confirm("Delete answer '" + textObject.value + "'?")) {
+    return;
+  }
+
+  deleteObject.disabled = true;
+
+  var queryString = "";
+  if (answersToDelete.innerHTML != "") {
+    queryString += "(())";
+  } 
+
+  queryString += answerId;
+  answersToDelete.innerHTML = answersToDelete.innerHTML + queryString;
+  UpdateTextToDarkRed(textObject);
+
+  return true;
+}
+
+function AddAnswerToAddQueue(questionId, elementId) {
+  var answersToAdd = GetObject("answers_to_add");
+  var textObject = GetObject(elementId);
+  var newText = GetValue(elementId);
+
+  if (newText == "") {
+    alert("oops! add text to your new wrong answer!");
+    return;
+  }
+
+  var queryString = "";
+  if (answersToAdd.innerHTML != "") {
+    queryString += "(())";
+  } 
+
+  queryString += questionId + "{{}}" + newText;
+  answersToAdd.innerHTML = answersToAdd.innerHTML + queryString;
+  textObject.value = "";
+
+  alert("answer added!");
+}
+
 function CommitQuestionUpdates() {
   var questionsToUpdate = GetObject("questions_to_update");
   var entries = questionsToUpdate.innerHTML.split("(())");
@@ -220,6 +265,32 @@ function CommitAnswerUpdates() {
   return true;
 }
 
+function CommitAnswerAdds() {
+  var questionsToUpdate = GetObject("answers_to_add");
+  var entries = questionsToUpdate.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    var id = entry[0];
+    var newValue = entry[1];
+    execute("/answer/AnswerHelper.php?option=add&questionId=" + id + "&answer=" + newValue, 'fakediv');
+  });
+
+  return true;
+}
+
+function CommitAnswerDeletes() {
+  var questionsToUpdate = GetObject("answers_to_delete");
+  var entries = questionsToUpdate.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(id) {
+    execute("/answer/AnswerHelper.php?option=delete&id=" + id, 'fakediv');
+  });
+
+  return true;
+}
 
 function UpdateTextColorIfChanged(textObject, originalText) {
   var newText = textObject.value;
@@ -238,6 +309,34 @@ function UpdateTextToBlack(textObject) {
 function UpdateTextToRed(textObject) {
     textObject.style.color = "red";
 }
+
+function UpdateTextToDarkRed(textObject) {
+  textObject.style.backgroundColor = "rgb(139, 0, 0)";
+  textObject.style.color = "white";
+}
+
+function UpdateTextToGreen(textObject) {
+  textObject.style.backgroundColor = "rgb(124,252,0)";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

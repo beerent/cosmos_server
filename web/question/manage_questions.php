@@ -74,12 +74,23 @@
 
         $answerId = $answer->GetId();
         $elementId = "edit_answer_id_". $answerId;
+        $elementDeleteId = "edit_answer_delete_id_". $answerId;
         $originalText = $answer->GetAnswer();
         echo "      <input type='text' size='60' id='". $elementId ."' onchange='AddToAnswerUpdateQueue(\"". $answerId ."\", \"". $elementId ."\", \"". $originalText ."\");' value='". $originalText ."' maxlength='150'>";
-
+        if (!$answer->IsCorrect()) {
+          echo "<button id='". $elementDeleteId ."' onclick='AddAnswerToDeleteQueue(\"$answerId\", \"$elementId\", \"$elementDeleteId\");'>-</button>";
+        }
         echo "    </td>";
         echo "  </tr>";
       }
+      echo "<tr>";
+      echo "<td id='new_answer_label_id_". $questionId ."'>";
+      echo "</td>";
+      echo "<td>";
+      $elementAddId = "new_answer_text_id_" . $questionId;
+      echo "<input type='text' size='60' id='".$elementAddId."' maxlength='150' placeholder='add new wrong answer...'>";
+      echo "<button id='new_answer_button_id_". $questionId ."' onclick='AddAnswerToAddQueue(\"$questionId\", \"$elementAddId\");'>+</button>";
+      echo "</td>";
       echo "</table>";
 
       echo "</center>";
@@ -105,6 +116,8 @@
     <div id="questions_to_update" style="display:none"></div>
     <div id="questions_to_toggle_enable" style="display:none"></div>
     <div id="answers_to_update" style="display:none"></div>
+    <div id="answers_to_delete" style="display:none"></div>
+    <div id="answers_to_add" style="display:none"></div>
     
     <center>
       <h1>Manage Questions</h1>
@@ -130,7 +143,7 @@
   $select .= "</select>";
   echo $select;
   echo "<br><br>";
-  echo "<button onclick='if (CommitQuestionUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
+  echo "<button onclick='if (CommitQuestionUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
   echo "</center>";
 
   echo "<br><br>";

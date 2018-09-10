@@ -10,4 +10,15 @@
   	$new = $_GET['new'];
   	$answerManager->UpdateAnswer($id, $new);
   }
+
+  else if ($option == "delete") {
+   	$id = $_GET['id'];
+  	$answerManager->DeleteAnswer($id);
+  }
+
+    else if ($option == "add") {
+   	$qid = $_GET['questionId'];
+   	$answer = $_GET['answer'];
+  	$answerManager->AddWrongAnswer($answer, $qid);
+  }
 ?>

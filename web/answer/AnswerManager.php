@@ -11,5 +11,15 @@
 			$sql = "update answers set answer = '". $newValue ."' where id = '". $answerId ."';";
 			$this->dbm->insert($sql);
 		}
+
+		function AddWrongAnswer($answer, $questionId) {
+			$sql = "insert into answers (answer, correct, question_id) values ('". $answer ."', 0, ". $questionId .")";
+			$this->dbm->insert($sql);
+		}
+
+		function DeleteAnswer($answerId) {
+			$sql = "delete from answers where id = '". $answerId ."';";
+			$this->dbm->insert($sql);
+		}
 	}
 ?>

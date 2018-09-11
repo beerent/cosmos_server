@@ -2,6 +2,7 @@
 <?php
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/BucketManager.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/question/QuestionManager.php"; include_once($include);
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/util/StringUtils.php"; include_once($include);
 
   $bucket_manager = new BucketManager();
   $questionManager = new QuestionManager();
@@ -24,6 +25,9 @@
       echo "    </td>";
       echo "  </tr>";
 
+/************************************************/
+// QUESTION FIELD
+/************************************************/
       echo "  <tr>";
       echo "    <td>";
       echo "      question";
@@ -32,12 +36,20 @@
 
       $questionId = $question->GetId();
       $elementId = "edit_question_id_". $questionId;
-      $originalText = $question->GetQuestion();
-      echo "      <input type='text' size='60' id='". $elementId ."' onchange='AddToQuestionUpdateQueue(\"". $questionId ."\", \"". $elementId ."\", \"". $originalText ."\");' value='". $originalText ."' maxlength='150'>";
+      $stringUtils = new StringUtils();
+      $questionText = $question->GetQuestion();
+      $singleQuoteEscapedQuestionText = $stringUtils->EscapeSingleQuotes($questionText);
+
+      echo '<input type="text" size="60" id="'.$elementId.'" value="'.htmlspecialchars($questionText).'" maxlength="150" onchange="AddToQuestionUpdateQueue(\''.$questionId.'\', \''.$elementId.'\', \''.htmlspecialchars($singleQuoteEscapedQuestionText).'\');">';
 
       echo "    </td>";
       echo "  </tr>";
 
+
+
+/************************************************/
+// ENABLED FIELD
+/************************************************/
       echo "  <tr>";
       echo "    <td>";
       echo "      enabled";
@@ -52,12 +64,17 @@
         $originalState = "DISABLED";
       }
 
-      echo "      <input type='text' readonly size='60' id='". $elementId ."' value='". $originalState ."' maxlength='150'>";
+      echo "<input type='text' readonly size='60' id='". $elementId ."' value='". $originalState ."' maxlength='150'>";
       echo "<button onclick='AddToQuestionEnableUpdateQueue(\"". $questionId ."\", \"". $elementId ."\", \"". $originalState ."\");'>toggle</button>";
 
       echo "    </td>";
       echo "  </tr>";
 
+
+
+/************************************************/
+// ANSWER FIELD
+/************************************************/
       $answers = $question->GetAnswers();
       for ($i = 0; $i < count($answers); $i++) {
         $answer = $answers[$i];
@@ -75,14 +92,24 @@
         $answerId = $answer->GetId();
         $elementId = "edit_answer_id_". $answerId;
         $elementDeleteId = "edit_answer_delete_id_". $answerId;
-        $originalText = $answer->GetAnswer();
-        echo "      <input type='text' size='60' id='". $elementId ."' onchange='AddToAnswerUpdateQueue(\"". $answerId ."\", \"". $elementId ."\", \"". $originalText ."\");' value='". $originalText ."' maxlength='150'>";
+        $answerText = $answer->GetAnswer();
+        $singleQuoteEscapedAnswerText = $stringUtils->EscapeSingleQuotes($answerText);
+
+        echo '<input type="text" size="60" id="'. $elementId .'" value="'. htmlspecialchars($answerText) .'" maxlength="150" onchange="AddToAnswerUpdateQueue(\''.$answerId .'\', \''. $elementId .'\', \''. htmlspecialchars($singleQuoteEscapedAnswerText) .'\');">';
+
         if (!$answer->IsCorrect()) {
           echo "<button id='". $elementDeleteId ."' onclick='AddAnswerToDeleteQueue(\"$answerId\", \"$elementId\", \"$elementDeleteId\");'>-</button>";
         }
         echo "    </td>";
         echo "  </tr>";
       }
+
+
+
+
+/************************************************/
+// NEW ANSWER FIELD
+/************************************************/
       echo "<tr>";
       echo "<td id='new_answer_label_id_". $questionId ."'>";
       echo "</td>";

@@ -335,7 +335,12 @@ function UpdateTextToGreen(textObject) {
   textObject.style.backgroundColor = "rgb(124,252,0)";
 }
 
-
+function ClearAddQuestionBuckets() {
+  var bucketChecklist = GetObjectsByName("new_question_buckets");
+  bucketChecklist.forEach(function(bucket) {
+    bucket.checked = false;
+  });
+}
 
 
 

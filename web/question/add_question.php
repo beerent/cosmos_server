@@ -50,7 +50,7 @@
           echo $checklist;
         ?>
 
-        <button onclick=ClearAddQuestionBuckets()>reset buckets</button>
+        <button onclick="ClearAddQuestionBuckets();">reset buckets</button>
         <br><br><br>
         <button onclick="if (AddQuestion()) { MarkAsQuestionAdded(); ClearAddQuestionFields(); } ">ADD QUESTION</button>
     

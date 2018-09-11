@@ -83,7 +83,7 @@ function AddQuestion() {
     urlArgs += "&w" + (count + i) + "=" + q;
   }
 
-  alert("/question/QuestionHelper.php?option=add&" + urlArgs, 'fakediv');
+  execute("/question/QuestionHelper.php?option=add&" + urlArgs, 'fakediv');
   return true;
 }
 
@@ -159,7 +159,6 @@ function AddToAnswerUpdateQueue(answerId, elementId, originalText) {
 
   queryString += answerId + "{{}}" + newText;
   answersToUpdate.innerHTML = answersToUpdate.innerHTML + queryString;
-  alert(answersToUpdate.innerHTML);
   UpdateTextColorIfChanged(textObject, originalText);
 }
 

@@ -1,6 +1,12 @@
 function AddNewWrongAnswerField() {
   var wrongAnswersHtml = GetObject("new_questions_field");
-  wrongAnswersHtml.insertAdjacentHTML('beforeend', 'Wrong Answer<input type="text" name="extra_wrong_answer" value="" maxlength="150"> <br>');
+  //-8
+  //new_question_table
+  var tableObject = GetObject("new_question_table");
+  var currentHTML = "" + tableObject.innerHTML;
+  var newHTML = currentHTML.substring(0, (currentHTML.length - 8));
+  newHTML = newHTML + '<tr><td>Wrong Answer</td><td><input type="text" name="extra_wrong_answer" value="" maxlength="150"></td></tr></tbody>';
+  tableObject.innerHTML = newHTML;
 }
 
 function UpdateQuestionsPage(bucketId) {
@@ -35,7 +41,13 @@ function AddQuestion() {
     extraWrongAnswers.push(extraWrongAnswerFields[i].value);
   }
 
-  var bucketId = GetValue("add_to_bucket_select");
+  var bucketChecklist = GetObjectsByName("new_question_buckets");
+  var bucketsChecked = [];
+  bucketChecklist.forEach(function(bucket) {
+    if (bucket.checked) {
+      bucketsChecked.push(bucket.value);
+    }
+  });
 
   if (question == "") {
     alert ("missing question field!");
@@ -62,7 +74,7 @@ function AddQuestion() {
     return false;
   }
 
-  if (bucketId == "") {
+  if (bucketsChecked.length == 0) {
     alert ("missing bucket!");
     return false;
   }
@@ -72,7 +84,11 @@ function AddQuestion() {
   urlArgs += "&w1=" + wrongAnswer1;
   urlArgs += "&w2=" + wrongAnswer2;
   urlArgs += "&w3=" + wrongAnswer3;
-  urlArgs+= "&b=" + bucketId;
+
+  for (var i = 0; i < bucketsChecked.length; i++) {
+    var bucketId = bucketsChecked[i];
+    urlArgs += "&b" + (i + 1) + "=" + bucketId;
+  }
 
   var count = 4;
   for (var i = 0; i < extraWrongAnswers.length; i++) {

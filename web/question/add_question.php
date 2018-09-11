@@ -23,31 +23,37 @@
       <hr>
 
       <p id="question_added"></p>
-      <p id="new_questions_field">
-        <font color="red">*</font>Question <input type="text" id="question" value="" maxlength="150"> <br>
-        <font color="red">*</font>Correct Answer <input type="text" id="correct_answer" value="" maxlength="150"> <br>
-        <font color="red">*</font>Wrong Answer<input type="text" id="wrong_answer1" value="" maxlength="150"> <br>
-        <font color="red">*</font>Wrong Answer<input type="text" id="wrong_answer2" value="" maxlength="150"> <br>
-        <font color="red">*</font>Wrong Answer<input type="text" id="wrong_answer3" value="" maxlength="150"> <br>
-      </p>
+        <table id="new_question_table">
+          <tr><td><font color="red">*</font>Question</td><td><input type="text" id="question" value="" maxlength="150"></td></tr>
+          <tr><td><font color="red">*</font>Correct Answer</td><td><input type="text" id="correct_answer" value="" maxlength="150"></td></tr>
+          <tr><td><font color="red">*</font>Wrong Answer</td><td><input type="text" id="wrong_answer1" value="" maxlength="150"></td></tr>
+          <tr><td><font color="red">*</font>Wrong Answer</td><td><input type="text" id="wrong_answer2" value="" maxlength="150"></td></tr>
+          <tr><td><font color="red">*</font>Wrong Answer</td><td><input type="text" id="wrong_answer3" value="" maxlength="150"></td></tr>
+        </table>
         <button onclick="AddNewWrongAnswerField();">+ wrong answer</button>
         <br><br><br>
         
 
         <?php
-          $select = "<select id='add_to_bucket_select'>";
+          $checklist = "Buckets:";
+          $checklist .= "<table>";
 
           foreach ($buckets as $bucket) {
-            $select .= '<option value="' . $bucket->GetId() . '">' . $bucket->GetName() . '</option>';
+            $checklist .= "<tr>";
+            $checklist .= "<td>";
+            $checklist .= '<input type="checkbox" name="new_question_buckets" value="'. $bucket->GetId() .'"> ' . $bucket->GetName();
+            $checklist .= "</td>";
+            $checklist .= "</tr>";
           }
-          $select .= "</select>";
 
-          echo "bucket " . $select;
+          $checklist .= "</table>";
+          echo $checklist;
         ?>
 
-
-  <br><br>
-  <button onclick="if (AddQuestion()) { MarkAsQuestionAdded(); ClearAddQuestionFields(); } ">ADD QUESTION</button>
+        <button onclick=ClearAddQuestionBuckets()>reset buckets</button>
+        <br><br><br>
+        <button onclick="if (AddQuestion()) { MarkAsQuestionAdded(); ClearAddQuestionFields(); } ">ADD QUESTION</button>
+    
     </center>
   </body>
 </html>

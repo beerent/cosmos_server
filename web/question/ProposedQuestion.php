@@ -1,9 +1,9 @@
 <?php
 	class ProposedQuestion {
-		function __construct($question, $correctAnswer, $bucketId){
+		function __construct($question, $correctAnswer){
 			$this->question = $question;
 			$this->correctAnswer = $correctAnswer;
-			$this->bucketId = $bucketId;
+			$this->bucketIds = array();
 			$this->wrongAnswers = array();
 		}
 
@@ -19,8 +19,16 @@
 			return $this->wrongAnswers;
 		}
 
-		function GetBucketId() {
-			return $this->bucketId;
+		function GetBucketIds() {
+			return $this->bucketIds;
+		}
+
+		function AddBucketId($bucketId) {
+			if ($bucketId == "") {
+				return;
+			}
+
+			array_push($this->bucketIds, $bucketId);
 		}
 
 		function AddWrongAnswer($newWrongAnswer) {
@@ -32,7 +40,7 @@
 		}
 
 		function MeetsNewQuestionRequirements() {
-			return $this->question != "" && $this->correctAnswer != "" && count($this->wrongAnswers) > 2;
+			return $this->question != "" && $this->correctAnswer != "" && count($this->bucketIds) > 0 && count($this->wrongAnswers) > 2;
 		}
 	}
 ?>

@@ -9,11 +9,19 @@
   if ($option == "add") {
     $question = $_GET['q'];
     $correctAnswer = $_GET['c'];
-    $bucketId = $_GET['b'];
 
-    $proposedQuestion = new ProposedQuestion($question, $correctAnswer, $bucketId);
-    $extraWrongs = count($_GET);
-    for ($i = 0; $i < $extraWrongs; $i++) {
+    $proposedQuestion = new ProposedQuestion($question, $correctAnswer);
+
+    $getElementCount = count($_GET);
+    for ($i = 0; $i < $getElementCount; $i++) {
+      if(!isset($_GET['b' . $i])) {
+        continue;
+      }
+ 
+      $proposedQuestion->AddBucketId($_GET['b' . $i]);
+    }    
+
+    for ($i = 0; $i < $getElementCount; $i++) {
       if(!isset($_GET['w' . $i])) {
         continue;
       }

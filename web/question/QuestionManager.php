@@ -109,8 +109,10 @@
 				$this->dbm->insert($sql);
 			}
 
-			$sql = "insert into question_bucket_map (question_id, bucket_id) values ('". $questionId ."', '". $proposedQuestion->GetBucketId() ."')";
-			$this->dbm->insert($sql);
+			foreach ($proposedQuestion->GetbucketIds() as $bucketId) {
+				$sql = "insert into question_bucket_map (question_id, bucket_id) values ('". $questionId ."', '". $bucketId ."')";
+				$this->dbm->insert($sql);
+			}
 		}
 
 	}

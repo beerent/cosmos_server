@@ -11,6 +11,9 @@
 
 <?php
   function DisplayQuestions($questions) {
+    echo "<center>";
+    echo "<font size='2'>question count: " . strval(count($questions)) . "</font>";
+    echo "</center>";
     foreach ($questions as $question) {
       echo "<hr>";
       echo "<center>";
@@ -118,6 +121,56 @@
       echo "<input type='text' size='60' id='".$elementAddId."' maxlength='150' placeholder='add new wrong answer...'>";
       echo "<button id='new_answer_button_id_". $questionId ."' onclick='AddAnswerToAddQueue(\"$questionId\", \"$elementAddId\");'>+</button>";
       echo "</td>";
+      echo "</tr>";
+
+
+
+
+/************************************************/
+// BUCKETS FIELD
+/************************************************/
+      echo "<tr>";
+      echo "<td id='edit_question_buckets_id_". $questionId ."'>";
+      echo "buckets";
+      echo "</td>";
+
+      echo "<td>";
+      $bucket_manager = new BucketManager();
+      $allBuckets = $bucket_manager->GetAllBucketsAlphabetical();
+      $currentBuckets = $bucket_manager->GetBucketsForQuestion($questionId);
+
+
+      echo "<table>";
+      $count = 0;
+      for($i = 0; $i < count($allBuckets); $i++) {
+        if ($count == 0) {
+          echo "<tr>";
+        }
+        $bucket = $allBuckets[$i];
+        $cellElementId = "update_bucket_id_" . $bucket->GetId() . "_" . $questionId;
+        if ($bucket_manager->BucketListContainsBucket($currentBuckets, $bucket)) {
+          echo '<td id="'. $cellElementId .'" align="right">' . $bucket->GetName() . ' <input type="checkbox" value="true" onchange="AddToUpdateBucketsQueue(\''.$questionId.'\', \''.$bucket->GetId().'\', this.value, this.checked, \''. $cellElementId .'\')" checked="checked"></td>';
+        } else {
+          echo '<td id="'. $cellElementId .'" align="right">' . $bucket->GetName() . ' <input type="checkbox" value="false" onchange="AddToUpdateBucketsQueue(\''.$questionId.'\', \''.$bucket->GetId().'\', this.value, this.checked, \''. $cellElementId .'\')" ></td>';
+        }
+        
+        $count++;
+        if ($count == 4) {
+          $count = 0;
+          echo "</tr>";
+        }
+      }
+      if ($count != 5) {
+        echo "</tr>";
+      }
+      echo "</table>";
+
+      echo "</td>";
+
+      echo "</tr>";
+
+
+
       echo "</table>";
 
       echo "</center>";
@@ -145,6 +198,7 @@
     <div id="answers_to_update" style="display:none"></div>
     <div id="answers_to_delete" style="display:none"></div>
     <div id="answers_to_add" style="display:none"></div>
+    <div id="buckets_to_update" style="display:none"></div>
     
     <center>
       <h1>Manage Questions</h1>
@@ -165,6 +219,13 @@
   echo "<b>Bucket:</b>";
   echo "</td>";
   echo "<td>";
+
+
+
+
+/************************************************/
+// BUCKET SELECT
+/************************************************/
   echo "<select id=\"bucket_select\" onchange='UpdateQuestionsPage(GetValue(\"bucket_select\"), GetValue(\"enable_select\"))'>";
   if ($currentBucketId == "") {
     echo '<option value="">select a bucket!</option>';
@@ -177,6 +238,13 @@
       echo '<option value="' . $bucket->GetId() . '">' . $bucket->GetName() . '</option>';
     }
   }
+
+  if ("-1" == $currentBucketId) {
+    echo '<option selected value="-1">NONE</option>';
+  } else {
+    echo '<option value="-1">NONE</option>';
+  }
+
   echo "</select>";
   echo "</td>";
   echo "</tr>";
@@ -185,6 +253,12 @@
   echo "<b>enabled:</b>";
   echo "</td>";
   echo "<td>";
+
+
+
+/************************************************/
+// ENABLED SELECT
+/************************************************/
   echo  "<select id=\"enable_select\" onchange='UpdateQuestionsPage(GetValue(\"bucket_select\"), GetValue(\"enable_select\"))'>";
   if ($showEnabledType == "enabled") {
       echo '<option selected value="enabled">enabled</option>';
@@ -204,19 +278,30 @@
   echo "</table>";
   echo "<br><br>";
   if (isset($currentBucketId)) {
-    echo "<button onclick='if (CommitQuestionUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
+    echo "<button onclick='if (CommitQuestionUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds() && CommitBucketUpdates()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
   }
 
   echo "</center>";
   echo "<br><br>";
 
 if ($currentBucketId != "") {
-  if ($showEnabledType == "enabled") {
-    $enabledQuestions = $questionManager->GetEnabledQuestions($currentBucketId);
-    DisplayQuestions($enabledQuestions);
-  } else if ($showEnabledType == "disabled") {
-    $disabledQuestions = $questionManager->GetDisabledQuestions($currentBucketId);
-    DisplayQuestions($disabledQuestions);
+
+  if ($currentBucketId == "-1") {
+    if ($showEnabledType == "enabled") {
+      $enabledQuestions = $questionManager->GetBucketlessQuestions(1);
+      DisplayQuestions($enabledQuestions);
+    } else if ($showEnabledType == "disabled") {
+      $disabledQuestions = $questionManager->GetBucketlessQuestions(0);
+      DisplayQuestions($disabledQuestions);
+    }
+  }else{
+    if ($showEnabledType == "enabled") {
+      $enabledQuestions = $questionManager->GetEnabledQuestions($currentBucketId);
+      DisplayQuestions($enabledQuestions);
+    } else if ($showEnabledType == "disabled") {
+      $disabledQuestions = $questionManager->GetDisabledQuestions($currentBucketId);
+      DisplayQuestions($disabledQuestions);
+    }
   }
 }
 ?>

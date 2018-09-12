@@ -38,12 +38,6 @@
   	$questionManager->UpdateQuestion($id, $new);
   }
 
-  else if ($option == "updateBucket") {
-    $id = $_GET['id'];
-    $new = $_GET['new'];
-    $questionManager->UpdateQuestionBucket($id, $new);
-  }
-
   else if ($option == "enable") {
   	$id = $_GET['id'];
     $questionManager->EnableQuestion($id);
@@ -52,5 +46,17 @@
   else if ($option == "disable") {
     $id = $_GET['id'];
     $questionManager->DisableQuestion($id);
+  }
+
+  else if ($option == "addMapping") {
+    $questionId = $_GET['qid'];
+    $bucketId = $_GET['bid'];
+    $questionManager->AddBucketMapping($questionId, $bucketId);
+  }
+
+  else if ($option == "deleteMapping") {
+    $questionId = $_GET['qid'];
+    $bucketId = $_GET['bid'];
+    $questionManager->DeleteBucketMapping($questionId, $bucketId);
   }
 ?>

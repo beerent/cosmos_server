@@ -20,16 +20,6 @@ function UpdateQuestionsPage(bucketId, enabled) {
   window.location.replace(window.location.href.substring(0, window.location.href.indexOf("?")) + "?id=" + bucketId + "&type=" + enabled);
 }
 
-function UpdateQuestionsBucket(questionId, currentBucketId) {
-  var newBucketId = GetValue('new_bucket_select');
-  
-  if (currentBucketId == newBucketId) {
-    return;
-  }
-
-  execute("/question/QuestionHelper.php?option=updateBucket&id=" + questionId + "&new=" + newBucketId, 'fakediv');
-}
-
 function OnEditQuestionClicked(questionId) {
   window.open('/question/edit_question.php?id=' + questionId, 'Edit Question'); 
   GetObject('updateID').innerHTML="<h3><font color='red'>refresh page for to see changes</font></h3><br><button onclick='location.reload();'>refresh</button><br><br>";
@@ -230,6 +220,27 @@ function AddAnswerToAddQueue(questionId, elementId) {
   alert("answer added!");
 }
 
+function AddToUpdateBucketsQueue(questionId, bucketId, originalState, currentState, cellElementId) {
+  var bucketsToUpdate = GetObject("buckets_to_update");
+  var cellElement = GetObject(cellElementId);
+
+  var queryString = "";
+  if (bucketsToUpdate.innerHTML != "") {
+    queryString += "(())";
+  } 
+
+  queryString += questionId + "{{}}" + bucketId + "{{}}" + currentState;
+  bucketsToUpdate.innerHTML = bucketsToUpdate.innerHTML + queryString;
+
+
+
+  if (("" + originalState) == ("" + currentState)) {
+    UpdateTextToBlack(cellElement);
+  } else {
+    UpdateTextToRed(cellElement);
+  }
+}
+
 function CommitQuestionUpdates() {
   var questionsToUpdate = GetObject("questions_to_update");
   var entries = questionsToUpdate.innerHTML.split("(())");
@@ -310,6 +321,37 @@ function CommitAnswerDeletes() {
   var map = {};
   entries.forEach(function(id) {
     execute("/answer/AnswerHelper.php?option=delete&id=" + id, 'fakediv');
+  });
+
+  return true;
+}
+
+function CommitBucketUpdates() {
+  var questionsToUpdate = GetObject("buckets_to_update");
+  var entries = questionsToUpdate.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    var questionId = entry[0];
+    var bucketId = entry[1];
+    var checked = entry[2] == "true";
+
+    mapKey = questionId + "{{}}" + bucketId;
+    map[mapKey] = checked;
+  });
+
+  Object.keys(map).forEach(function(mappingKey) {
+    var checked = map[mappingKey];
+    var values = mappingKey.split("{{}}");
+    var questionId = values[0];
+    var bucketId = values[1];
+
+    if (checked) {
+      execute("/question/QuestionHelper.php?option=addMapping&qid=" + questionId + "&bid=" + bucketId, 'fakediv');
+    } else {
+      execute("/question/QuestionHelper.php?option=deleteMapping&qid=" + questionId + "&bid=" + bucketId, 'fakediv');
+    }
   });
 
   return true;

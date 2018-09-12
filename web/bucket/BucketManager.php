@@ -30,13 +30,32 @@
 			return $buckets;
 		}
 
-		function GetBucketForQuestion($id) {
+		function GetBucketsForQuestion($id) {
 			$sql = "select buckets.id, buckets.name from buckets join question_bucket_map on buckets.id = question_bucket_map.bucket_id where question_bucket_map.question_id = ". $id;
 
-			$result = $this->dbm->query($sql);
-			$row = $result->fetch_assoc();
-			$bucket = new Bucket($row['id'], $row['name']);
-			return $bucket;
+			$results = $this->dbm->query($sql);
+			
+			$buckets = array();
+			while($row = $results->fetch_assoc()){
+				$bucket = new Bucket($row['id'], $row['name']);
+				array_push($buckets, $bucket);
+			}
+
+			return $buckets;
+		}
+
+		function GetAllBucketsAlphabetical() {
+			$sql = "select id, name from buckets order by name asc";
+
+			$results = $this->dbm->query($sql);
+			
+			$buckets = array();
+			while($row = $results->fetch_assoc()){
+				$bucket = new Bucket($row['id'], $row['name']);
+				array_push($buckets, $bucket);
+			}
+
+			return $buckets;
 		}
 
 		function RenameBucket($bucketId, $newBucketName) {
@@ -57,6 +76,17 @@
 		function AddBucket($bucketName) {
 			$sql = "insert into buckets (name) values ('". $bucketName ."');";
 			$this->dbm->insert($sql);
+		}
+
+		function BucketListContainsBucket($bucketList, $bucket) {
+			for($i = 0; $i < count($bucketList); $i++) {
+				if ($bucketList[$i]->GetId() == $bucket->GetId()) {
+					return true;
+				}
+			}
+
+			return false;
+
 		}
 	}
 ?>

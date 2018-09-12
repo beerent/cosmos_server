@@ -1,1 +1,1 @@
-ALTER TABLE `cosmos`.`blogs` ADD COLUMN `enabled` INT(1) NOT NULL DEFAULT 1  AFTER `date` ;
+alter table question_bucket_map add constraint question_bucket_constraint unique (question_id, bucket_id);

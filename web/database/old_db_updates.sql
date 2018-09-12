@@ -15,3 +15,6 @@ ALTER TABLE `cosmos`.`question_bucket_map`
   ON DELETE NO ACTION
   ON UPDATE NO ACTION
 , ADD INDEX `qbm1_idx` (`question_id` ASC) ;
+
+ALTER TABLE `cosmos`.`blogs` ADD COLUMN `enabled` INT(1) NOT NULL DEFAULT 1  AFTER `date` ;
+

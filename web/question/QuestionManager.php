@@ -56,6 +56,20 @@
 			return $questions;
 		}
 
+		function GetBucketlessQuestions($enabledToggle) {
+			$sql = "select distinct questions.id from questions where questions.id not in (select distinct question_id from question_bucket_map) and questions.enabled = " . $enabledToggle;
+			$results = $this->dbm->query($sql);
+
+			$questions = array();
+			while($row = $results->fetch_assoc()){
+				$questionId = $row['id'];
+				$question = $this->GetQuestion($questionId);
+				array_push($questions, $question);
+			}
+
+			return $questions;	
+		}
+
 		function GetQuestion($questionId) {
 			$sql = "select question, enabled from questions where id = '". $questionId ."'";
 			$questionResult = $this->dbm->query($sql);
@@ -87,11 +101,6 @@
 			$this->dbm->insert($sql);
 		}
 
-		function UpdateQuestionBucket($questionId, $newValue) {
-			$sql = "update question_bucket_map set bucket_id = '". $this->dbm->GetEscapedString($newValue) ."' where question_id = '". $questionId ."';";
-			$this->dbm->insert($sql);
-		}
-
 		function AddQuestion($proposedQuestion) {
 			if (false == $proposedQuestion->MeetsNewQuestionRequirements()) {
 				return;
@@ -114,6 +123,16 @@
 				$this->dbm->insert($sql);
 			}
 		}
+
+    	function AddBucketMapping($questionId, $bucketId) {
+			$sql = "insert into question_bucket_map (question_id, bucket_id) values (". $questionId .", ". $bucketId .");";
+			$this->dbm->insert($sql);
+    	}
+
+    	function DeleteBucketMapping($questionId, $bucketId) {
+			$sql = "delete from question_bucket_map where question_id = ". $questionId ." and bucket_id = " . $bucketId;
+			$this->dbm->insert($sql);
+    	}
 
 	}
 ?>

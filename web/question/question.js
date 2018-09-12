@@ -16,8 +16,8 @@ function AddNewWrongAnswerField() {
   //tableObject.innerHTML = newHTML;
 }
 
-function UpdateQuestionsPage(bucketId) {
-  window.location.replace(window.location.href.substring(0, window.location.href.indexOf("?")) + "?id=" + bucketId);
+function UpdateQuestionsPage(bucketId, enabled) {
+  window.location.replace(window.location.href.substring(0, window.location.href.indexOf("?")) + "?id=" + bucketId + "&type=" + enabled);
 }
 
 function UpdateQuestionsBucket(questionId, currentBucketId) {

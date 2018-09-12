@@ -153,36 +153,71 @@
 
 <?php
   $currentBucketId = $_GET['id'];
+  
+  $showEnabledType=$_GET['type'];
+  if ($showEnabledType == "") {
+    $showEnabledType = "enabled";
+  }
+  echo "<table>";
+  echo "<tr>";
 
-  $select = "<b>Bucket: </b>";
-  $select .= "<select id=\"bucket_select\" onchange='UpdateQuestionsPage(GetValue(\"bucket_select\"))'>";
+  echo "<td>";
+  echo "<b>Bucket:</b>";
+  echo "</td>";
+  echo "<td>";
+  echo "<select id=\"bucket_select\" onchange='UpdateQuestionsPage(GetValue(\"bucket_select\"), GetValue(\"enable_select\"))'>";
   if ($currentBucketId == "") {
-    $select .= '<option value="">select a bucket!</option>';
+    echo '<option value="">select a bucket!</option>';
   }
 
   foreach ($buckets as $bucket) {
     if ($bucket->GetId() == $currentBucketId) {
-      $select .= '<option selected value="' . $bucket->GetId() . '">' . $bucket->GetName() . '</option>';
+      echo '<option selected value="' . $bucket->GetId() . '">' . $bucket->GetName() . '</option>';
     } else {
-      $select .= '<option value="' . $bucket->GetId() . '">' . $bucket->GetName() . '</option>';
+      echo '<option value="' . $bucket->GetId() . '">' . $bucket->GetName() . '</option>';
     }
   }
-  $select .= "</select>";
-  echo $select;
+  echo "</select>";
+  echo "</td>";
+  echo "</tr>";
+  echo "<tr>";
+  echo "<td>";
+  echo "<b>enabled:</b>";
+  echo "</td>";
+  echo "<td>";
+  echo  "<select id=\"enable_select\" onchange='UpdateQuestionsPage(GetValue(\"bucket_select\"), GetValue(\"enable_select\"))'>";
+  if ($showEnabledType == "enabled") {
+      echo '<option selected value="enabled">enabled</option>';
+  } else {
+      echo '<option value="enabled">enabled</option>';
+  }
+
+  if ($showEnabledType == "disabled") {
+      echo '<option selected value="disabled">disabled</option>';
+  } else {
+      echo '<option value="disabled">disabled</option>';
+  }
+
+  echo "</select>";
+  echo "</td>";
+  echo "</tr>";
+  echo "</table>";
   echo "<br><br>";
   if (isset($currentBucketId)) {
     echo "<button onclick='if (CommitQuestionUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
   }
-  
+
   echo "</center>";
   echo "<br><br>";
 
-if ($currentBucketId != "") {  
-  
-  $enabledQuestions = $questionManager->GetEnabledQuestions($currentBucketId);
-  DisplayQuestions($enabledQuestions);
-  $disabledQuestions = $questionManager->GetDisabledQuestions($currentBucketId);
-  DisplayQuestions($disabledQuestions);
+if ($currentBucketId != "") {
+  if ($showEnabledType == "enabled") {
+    $enabledQuestions = $questionManager->GetEnabledQuestions($currentBucketId);
+    DisplayQuestions($enabledQuestions);
+  } else if ($showEnabledType == "disabled") {
+    $disabledQuestions = $questionManager->GetDisabledQuestions($currentBucketId);
+    DisplayQuestions($disabledQuestions);
+  }
 }
 ?>
   </body>

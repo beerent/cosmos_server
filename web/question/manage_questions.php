@@ -170,9 +170,11 @@
   $select .= "</select>";
   echo $select;
   echo "<br><br>";
-  echo "<button onclick='if (CommitQuestionUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
+  if (isset($currentBucketId)) {
+    echo "<button onclick='if (CommitQuestionUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
+  }
+  
   echo "</center>";
-
   echo "<br><br>";
 
 if ($currentBucketId != "") {  

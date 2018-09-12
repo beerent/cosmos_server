@@ -1,12 +1,19 @@
 function AddNewWrongAnswerField() {
   var wrongAnswersHtml = GetObject("new_questions_field");
-  //-8
-  //new_question_table
   var tableObject = GetObject("new_question_table");
-  var currentHTML = "" + tableObject.innerHTML;
-  var newHTML = currentHTML.substring(0, (currentHTML.length - 8));
-  newHTML = newHTML + '<tr><td>Wrong Answer</td><td><input type="text" name="extra_wrong_answer" value="" maxlength="150"></td></tr></tbody>';
-  tableObject.innerHTML = newHTML;
+
+  var row = tableObject.insertRow();
+  
+  var x = row.insertCell(0);
+  x.innerHTML = "Wrong Answer";
+
+
+  x = row.insertCell(1);
+  x.innerHTML = '<input type="text" name="extra_wrong_answer" value="" maxlength="150">';
+  //var currentHTML = "" + tableObject.innerHTML;
+  //var newHTML = currentHTML.substring(0, (currentHTML.length - 8));
+  //newHTML = newHTML + '<tr><td>Wrong Answer</td><td><input type="text" name="extra_wrong_answer" value="" maxlength="150"></td></tr></tbody>';
+  //tableObject.innerHTML = newHTML;
 }
 
 function UpdateQuestionsPage(bucketId) {

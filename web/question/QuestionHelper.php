@@ -25,7 +25,6 @@
       if(!isset($_GET['w' . $i])) {
         continue;
       }
- 
       $proposedQuestion->AddWrongAnswer($_GET['w' . $i]);
     }
 

@@ -40,7 +40,7 @@
 		}
 
 		function MeetsNewQuestionRequirements() {
-			return $this->question != "" && $this->correctAnswer != "" && count($this->bucketIds) > 0 && count($this->wrongAnswers) > 2;
+			return $this->question != "" && $this->correctAnswer != "" && count($this->bucketIds) > 0 && count($this->wrongAnswers) > 0;
 		}
 	}
 ?>

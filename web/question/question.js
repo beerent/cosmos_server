@@ -61,16 +61,6 @@ function AddQuestion() {
     return false;
   }
 
-  if (wrongAnswer2 == "") {
-    alert ("missing wrong answer 2 field!");
-    return false;
-  }
-
-  if (wrongAnswer3 == "") {
-    alert ("missing wrong answer 3 field!");
-    return false;
-  }
-
   if (bucketsChecked.length == 0) {
     alert ("missing bucket!");
     return false;
@@ -79,8 +69,14 @@ function AddQuestion() {
   var urlArgs = "q=" + question;
   urlArgs += "&c=" + correctAnswer;
   urlArgs += "&w1=" + wrongAnswer1;
-  urlArgs += "&w2=" + wrongAnswer2;
-  urlArgs += "&w3=" + wrongAnswer3;
+
+  if (wrongAnswer2 != "") {
+    urlArgs += "&w2=" + wrongAnswer2;
+  }
+
+  if (wrongAnswer3 != "") {
+    urlArgs += "&w3=" + wrongAnswer3;
+  }
 
   for (var i = 0; i < bucketsChecked.length; i++) {
     var bucketId = bucketsChecked[i];

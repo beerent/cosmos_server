@@ -97,7 +97,6 @@
 
 		function UpdateQuestion($questionId, $newValue) {
 			$sql = "update questions set question = '". $this->dbm->GetEscapedString($newValue) ."' where id = '". $questionId ."';";
-			echo $sql;
 			$this->dbm->insert($sql);
 		}
 
@@ -107,7 +106,6 @@
 			}
 
 			$sql = "insert into questions (question) values ('". $this->dbm->GetEscapedString($proposedQuestion->GetQuestion()) ."')";
-			echo $sql;
 			$questionId = $this->dbm->insert($sql);
 
 			$sql = "insert into answers (answer, correct, question_id) values ('". $this->dbm->GetEscapedString($proposedQuestion->GetCorrectAnswer()) ."', '1', '". $questionId ."')";

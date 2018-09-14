@@ -24,11 +24,11 @@
 
       <p id="question_added"></p>
         <table id="new_question_table">
-          <tr><td><font color="red">*</font>Question</td><td><input type="text" id="question" value="" maxlength="150"></td></tr>
-          <tr><td><font color="red">*</font>Correct Answer</td><td><input type="text" id="correct_answer" value="" maxlength="150"></td></tr>
-          <tr><td><font color="red">*</font>Wrong Answer</td><td><input type="text" id="wrong_answer1" value="" maxlength="150"></td></tr>
-          <tr><td><font color="red">*</font>Wrong Answer</td><td><input type="text" id="wrong_answer2" value="" maxlength="150"></td></tr>
-          <tr><td><font color="red">*</font>Wrong Answer</td><td><input type="text" id="wrong_answer3" value="" maxlength="150"></td></tr>
+          <tr><td><font color="red">*</font>Question</td><td><input size="60" type="text" id="question" value="" maxlength="150"></td></tr>
+          <tr><td><font color="red">*</font>Correct Answer</td><td><input size="60" type="text" id="correct_answer" value="" maxlength="150"></td></tr>
+          <tr><td><font color="red">*</font>Wrong Answer</td><td><input size="60" type="text" id="wrong_answer1" value="" maxlength="150"></td></tr>
+          <tr><td><font color="red">*</font>Wrong Answer</td><td><input size="60" type="text" id="wrong_answer2" value="" maxlength="150"></td></tr>
+          <tr><td><font color="red">*</font>Wrong Answer</td><td><input size="60" type="text" id="wrong_answer3" value="" maxlength="150"></td></tr>
         </table>
         <button onclick="AddNewWrongAnswerField();">+ wrong answer</button>
         <br><br><br>

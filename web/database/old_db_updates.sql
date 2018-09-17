@@ -19,3 +19,5 @@ ALTER TABLE `cosmos`.`question_bucket_map`
 ALTER TABLE `cosmos`.`blogs` ADD COLUMN `enabled` INT(1) NOT NULL DEFAULT 1  AFTER `date` ;
 
 alter table question_bucket_map add constraint question_bucket_constraint unique (question_id, bucket_id);
+
+ALTER TABLE `cosmos`.`questions` ADD COLUMN `added` DATETIME NULL  AFTER `enabled` ;

@@ -1,8 +1,9 @@
 <?php
 	class Question {
-		function __construct($id, $question, $answers, $enabled, $added) {
+		function __construct($id, $question, $citation, $answers, $enabled, $added) {
 			$this->id = $id;
 			$this->question = $question;
+			$this->citation = $citation;
 			$this->answers = $answers;
 			$this->enabled = $enabled;
 			$this->added = $added;
@@ -14,6 +15,10 @@
 
 		function GetQuestion(){
 			return $this->question;
+		}
+
+		function GetCitation(){
+			return $this->citation;
 		}
 
 		function GetAnswers() {

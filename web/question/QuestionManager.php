@@ -79,12 +79,13 @@
 		}
 
 		function GetQuestion($questionId) {
-			$sql = "select question, enabled, subtime(added, '5:0:0') as added from questions where id = '". $questionId ."'";
+			$sql = "select question, enabled, citation, subtime(added, '5:0:0') as added from questions where id = '". $questionId ."'";
 			$questionResult = $this->dbm->query($sql);
 			$questionRow = $questionResult->fetch_assoc();
 			$questionText = $questionRow['question'];
 			$questionEnabled = $questionRow['enabled'];
 			$questionAdded = $questionRow['added'];
+			$questionCitation = $questionRow['citation'];
 
 			$sql = "select * from answers where question_id = '". $questionId ."'";
 			$answerResults = $this->dbm->query($sql);
@@ -100,7 +101,7 @@
 				array_push($answers, $answer);					
 			}
 
-			$question = new Question($questionId, $questionText, $answers, $questionEnabled, $questionAdded);	
+			$question = new Question($questionId, $questionText, $questionCitation, $answers, $questionEnabled, $questionAdded);	
 			return $question;		
 		}
 
@@ -109,12 +110,17 @@
 			$this->dbm->insert($sql);
 		}
 
+		function UpdateQuestionCitation($questionId, $newValue) {
+			$sql = "update questions set citation = '". $this->dbm->GetEscapedString($newValue) ."' where id = '". $questionId ."';";
+			$this->dbm->insert($sql);
+		}
+
 		function AddQuestion($proposedQuestion) {
 			if (false == $proposedQuestion->MeetsNewQuestionRequirements()) {
 				return;
 			}
 
-			$sql = "insert into questions (question, added) values ('". $this->dbm->GetEscapedString($proposedQuestion->GetQuestion()) ."', now())";
+			$sql = "insert into questions (question, citation, added) values ('". $this->dbm->GetEscapedString($proposedQuestion->GetQuestion()) ."', '". $this->dbm->GetEscapedString($proposedQuestion->GetCitation()) ."', now())";
 			$questionId = $this->dbm->insert($sql);
 
 			$sql = "insert into answers (answer, correct, question_id) values ('". $this->dbm->GetEscapedString($proposedQuestion->GetCorrectAnswer()) ."', '1', '". $questionId ."')";

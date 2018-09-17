@@ -118,6 +118,28 @@
 
 
 
+
+/************************************************/
+// CITATION FIELD
+/************************************************/
+      echo "  <tr>";
+      echo "    <td>";
+      echo "      citation";
+      echo "    </td>";
+      echo "    <td>";
+
+      $questionId = $question->GetId();
+      $originalCitation = $question->GetCitation();
+      $elementId = "edit_question_citation_id_". $questionId;
+      $singleQuoteEscapedCitationText = $stringUtils->EscapeSingleQuotes($originalCitation);
+
+      echo '<input type="text" size="60" id="'.$elementId.'" value="'.htmlspecialchars($originalCitation).'" maxlength="150" onchange="AddToCitationUpdateQueue(\''.$questionId.'\', \''.$elementId.'\', \''.htmlspecialchars($singleQuoteEscapedCitationText).'\');">';
+
+      echo "    </td>";
+      echo "  </tr>";
+
+
+
 /************************************************/
 // ANSWER FIELD
 /************************************************/
@@ -237,6 +259,7 @@
     <?php  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/top.php"; include($include); ?>
 
     <div id="questions_to_update" style="display:none"></div>
+    <div id="citations_to_update" style="display:none"></div>
     <div id="questions_to_toggle_enable" style="display:none"></div>
     <div id="answers_to_update" style="display:none"></div>
     <div id="answers_to_delete" style="display:none"></div>
@@ -325,7 +348,7 @@
   echo "</table>";
   echo "<br><br>";
   if (isset($currentBucketId)) {
-    echo "<button onclick='if (CommitQuestionUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds() && CommitBucketUpdates()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
+    echo "<button onclick='if (CommitQuestionUpdates() && CommitCitationUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds() && CommitBucketUpdates()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
   }
 
   echo "</center>";

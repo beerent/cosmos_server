@@ -1,1 +1,1 @@
-ALTER TABLE `cosmos`.`questions` ADD COLUMN `added` DATETIME NULL  AFTER `enabled` ;
+ALTER TABLE `cosmos`.`questions` ADD COLUMN `citation` VARCHAR(500) NULL  AFTER `question` ;

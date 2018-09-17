@@ -8,9 +8,10 @@
 
   if ($option == "add") {
     $question = $_GET['q'];
+    $citation = $_GET['ci'];
     $correctAnswer = $_GET['c'];
 
-    $proposedQuestion = new ProposedQuestion($question, $correctAnswer);
+    $proposedQuestion = new ProposedQuestion($question, $citation, $correctAnswer);
 
     $getElementCount = count($_GET);
     for ($i = 0; $i < $getElementCount; $i++) {
@@ -35,6 +36,12 @@
   	$id = $_GET['id'];
   	$new = $_GET['new'];
   	$questionManager->UpdateQuestion($id, $new);
+  }
+
+  else if ($option == "updateCitation") {
+    $id = $_GET['id'];
+    $new = $_GET['new'];
+    $questionManager->UpdateQuestionCitation($id, $new);
   }
 
   else if ($option == "enable") {

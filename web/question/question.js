@@ -27,6 +27,7 @@ function OnEditQuestionClicked(questionId) {
 
 function AddQuestion() {
   var question = GetValue("question");
+  var questionCitation = GetValue("question_citation");
   var correctAnswer = GetValue("correct_answer");
   var wrongAnswer1 = GetValue("wrong_answer1");
   var wrongAnswer2 = GetValue("wrong_answer2");
@@ -51,6 +52,11 @@ function AddQuestion() {
     return false;
   }
 
+  if (questionCitation == "") {
+    alert ("missing citation field!");
+    return false;
+  }
+
   if (correctAnswer == "") {
     alert ("missing correctAnswer field!");
     return false;
@@ -67,6 +73,7 @@ function AddQuestion() {
   }
 
   var urlArgs = "q=" + question;
+  urlArgs += "&ci=" + questionCitation;
   urlArgs += "&c=" + correctAnswer;
   urlArgs += "&w1=" + wrongAnswer1;
 
@@ -109,6 +116,7 @@ function MarkEditPageAsEdited() {
 
 function ClearAddQuestionFields() {
   GetObject("question").value="";
+  GetObject("question_citation").value="";
   GetObject("correct_answer").value="";
   GetObject("wrong_answer1").value="";
   GetObject("wrong_answer2").value="";
@@ -132,6 +140,21 @@ function AddToQuestionUpdateQueue(questionId, elementId, originalText) {
 
   queryString += questionId + "{{}}" + newText;
   questionsToUpdate.innerHTML = questionsToUpdate.innerHTML + queryString;
+  UpdateTextColorIfChanged(textObject, originalText);
+}
+
+function AddToCitationUpdateQueue(questionId, elementId, originalText) {
+  var citationsToUpdate = GetObject("citations_to_update");
+  var textObject = GetObject(elementId);
+  var newText = GetValue(elementId);
+
+  var queryString = "";
+  if (citationsToUpdate.innerHTML != "") {
+    queryString += "(())";
+  } 
+
+  queryString += questionId + "{{}}" + newText;
+  citationsToUpdate.innerHTML = citationsToUpdate.innerHTML + queryString;
   UpdateTextColorIfChanged(textObject, originalText);
 }
 
@@ -250,6 +273,24 @@ function CommitQuestionUpdates() {
   Object.keys(map).forEach(function(id) {
     var newValue = map[id];
     execute("/question/QuestionHelper.php?option=update&id=" + id + "&new=" + newValue, 'fakediv');
+  });
+
+  return true;
+}
+
+function CommitCitationUpdates() {
+  var questionsToUpdate = GetObject("citations_to_update");
+  var entries = questionsToUpdate.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    map[entry[0]] = entry[1];
+  });
+
+  Object.keys(map).forEach(function(id) {
+    var newValue = map[id];
+    execute("/question/QuestionHelper.php?option=updateCitation&id=" + id + "&new=" + newValue, 'fakediv');
   });
 
   return true;

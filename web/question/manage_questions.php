@@ -16,7 +16,13 @@
     $invalidCount = 0;
     $trueFalseCount = 0;
     $multipleChoiceCount = 0;
+    $citationCount = 0;
     for ($i = 0; $i < count($questions); $i++) {
+
+      if ($questions[$i]->GetCitation() != "") {
+        $citationCount++;
+      }
+
       if (count($questions[$i]->GetWrongAnswers()) == 1) {
         $trueFalseCount++;
       } else if (count($questions[$i]->GetWrongAnswers()) == 0 || count($questions[$i]->GetWrongAnswers()) == 2) {
@@ -44,6 +50,11 @@
     echo "<tr>";
     echo "<td><font size='2'>total count</font></td>";
     echo "<td><font size='2'>" . strval(count($questions)) . "</font></td>";
+    echo "</tr>";
+
+    echo "<tr>";
+    echo "<td><font size='2'>total cited</font></td>";
+    echo "<td><font size='2'>" . strval($citationCount) . "</font></td>";
     echo "</tr>";
 
     echo "</table>";

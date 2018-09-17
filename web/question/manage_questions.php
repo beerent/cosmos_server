@@ -48,7 +48,7 @@
     echo "</tr>";
 
     echo "<tr>";
-    echo "<td><font size='2'>total count</font></td>";
+    echo "<td><font size='2'>total questions</font></td>";
     echo "<td><font size='2'>" . strval(count($questions)) . "</font></td>";
     echo "</tr>";
 

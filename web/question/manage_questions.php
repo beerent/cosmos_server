@@ -12,8 +12,44 @@
 <?php
   function DisplayQuestions($questions) {
     echo "<center>";
-    echo "<font size='2'>question count: " . strval(count($questions)) . "</font>";
+    
+    $invalidCount = 0;
+    $trueFalseCount = 0;
+    $multipleChoiceCount = 0;
+    for ($i = 0; $i < count($questions); $i++) {
+      if (count($questions[$i]->GetWrongAnswers()) == 1) {
+        $trueFalseCount++;
+      } else if (count($questions[$i]->GetWrongAnswers()) == 0 || count($questions[$i]->GetWrongAnswers()) == 2) {
+        $invalidCount++;
+      } else {
+        $multipleChoiceCount++;
+      }
+    }
+    echo "<table>";
+    echo "<tr>";
+    echo "<td><font size='2'>true/false count</font></td>";
+    echo "<td><font size='2'>" . strval($trueFalseCount) . "</font></td>";
+    echo "</tr>";
+
+    echo "<tr>";
+    echo "<td><font size='2'>multiple choice count</font></td>";
+    echo "<td><font size='2'>" . strval($multipleChoiceCount) . "</font></td>";
+    echo "</tr>";
+
+    echo "<tr>";
+    echo "<td><font size='2'>invalid count</font></td>";
+    echo "<td><font size='2'>" . strval($invalidCount) . "</font></td>";
+    echo "</tr>";
+
+    echo "<tr>";
+    echo "<td><font size='2'>total count</font></td>";
+    echo "<td><font size='2'>" . strval(count($questions)) . "</font></td>";
+    echo "</tr>";
+
+    echo "</table>";
+
     echo "</center>";
+
     foreach ($questions as $question) {
       echo "<hr>";
       echo "<center>";

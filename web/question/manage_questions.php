@@ -202,6 +202,10 @@
     
     <center>
       <h1>Manage Questions</h1>
+      <?php
+        $enabledQuestionCount = $questionManager->GetEnabledQuestionCount();
+        echo "<font size='2'>Total Question Count: ". $enabledQuestionCount ."</font>";
+      ?>
       <hr>
 <p id="updateID"></p>
 

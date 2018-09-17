@@ -42,6 +42,14 @@
 			return $questions;			
 		}
 
+		function GetEnabledQuestionCount() {
+			$sql = "select count(id) as count from questions where enabled = 1";
+			$result = $this->dbm->query($sql);
+
+			$row = $result->fetch_assoc();
+			return $row['count'];
+		}
+
 		function GetQuestions($bucketId, $enabledToggle) {
 			$sql = "select questions.id from questions join question_bucket_map on question_bucket_map.question_id = questions.id where bucket_id = '" . $bucketId . "' and questions.enabled = " . $enabledToggle . " order by questions.id desc";
 			$results = $this->dbm->query($sql);

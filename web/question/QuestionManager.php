@@ -79,11 +79,12 @@
 		}
 
 		function GetQuestion($questionId) {
-			$sql = "select question, enabled from questions where id = '". $questionId ."'";
+			$sql = "select question, enabled, added from questions where id = '". $questionId ."'";
 			$questionResult = $this->dbm->query($sql);
 			$questionRow = $questionResult->fetch_assoc();
 			$questionText = $questionRow['question'];
 			$questionEnabled = $questionRow['enabled'];
+			$questionAdded = $questionRow['added'];
 
 			$sql = "select * from answers where question_id = '". $questionId ."'";
 			$answerResults = $this->dbm->query($sql);
@@ -99,7 +100,7 @@
 				array_push($answers, $answer);					
 			}
 
-			$question = new Question($questionId, $questionText, $answers, $questionEnabled);	
+			$question = new Question($questionId, $questionText, $answers, $questionEnabled, $questionAdded);	
 			return $question;		
 		}
 
@@ -113,7 +114,7 @@
 				return;
 			}
 
-			$sql = "insert into questions (question) values ('". $this->dbm->GetEscapedString($proposedQuestion->GetQuestion()) ."')";
+			$sql = "insert into questions (question, added) values ('". $this->dbm->GetEscapedString($proposedQuestion->GetQuestion()) ."', now())";
 			$questionId = $this->dbm->insert($sql);
 
 			$sql = "insert into answers (answer, correct, question_id) values ('". $this->dbm->GetEscapedString($proposedQuestion->GetCorrectAnswer()) ."', '1', '". $questionId ."')";

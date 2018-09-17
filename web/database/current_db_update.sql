@@ -1,1 +1,1 @@
-alter table question_bucket_map add constraint question_bucket_constraint unique (question_id, bucket_id);
+ALTER TABLE `cosmos`.`questions` ADD COLUMN `added` DATETIME NULL  AFTER `enabled` ;

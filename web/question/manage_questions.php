@@ -63,6 +63,13 @@
       echo "      <input type='text' readonly value='". $question->GetId() ."' size='60' maxlength='150'>";
       echo "    </td>";
       echo "  </tr>";
+      echo "    <td>";
+      echo "      date added";
+      echo "    </td>";
+      echo "    <td>";
+      echo "      <input type='text' readonly value='". $question->GetAdded() ."' size='60' maxlength='150'>";
+      echo "    </td>";
+      echo "  </tr>";
 
 /************************************************/
 // QUESTION FIELD

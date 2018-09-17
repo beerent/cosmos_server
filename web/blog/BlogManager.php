@@ -14,7 +14,7 @@
 		}
 
 		function GetBlogs() {
-			$sql = "select id, blog, author, date from blogs order by id desc";
+			$sql = "select id, blog, author, subtime(date, '5:0:0') as date from blogs order by id desc";
 			$results = $this->dbm->query($sql);
 
 			$blogs = array();
@@ -32,7 +32,7 @@
 		}
 
 		function GetEnabledBlogs() {
-			$sql = "select id, blog, author, date from blogs where enabled = 1 order by id desc";
+			$sql = "select id, blog, author, subtime(date, '5:0:0') as date from blogs where enabled = 1 order by id desc";
 			$results = $this->dbm->query($sql);
 
 			$blogs = array();

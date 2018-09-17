@@ -79,7 +79,7 @@
 		}
 
 		function GetQuestion($questionId) {
-			$sql = "select question, enabled, added from questions where id = '". $questionId ."'";
+			$sql = "select question, enabled, subtime(added, '5:0:0') as added from questions where id = '". $questionId ."'";
 			$questionResult = $this->dbm->query($sql);
 			$questionRow = $questionResult->fetch_assoc();
 			$questionText = $questionRow['question'];

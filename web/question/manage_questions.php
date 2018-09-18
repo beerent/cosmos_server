@@ -144,7 +144,7 @@
       $elementId = "edit_question_citation_id_". $questionId;
       $singleQuoteEscapedCitationText = $stringUtils->EscapeSingleQuotes($originalCitation);
 
-      echo '<input type="text" size="60" id="'.$elementId.'" value="'.htmlspecialchars($originalCitation).'" maxlength="150" onchange="AddToCitationUpdateQueue(\''.$questionId.'\', \''.$elementId.'\', \''.htmlspecialchars($singleQuoteEscapedCitationText).'\');">';
+      echo '<input type="text" size="60" id="'.$elementId.'" value="'.htmlspecialchars($originalCitation).'" maxlength="500" onchange="AddToCitationUpdateQueue(\''.$questionId.'\', \''.$elementId.'\', \''.htmlspecialchars($singleQuoteEscapedCitationText).'\');">';
 
       echo "    </td>";
       echo "  </tr>";

@@ -362,8 +362,10 @@
     echo "<button onclick='if (CommitQuestionUpdates() && CommitCitationUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds() && CommitBucketUpdates()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
   }
 
+
   echo "</center>";
   echo "<br><br>";
+  echo $_SERVER['REMOTE_ADDR'];
 
 if ($currentBucketId != "") {
 

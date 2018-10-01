@@ -1,6 +1,7 @@
 
 <?php
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/BucketManager.php"; include_once($include);
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/review/ReviewManager.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/question/QuestionManager.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/util/StringUtils.php"; include_once($include);
 
@@ -10,14 +11,26 @@
 ?>
 
 <?php
-  function DisplayQuestions($questions) {
+  function DisplayQuestions($questions, $forMeToReview) {
+    $reviewManager = new ReviewManager();
+
+    $ipAddress = $_SERVER['REMOTE_ADDR'];
+    $beerentsIp = $ipAddress == "104.54.224.18" || $ipAddress == "::1";
+    $bobsIp = $ipAddress == "72.43.89.50" || $ipAddress == "71.115.202.168";
+
     echo "<center>";
     
     $invalidCount = 0;
     $trueFalseCount = 0;
     $multipleChoiceCount = 0;
     $citationCount = 0;
+    $reviewCount = 0;
+
     for ($i = 0; $i < count($questions); $i++) {
+      $reviews = $reviewManager->GetReviews($questions[$i]->GetId());
+      if ($reviews->IsReviewComplete()) {
+        $reviewCount ++;
+      }
 
       if ($questions[$i]->GetCitation() != "") {
         $citationCount++;
@@ -48,13 +61,18 @@
     echo "</tr>";
 
     echo "<tr>";
-    echo "<td><font size='2'>total questions</font></td>";
-    echo "<td><font size='2'>" . strval(count($questions)) . "</font></td>";
+    echo "<td><font size='2'>total cited</font></td>";
+    echo "<td><font size='2'>" . strval($citationCount) . "</font></td>";
     echo "</tr>";
 
     echo "<tr>";
-    echo "<td><font size='2'>total cited</font></td>";
-    echo "<td><font size='2'>" . strval($citationCount) . "</font></td>";
+    echo "<td><font size='2'>total reviewed</font></td>";
+    echo "<td><font size='2'>" . strval($reviewCount) . "</font></td>";
+    echo "</tr>";
+
+    echo "<tr>";
+    echo "<td><font size='2'>total questions</font></td>";
+    echo "<td><font size='2'>" . strval(count($questions)) . "</font></td>";
     echo "</tr>";
 
     echo "</table>";
@@ -62,6 +80,22 @@
     echo "</center>";
 
     foreach ($questions as $question) {
+      $reviews = $reviewManager->GetReviews($question->GetId());
+
+      if ($forMeToReview) {
+        if ($beerentsIp) {
+          if ($reviews->BeerentReviewed()) {
+            continue;
+          }
+        } else if ($bobsIp) {
+          if ($reviews->BobReviewed()) {
+            continue;
+          }
+        } else {
+          continue;
+        }
+      }
+
       echo "<hr>";
       echo "<center>";
 
@@ -191,11 +225,70 @@
 /************************************************/
       echo "<tr>";
       echo "<td id='new_answer_label_id_". $questionId ."'>";
-      echo "</td>";
+      echo "add answer</td>";
       echo "<td>";
       $elementAddId = "new_answer_text_id_" . $questionId;
       echo "<input type='text' size='60' id='".$elementAddId."' maxlength='150' placeholder='add new wrong answer...'>";
       echo "<button id='new_answer_button_id_". $questionId ."' onclick='AddAnswerToAddQueue(\"$questionId\", \"$elementAddId\");'>+</button>";
+      echo "</td>";
+      echo "</tr>";
+
+
+
+
+/************************************************/
+// REVIEW FIELD
+//************************************************/
+      echo "<tr>";
+      echo "<td>reviews</td>";
+      echo "<td>";
+      $beerentId = "beerent_" . $questionId . "_review";
+      echo "<div style='display:inline' id='". $beerentId ."'>";
+
+      $disabled = "";
+      if (!$beerentsIp) {
+        $disabled = " disabled ";
+      }
+
+      $originalState = "false";
+      $checked = "";
+      if ($reviews->BeerentReviewed()) {
+        $originalState = "true";
+        $checked = " checked ";
+      }
+
+      echo '<input '. $disabled .' '. $checked .' type="checkbox" onchange="AddToUpdateReviewQueue(\''. $beerentId .'\', \''. $questionId .'\', 0, '. $originalState .', this.checked)">';
+      echo "beerent ";
+
+      echo "</div>";
+      
+
+
+
+
+
+
+      $bobId = "bob_" . $questionId . "_review";
+      echo "<div style='display:inline' id='". $bobId ."'>";
+
+      $disabled = "";
+      if (!$bobsIp) {
+        $disabled = "  ";
+      }
+
+      $originalState = "false";
+
+      $checked = "";
+      if ($reviews->BobReviewed()) {
+        $originalState = "true";
+        $checked = " checked ";
+      }
+
+      echo '<input '. $disabled .' '. $checked .' type="checkbox" onchange="AddToUpdateReviewQueue(\''. $bobId .'\', \''. $questionId .'\', 1, '. $originalState .', this.checked)">';
+      echo "bob";
+
+      echo "</div>";
+
       echo "</td>";
       echo "</tr>";
 
@@ -240,13 +333,8 @@
         echo "</tr>";
       }
       echo "</table>";
-
       echo "</td>";
-
       echo "</tr>";
-
-
-
       echo "</table>";
 
       echo "</center>";
@@ -276,6 +364,7 @@
     <div id="answers_to_delete" style="display:none"></div>
     <div id="answers_to_add" style="display:none"></div>
     <div id="buckets_to_update" style="display:none"></div>
+    <div id="reviews_to_update" style="display:none"></div>
     
     <center>
       <h1>Manage Questions</h1>
@@ -293,6 +382,9 @@
   if ($showEnabledType == "") {
     $showEnabledType = "enabled";
   }
+
+  $forMeToReview = $_GET['for_me_to_review'] == "1";
+
   echo "<table>";
   echo "<tr>";
 
@@ -307,7 +399,7 @@
 /************************************************/
 // BUCKET SELECT
 /************************************************/
-  echo "<select id=\"bucket_select\" onchange='UpdateQuestionsPage(GetValue(\"bucket_select\"), GetValue(\"enable_select\"))'>";
+  echo "<select id=\"bucket_select\" onchange='UpdateQuestionsPage(GetValue(\"bucket_select\"), GetValue(\"enable_select\"), GetObject(\"for_me_to_review\").checked)'>";
   if ($currentBucketId == "") {
     echo '<option value="">select a bucket!</option>';
   }
@@ -331,7 +423,7 @@
   echo "</tr>";
   echo "<tr>";
   echo "<td>";
-  echo "<b>enabled:</b>";
+  echo "<b>Enabled:</b>";
   echo "</td>";
   echo "<td>";
 
@@ -340,7 +432,7 @@
 /************************************************/
 // ENABLED SELECT
 /************************************************/
-  echo  "<select id=\"enable_select\" onchange='UpdateQuestionsPage(GetValue(\"bucket_select\"), GetValue(\"enable_select\"))'>";
+  echo  "<select id=\"enable_select\" onchange='UpdateQuestionsPage(GetValue(\"bucket_select\"), GetValue(\"enable_select\"), GetObject(\"for_me_to_review\").checked)'>";
   if ($showEnabledType == "enabled") {
       echo '<option selected value="enabled">enabled</option>';
   } else {
@@ -356,34 +448,46 @@
   echo "</select>";
   echo "</td>";
   echo "</tr>";
+
+  echo "<tr>";
+  echo "<td><b></>To Review:</td>";
+  echo "<td><center>";
+  $reviewChecked ="";
+  if ($forMeToReview) {
+    $reviewChecked = " checked ";
+  }
+  $reviewedCheckbox = "<input type='checkbox' id=\"for_me_to_review\" " . $reviewChecked . " onchange='UpdateQuestionsPage(GetValue(\"bucket_select\"), GetValue(\"enable_select\"), GetObject(\"for_me_to_review\").checked)'>";
+  echo $reviewedCheckbox;
+  echo "</center></td>";
+  echo "</tr>";
+
   echo "</table>";
   echo "<br><br>";
   if (isset($currentBucketId)) {
-    echo "<button onclick='if (CommitQuestionUpdates() && CommitCitationUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds() && CommitBucketUpdates()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
+    echo "<button onclick='if (CommitQuestionUpdates() && CommitCitationUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds() && CommitBucketUpdates() && CommitReviewUpdates()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
   }
 
 
   echo "</center>";
   echo "<br><br>";
-  echo $_SERVER['REMOTE_ADDR'];
 
 if ($currentBucketId != "") {
 
   if ($currentBucketId == "-1") {
     if ($showEnabledType == "enabled") {
       $enabledQuestions = $questionManager->GetBucketlessQuestions(1);
-      DisplayQuestions($enabledQuestions);
+      DisplayQuestions($enabledQuestions, $forMeToReview);
     } else if ($showEnabledType == "disabled") {
       $disabledQuestions = $questionManager->GetBucketlessQuestions(0);
-      DisplayQuestions($disabledQuestions);
+      DisplayQuestions($disabledQuestions, $forMeToReview);
     }
   }else{
     if ($showEnabledType == "enabled") {
       $enabledQuestions = $questionManager->GetEnabledQuestions($currentBucketId);
-      DisplayQuestions($enabledQuestions);
+      DisplayQuestions($enabledQuestions, $forMeToReview);
     } else if ($showEnabledType == "disabled") {
       $disabledQuestions = $questionManager->GetDisabledQuestions($currentBucketId);
-      DisplayQuestions($disabledQuestions);
+      DisplayQuestions($disabledQuestions, $forMeToReview);
     }
   }
 }

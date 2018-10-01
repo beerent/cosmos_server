@@ -10,14 +10,15 @@ function AddNewWrongAnswerField() {
 
   x = row.insertCell(1);
   x.innerHTML = '<input type="text" name="extra_wrong_answer" value="" size="60" maxlength="150">';
-  //var currentHTML = "" + tableObject.innerHTML;
-  //var newHTML = currentHTML.substring(0, (currentHTML.length - 8));
-  //newHTML = newHTML + '<tr><td>Wrong Answer</td><td><input type="text" name="extra_wrong_answer" value="" maxlength="150"></td></tr></tbody>';
-  //tableObject.innerHTML = newHTML;
 }
 
-function UpdateQuestionsPage(bucketId, enabled) {
-  window.location.replace(window.location.href.substring(0, window.location.href.indexOf("?")) + "?id=" + bucketId + "&type=" + enabled);
+function UpdateQuestionsPage(bucketId, enabled, reviewed) {
+  var reviewedString = "0";
+  if (reviewed) {
+    reviewedString = "1";
+  }
+
+  window.location.replace(window.location.href.substring(0, window.location.href.indexOf("?")) + "?id=" + bucketId + "&type=" + enabled  + "&for_me_to_review=" + reviewedString);
 }
 
 function OnEditQuestionClicked(questionId) {
@@ -251,12 +252,34 @@ function AddToUpdateBucketsQueue(questionId, bucketId, originalState, currentSta
   queryString += questionId + "{{}}" + bucketId + "{{}}" + currentState;
   bucketsToUpdate.innerHTML = bucketsToUpdate.innerHTML + queryString;
 
-
-
   if (("" + originalState) == ("" + currentState)) {
     UpdateTextToBlack(cellElement);
   } else {
     UpdateTextToRed(cellElement);
+  }
+}
+
+function AddToUpdateReviewQueue(elementId, questionId, reviewerId, originalState, currentState) {
+  var reviewsToUpdate = GetObject("reviews_to_update");
+  var element = GetObject(elementId);
+
+  var op = "-";
+  if (currentState) {
+    op = "+";
+  }
+
+  var queryString = "";
+  if (reviewsToUpdate.innerHTML != "") {
+    queryString += "(())";
+  }
+
+  queryString += questionId + "{{}}" + reviewerId + "{{}}" + op;
+  reviewsToUpdate.innerHTML = reviewsToUpdate.innerHTML + queryString;
+
+  if (originalState == currentState) {
+    UpdateTextToBlack(element);
+  } else {
+    UpdateTextToRed(element);
   }
 }
 
@@ -374,7 +397,7 @@ function CommitBucketUpdates() {
     var bucketId = entry[1];
     var checked = entry[2] == "true";
 
-    mapKey = questionId + "{{}}" + bucketId;
+    var mapKey = questionId + "{{}}" + bucketId;
     map[mapKey] = checked;
   });
 
@@ -388,6 +411,37 @@ function CommitBucketUpdates() {
       execute("/question/QuestionHelper.php?option=addMapping&qid=" + questionId + "&bid=" + bucketId, 'fakediv');
     } else {
       execute("/question/QuestionHelper.php?option=deleteMapping&qid=" + questionId + "&bid=" + bucketId, 'fakediv');
+    }
+  });
+
+  return true;
+}
+
+function CommitReviewUpdates() {
+  var reviewsToUpdate = GetObject("reviews_to_update");
+  var entries = reviewsToUpdate.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    var questionId = entry[0];
+    var reviewerId = entry[1];
+    var add = entry[2] == "+";
+
+    var mapKey = questionId + "{{}}" + reviewerId;
+    map[mapKey] = add;
+  });
+
+  Object.keys(map).forEach(function(mappingKey) {
+    var add = map[mappingKey];
+    var values = mappingKey.split("{{}}");
+    var questionId = values[0];
+    var reviewerId = values[1];
+
+    if (add) {
+      execute("/review/ReviewHelper.php?option=add&qid=" + questionId + "&rid=" + reviewerId, 'fakediv');
+    } else {
+      execute("/review/ReviewHelper.php?option=remove&qid=" + questionId + "&rid=" + reviewerId, 'fakediv');
     }
   });
 

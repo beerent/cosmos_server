@@ -273,7 +273,7 @@
 
       $disabled = "";
       if (!$bobsIp) {
-        $disabled = "  ";
+        $disabled = " disabled ";
       }
 
       $originalState = "false";

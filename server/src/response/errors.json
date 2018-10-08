@@ -1,0 +1,11 @@
+{
+    "INVALID_CREDENTIALS": {
+        "id": 101,
+        "note": "invalid credentials"
+    },
+
+    "ACTIVE_GAME_FIELDS_ERROR": {
+        "id": 102,
+        "note": "invalid active game requirements"
+    }
+} 

@@ -9,7 +9,7 @@ class QuestionManager {
 	}
 
 	GetAllQuestions(callback) {
-		var results = this.dbm.Query("SELECT questions.id as qid, questions.question, questions.citation, questions.enabled, questions.added, answers.id as aid, answers.answer, answers.correct FROM questions join answers on questions.id = answers.question_id;", function (results) {
+		var results = this.dbm.Query("SELECT questions.id as qid, questions.question, questions.citation, questions.enabled, questions.added, answers.id as aid, answers.answer, answers.correct FROM questions join answers on questions.id = answers.question_id order by answers.question_id ASC;", function (results) {
 			var questions = [];
 
 			var questionId = undefined;
@@ -22,14 +22,14 @@ class QuestionManager {
 			results.forEach(function(entry) {
 				if (entry.qid != questionId) {
 					if (questionId != undefined) {
-						questions.push(new Question(questionId, questionText, questionCitation, questionAdded, correctAnswer, incorrectAnswers));
+						var newQuestion = new Question(questionId, questionText, questionCitation, questionAdded, correctAnswer, incorrectAnswers); 
+						questions.push(newQuestion);
 					}
 
 					questionId = entry.qid;
 					questionText = entry.question;
 					questionCitation = entry.citation;
-					questionAdded = entry.added;
-
+					questionAdded = entry.added;	
 					correctAnswer = undefined;
 					incorrectAnswers = [];
 				}
@@ -40,10 +40,12 @@ class QuestionManager {
 				} else {
 					incorrectAnswers.push(answer);
 				}
+
 			});
 
 			if (questionId != undefined) {
-				questions.push(new Question(questionId, questionText, questionCitation, questionAdded, correctAnswer, incorrectAnswers));
+				var newQuestion = new Question(questionId, questionText, questionCitation, questionAdded, correctAnswer, incorrectAnswers); 
+				questions.push(newQuestion);
 			}
 
 			callback(questions);

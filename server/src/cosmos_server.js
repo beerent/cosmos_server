@@ -4,21 +4,12 @@ var QuestionManager = require("./question/QuestionManager.js");
 var GameManager = require("./game/GameManager.js");
 var Authenticator = require("./authentication/Authenticator.js");
 var ResponseBuilder = require("./response/ResponseBuilder.js");
+var UserManager = require("./user/UserManager.js");
 
 function LoadErrors() {
 	var fs = require('fs');
 	var obj = JSON.parse(fs.readFileSync('./response/errors.json', 'utf8'));
 	return obj;
-}
-
-function CredentialFieldsAreValid(query) {
-	return query.username != undefined && query.password != undefined;
-}
-
-function HandleRequestWithInvalidCredentials(res) {
-	var responseBuilder = new ResponseBuilder();
-	responseBuilder.SetError(errors.INVALID_CREDENTIALS);
-	res.json(responseBuilder.Response());	
 }
 
 function ActiveGameFieldsAreValid(query) {
@@ -77,9 +68,43 @@ app.get('/getQuestions', function (req, res) {
 	});
 });
 
-app.put('/submitAnswer', function (req, res) {
-	//username, password, gameID, questionID, answerID
+
+
+
+
+
+
+
+
+/****************************************************************************/
+
+app.get('/authenticate', function (req, res) {
+	var user_manager = new UserManager(dbm, errors);
+	user_manager.AuthenticationRequest(req.query, function (response) {
+		res.json(response);
+	});
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

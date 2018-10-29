@@ -17,9 +17,19 @@ class DBM {
 	Query(sql, callback) {
 		this.con.query(sql, function (err, result) {
 			if (err) throw err;
-			
 			callback(result);
 		});
+	}
+
+	Query(sql, parameters, callback) {
+		this.con.query(sql, parameters, function (err, result) {
+			if (err) throw err;
+			callback(result);
+		});
+	}
+
+	Escape(str) {
+		return mysql.escape(str);
 	}
 };
 

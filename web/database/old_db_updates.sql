@@ -35,3 +35,6 @@ CREATE TABLE `question_reviews` (
   CONSTRAINT `review_fk_1` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `review_fk_2` FOREIGN KEY (`reviewer_id`) REFERENCES `reviewer` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
+
+insert into reviewer (id, name) values (0, "beerent");
+insert into reviewer (id, name) values (1, "bob");

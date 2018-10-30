@@ -9,7 +9,8 @@ class QuestionManager {
 	}
 
 	GetAllQuestions(callback) {
-		var results = this.dbm.Query("SELECT questions.id as qid, questions.question, questions.citation, questions.enabled, questions.added, answers.id as aid, answers.answer, answers.correct FROM questions join answers on questions.id = answers.question_id order by answers.question_id ASC;", function (results) {
+		var sql = "SELECT questions.id as qid, questions.question, questions.citation, questions.enabled, questions.added, answers.id as aid, answers.answer, answers.correct FROM questions join answers on questions.id = answers.question_id order by answers.question_id ASC;";
+		this.dbm.Query(sql, function (results) {
 			var questions = [];
 
 			var questionId = undefined;

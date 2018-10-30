@@ -21,7 +21,7 @@ class DBM {
 		});
 	}
 
-	Query(sql, parameters, callback) {
+	ParameterizedQuery(sql, parameters, callback) {
 		this.con.query(sql, parameters, function (err, result) {
 			if (err) throw err;
 			callback(result);

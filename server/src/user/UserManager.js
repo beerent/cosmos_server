@@ -14,6 +14,7 @@ class UserManager {
 		if (this.CredentialFieldsAreValid(query) == false) {
 			responseBuilder.SetError(errors.INVALID_CREDENTIALS);
 			callback(responseBuilder.Response());
+			return;
 		}
 
 		this.GetUserByUsername(query.username, query.password, function (results) {
@@ -32,7 +33,7 @@ class UserManager {
 	GetUserByUsername(username, password, callback) {
 		var params = [username, password];
 		var sql = "select id, username, email from users where username = ? and password_salt = ?";
-		this.dbm.Query(sql, params, callback);
+		this.dbm.ParameterizedQuery(sql, params, callback);
 	}
 
 	GetUserByEmail(username, password) {

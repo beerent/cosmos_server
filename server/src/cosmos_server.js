@@ -19,7 +19,8 @@ function ActiveGameFieldsAreValid(query) {
 function HandleRequestWithInvalidActiveGameFields(res) {
 	var responseBuilder = new ResponseBuilder();
 	responseBuilder.SetError(errors.ACTIVE_GAME_FIELDS_ERROR);
-	res.json(responseBuilder.Response());	
+	res.json(responseBuilder.Response());
+	res.end();
 }
 
 var app = express();
@@ -38,6 +39,7 @@ app.get('/newGame', function (req, res) {
 	authenticatorInstance.HandleIfAuthenticated(req.query, function(){
 		gameManagerInstance.HandleNewGameRequest(req.query, function(response){
 			res.json(response);
+			res.end();
 		});
 	});
 });
@@ -56,6 +58,7 @@ app.get('/getActiveGameQuestions', function (req, res) {
 	var question_manager = new QuestionManager(dbm);
 	var questions = question_manager.GetAllQuestions(function (questions) {
 		res.json(questions);
+		res.end();
 		console.log("[SERVER] sent questions.");
 	});
 });
@@ -64,6 +67,7 @@ app.get('/getQuestions', function (req, res) {
 	var question_manager = new QuestionManager(dbm);
 	var questions = question_manager.GetAllQuestions(function (questions) {
 		res.json(questions);
+		res.end();
 		console.log("[SERVER] sent questions.");
 	});
 });
@@ -82,6 +86,7 @@ app.get('/authenticate', function (req, res) {
 	var user_manager = new UserManager(dbm, errors);
 	user_manager.AuthenticationRequest(req.query, function (response) {
 		res.json(response);
+		res.end();
 	});
 });
 

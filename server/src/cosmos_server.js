@@ -40,6 +40,7 @@ app.get('/newGame', function (req, res) {
 		gameManagerInstance.HandleNewGameRequest(req.query, function(response){
 			res.json(response);
 			res.end();
+			dbm.Close();
 		});
 	});
 });
@@ -61,6 +62,7 @@ app.get('/getActiveGameQuestions', function (req, res) {
 		res.json(questions);
 		res.end();
 		console.log("[SERVER] sent questions.");
+		dbm.Close();
 	});
 });
 
@@ -71,6 +73,7 @@ app.get('/getQuestions', function (req, res) {
 		res.json(questions);
 		res.end();
 		console.log("[SERVER] sent questions.");
+		dbm.Close();
 	});
 });
 
@@ -90,6 +93,7 @@ app.get('/authenticate', function (req, res) {
 	user_manager.AuthenticationRequest(req.query, function (response) {
 		res.json(response);
 		res.end();
+		dbm.Close();
 	});
 });
 

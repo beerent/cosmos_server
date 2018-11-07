@@ -31,6 +31,10 @@ class DBM {
 	Escape(str) {
 		return mysql.escape(str);
 	}
+
+	Close() {
+		this.con.end();
+	}
 };
 
 module.exports = DBM;

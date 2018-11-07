@@ -1,7 +1,7 @@
 var express = require('express');
 var DBM = require("./database/DBM.js");
 var QuestionManager = require("./question/QuestionManager.js");
-var GameManager = require("./game/GameManager.js");
+var ChallengeManager = require("./game/ChallengeManager.js");
 var Authenticator = require("./authentication/Authenticator.js");
 var ResponseBuilder = require("./response/ResponseBuilder.js");
 var UserManager = require("./user/UserManager.js");
@@ -26,22 +26,22 @@ function HandleRequestWithInvalidActiveGameFields(res) {
 var app = express();
 var errors = LoadErrors();
 
-app.get('/newGame', function (req, res) {
-	if (CredentialFieldsAreValid(req.query) == false) {
-		HandleRequestWithInvalidCredentials(res);
-		return;
-	}
-
+app.get('/newChallenge', function (req, res) {
 	var dbm = new DBM();
-	var authenticatorInstance = new Authenticator(dbm);
-	var gameManagerInstance = new GameManager();
+	var user_manager = new UserManager(dbm, errors);
+	var challengeManagerInstance = new ChallengeManager();
 
-	authenticatorInstance.HandleIfAuthenticated(req.query, function(){
-		gameManagerInstance.HandleNewGameRequest(req.query, function(response){
+	user_manager.AuthenticationRequest(req.query, function (response) {
+		if (false == response.success) {
 			res.json(response);
 			res.end();
-			dbm.Close();
-		});
+		} else {
+			challengeManagerInstance.HandleNewChallengeRequest(req.query, function(response){
+				res.json(response);
+				res.end();
+			});
+		}
+		dbm.Close();
 	});
 });
 
@@ -76,6 +76,8 @@ app.get('/getQuestions', function (req, res) {
 		dbm.Close();
 	});
 });
+
+
 
 
 

@@ -1,6 +1,6 @@
 var ResponseBuilder = require("../response/ResponseBuilder.js");
 
-class GameManager {
+class ChallengeManager {
 
 	constructor (dbm) {
 		this.dbm = dbm;
@@ -10,7 +10,7 @@ class GameManager {
 
 	}
 
-	HandleNewGameRequest(query, callback) {
+	HandleNewChallengeRequest(query, callback) {
 		var responseBuilderImpl = new ResponseBuilder();
 		var newGameData = {}; newGameData["game_id"] = 1;
 		responseBuilderImpl.SetPayload(newGameData);
@@ -20,4 +20,4 @@ class GameManager {
 
 };
 
-module.exports = GameManager;
+module.exports = ChallengeManager;

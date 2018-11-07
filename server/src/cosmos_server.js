@@ -24,7 +24,6 @@ function HandleRequestWithInvalidActiveGameFields(res) {
 }
 
 var app = express();
-var dbm = new DBM();
 var errors = LoadErrors();
 
 app.get('/newGame', function (req, res) {
@@ -33,6 +32,7 @@ app.get('/newGame', function (req, res) {
 		return;
 	}
 
+	var dbm = new DBM();
 	var authenticatorInstance = new Authenticator(dbm);
 	var gameManagerInstance = new GameManager();
 
@@ -55,6 +55,7 @@ app.get('/getActiveGameQuestions', function (req, res) {
 		return;
 	}
 
+	var dbm = new DBM();
 	var question_manager = new QuestionManager(dbm);
 	var questions = question_manager.GetAllQuestions(function (questions) {
 		res.json(questions);
@@ -64,6 +65,7 @@ app.get('/getActiveGameQuestions', function (req, res) {
 });
 
 app.get('/getQuestions', function (req, res) {
+	var dbm = new DBM();
 	var question_manager = new QuestionManager(dbm);
 	var questions = question_manager.GetAllQuestions(function (questions) {
 		res.json(questions);
@@ -83,6 +85,7 @@ app.get('/getQuestions', function (req, res) {
 /****************************************************************************/
 
 app.get('/authenticate', function (req, res) {
+	var dbm = new DBM();
 	var user_manager = new UserManager(dbm, errors);
 	user_manager.AuthenticationRequest(req.query, function (response) {
 		res.json(response);
@@ -113,14 +116,12 @@ app.get('/authenticate', function (req, res) {
 
 
 
-
-
 var server = app.listen(8081, function () {
 
   var host = server.address().address
   var port = server.address().port
 
-  console.log("istening at http://%s:%s", host, port)
+  console.log("listening at http://%s:%s", host, port)
 });
 
 

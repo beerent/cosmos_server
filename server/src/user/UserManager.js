@@ -17,8 +17,8 @@ class UserManager {
 			return;
 		}
 
-		this.GetUserByUsername(query.username, query.password, function (results) {
-			if (results.length == 0) {
+		this.GetUserFromCredentials(query.username, query.password, function (userObject) {
+			if (userObject == undefined) {
 				responseBuilder.SetError(errors.INVALID_CREDENTIALS);
 			}
 
@@ -30,10 +30,23 @@ class UserManager {
 		return query.username != undefined && query.password != undefined;
 	}
 
-	GetUserByUsername(username, password, callback) {
+	GetUserFromCredentials(username, password, callback) {
 		var params = [username, password];
 		var sql = "select id, username, email from users where username = ? and password_salt = ?";
-		this.dbm.ParameterizedQuery(sql, params, callback);
+		this.dbm.ParameterizedQuery(sql, params, function(queryResults) {
+			if (queryResults.length == 0) {
+				var user = undefined;
+				callback(user);
+				return;
+			}
+
+			var user = {};
+			user.id = queryResults[0].id;
+			user.username = queryResults[0].username;
+			user.email = queryResults[0].email;
+
+			callback(user);
+		});
 	}
 
 	GetUserByEmail(username, password) {

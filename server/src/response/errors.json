@@ -4,8 +4,8 @@
         "note": "invalid credentials"
     },
 
-    "ACTIVE_GAME_FIELDS_ERROR": {
+    "ACTIVE_CHALLENGE_ERROR": {
         "id": 102,
-        "note": "invalid active game requirements"
+        "note": "invalid active challenge requirements"
     }
 } 

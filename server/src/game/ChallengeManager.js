@@ -2,22 +2,28 @@ var ResponseBuilder = require("../response/ResponseBuilder.js");
 
 class ChallengeManager {
 
-	constructor (dbm) {
+	constructor (dbm, errors) {
 		this.dbm = dbm;
+		this.errors = errors;
 	}
 
-	CreateNewGame() {
+	CreateNewChallenge(user_id, callback) {
+		var responseBuilder = new ResponseBuilder();
 
+		var sql = "insert into challenge_attempts (user_id) values (?)";
+		var params = [user_id];
+		this.dbm.ParameterizedInsert(sql, params, function(newChallengeId) {
+			var newGameData = {}; 
+			newGameData["game_id"] = newChallengeId;
+
+			responseBuilder.SetPayload(newGameData);
+			callback(responseBuilder.Response());
+		});
 	}
 
-	HandleNewChallengeRequest(query, callback) {
-		var responseBuilderImpl = new ResponseBuilder();
-		var newGameData = {}; newGameData["game_id"] = 1;
-		responseBuilderImpl.SetPayload(newGameData);
-		callback(responseBuilderImpl.Response());
+	HandleNewChallengeRequest(user_id, callback) {
+		this.CreateNewChallenge(user_id, callback);	
 	}
-
-
 };
 
 module.exports = ChallengeManager;

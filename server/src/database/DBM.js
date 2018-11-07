@@ -28,6 +28,13 @@ class DBM {
 		});
 	}
 
+	ParameterizedInsert(sql, parameters, callback) {
+		this.con.query(sql, parameters, function (err, result) {
+			if (err) throw err;
+			callback(result.insertId);
+		});
+	}
+
 	Escape(str) {
 		return mysql.escape(str);
 	}

@@ -26,25 +26,6 @@ function HandleRequestWithInvalidActiveGameFields(res) {
 var app = express();
 var errors = LoadErrors();
 
-app.get('/newChallenge', function (req, res) {
-	var dbm = new DBM();
-	var user_manager = new UserManager(dbm, errors);
-	var challengeManagerInstance = new ChallengeManager();
-
-	user_manager.AuthenticationRequest(req.query, function (response) {
-		if (false == response.success) {
-			res.json(response);
-			res.end();
-		} else {
-			challengeManagerInstance.HandleNewChallengeRequest(req.query, function(response){
-				res.json(response);
-				res.end();
-			});
-		}
-		dbm.Close();
-	});
-});
-
 app.get('/getActiveGameQuestions', function (req, res) {
 	if (CredentialFieldsAreValid(req.query) == false) {
 		HandleRequestWithInvalidCredentials(res);
@@ -92,9 +73,38 @@ app.get('/getQuestions', function (req, res) {
 app.get('/authenticate', function (req, res) {
 	var dbm = new DBM();
 	var user_manager = new UserManager(dbm, errors);
-	user_manager.AuthenticationRequest(req.query, function (response) {
+	user_manager.AuthenticationRequest(req.query, function(response) {
 		res.json(response);
 		res.end();
+		dbm.Close();
+	});
+});
+
+app.get('/newChallenge', function (req, res) {
+	var dbm = new DBM();
+	var user_manager = new UserManager(dbm, errors);
+	var challengeManagerInstance = new ChallengeManager(dbm, errors);
+	var responseBuilder = new ResponseBuilder();
+
+	if (user_manager.CredentialFieldsAreValid(req.query) == false) {
+		responseBuilder.SetError(errors.INVALID_CREDENTIALS);
+		res.json(responseBuilder.Response());
+		res.end();
+		dbm.Close();
+		return;
+	}
+
+	user_manager.GetUserFromCredentials(req.query.username, req.query.password, function(user) {
+		if (undefined == user) {
+			responseBuilder.SetError(errors.INVALID_CREDENTIALS);
+			res.json(responseBuilder.Response());
+			res.end();
+		} else {
+			challengeManagerInstance.HandleNewChallengeRequest(user.id, function(response){
+				res.json(response);
+				res.end();
+			});
+		}
 		dbm.Close();
 	});
 });

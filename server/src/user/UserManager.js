@@ -7,6 +7,15 @@ class UserManager {
 		this.errors = errors;
 	}
 
+	HandleAuthenticationRequest(req, res) {
+		var self = this;
+		this.AuthenticationRequest(req.query, function(response) {
+			res.json(response);
+			res.end();
+			self.dbm.Close();
+		});
+	}
+
 	AuthenticationRequest(query, callback) {
 		var responseBuilder = new ResponseBuilder();
 		var errors = this.errors;
@@ -33,8 +42,8 @@ class UserManager {
 	GetUserFromCredentials(username, password, callback) {
 		var params = [username, password];
 		var sql = "select id, username, email from users where username = ? and password_salt = ?";
-		this.dbm.ParameterizedQuery(sql, params, function(queryResults) {
-			if (queryResults.length == 0) {
+		this.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
+			if (err || queryResults.length == 0) {
 				var user = undefined;
 				callback(user);
 				return;

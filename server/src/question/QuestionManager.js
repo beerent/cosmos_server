@@ -10,6 +10,7 @@ class QuestionManager {
 
 	GetAllQuestions(callback) {
 		var sql = "SELECT questions.id as qid, questions.question, questions.citation, questions.enabled, questions.added, answers.id as aid, answers.answer, answers.correct FROM questions join answers on questions.id = answers.question_id order by answers.question_id DESC limit 40;";
+		var self = this;
 		this.dbm.Query(sql, function (results) {
 			var questions = [];
 
@@ -48,9 +49,25 @@ class QuestionManager {
 				var newQuestion = new Question(questionId, questionText, questionCitation, questionAdded, correctAnswer, incorrectAnswers); 
 				questions.push(newQuestion);
 			}
-
+			questions = self.shuffle(questions);
 			callback(questions);
 		});
+	}
+	
+	shuffle(array) {
+		var m = array.length, t, i;
+		// While there remain elements to shuffle…
+		while (m) {
+			// Pick a remaining element…
+			i = Math.floor(Math.random() * m--);
+
+			// And swap it with the current element.
+			t = array[m];
+			array[m] = array[i];
+			array[i] = t;
+		}
+
+		return array;
 	}
 
 

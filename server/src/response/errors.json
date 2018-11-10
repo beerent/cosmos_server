@@ -7,5 +7,25 @@
     "ACTIVE_CHALLENGE_ERROR": {
         "id": 102,
         "note": "invalid active challenge requirements"
+    },
+
+    "REGISTER_CHALLENGE_ANSWER_MISSING_ERROR": {
+        "id": 103,
+        "note": "register challenge answer missing parameters"
+    },
+
+    "REGISTER_CHALLENGE_ANSWER_INVALID_ERROR": {
+        "id": 104,
+        "note": "register challenge answer invalid parameters"
+    },
+
+    "GET_CHALLENGE_QUESTIONS_ERROR": {
+        "id": 105,
+        "note": "get questions is missing parameters"
+    },
+
+    "GET_CHALLENGE_INVALID_ID": {
+        "id": 106,
+        "note": "challenge id is invalid"
     }
 } 

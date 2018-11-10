@@ -23,15 +23,19 @@ class DBM {
 
 	ParameterizedQuery(sql, parameters, callback) {
 		this.con.query(sql, parameters, function (err, result) {
-			if (err) throw err;
-			callback(result);
+			if (err)
+				callback(undefined, err);
+			else
+				callback(result, err);
 		});
 	}
 
 	ParameterizedInsert(sql, parameters, callback) {
 		this.con.query(sql, parameters, function (err, result) {
-			if (err) throw err;
-			callback(result.insertId);
+			if (err)
+				callback(undefined, err);
+			else
+				callback(result.insertId, err);
 		});
 	}
 

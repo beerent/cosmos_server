@@ -12,125 +12,36 @@ function LoadErrors() {
 	return obj;
 }
 
-function ActiveGameFieldsAreValid(query) {
-	return query.gameId != undefined;
-}
-
-function HandleRequestWithInvalidActiveGameFields(res) {
-	var responseBuilder = new ResponseBuilder();
-	responseBuilder.SetError(errors.ACTIVE_GAME_FIELDS_ERROR);
-	res.json(responseBuilder.Response());
-	res.end();
-}
-
 var app = express();
 var errors = LoadErrors();
-
-app.get('/getActiveGameQuestions', function (req, res) {
-	if (CredentialFieldsAreValid(req.query) == false) {
-		HandleRequestWithInvalidCredentials(res);
-		return;
-	}
-
-	if (ActiveGameFieldsAreValid(req.query) == false) {
-		HandleRequestWithInvalidActiveGameFields(res);
-		return;
-	}
-
-	var dbm = new DBM();
-	var question_manager = new QuestionManager(dbm);
-	var questions = question_manager.GetAllQuestions(function (questions) {
-		res.json(questions);
-		res.end();
-		console.log("[SERVER] sent questions.");
-		dbm.Close();
-	});
-});
-
-app.get('/getQuestions', function (req, res) {
-	var dbm = new DBM();
-	var question_manager = new QuestionManager(dbm);
-	var questions = question_manager.GetAllQuestions(function (questions) {
-		res.json(questions);
-		res.end();
-		console.log("[SERVER] sent questions.");
-		dbm.Close();
-	});
-});
-
-
-
-
-
-
-
-
-
-
-
-/****************************************************************************/
 
 app.get('/authenticate', function (req, res) {
 	var dbm = new DBM();
 	var user_manager = new UserManager(dbm, errors);
-	user_manager.AuthenticationRequest(req.query, function(response) {
-		res.json(response);
-		res.end();
-		dbm.Close();
-	});
+
+	user_manager.HandleAuthenticationRequest(req, res);
 });
 
 app.get('/newChallenge', function (req, res) {
 	var dbm = new DBM();
-	var user_manager = new UserManager(dbm, errors);
 	var challengeManagerInstance = new ChallengeManager(dbm, errors);
-	var responseBuilder = new ResponseBuilder();
 
-	if (user_manager.CredentialFieldsAreValid(req.query) == false) {
-		responseBuilder.SetError(errors.INVALID_CREDENTIALS);
-		res.json(responseBuilder.Response());
-		res.end();
-		dbm.Close();
-		return;
-	}
-
-	user_manager.GetUserFromCredentials(req.query.username, req.query.password, function(user) {
-		if (undefined == user) {
-			responseBuilder.SetError(errors.INVALID_CREDENTIALS);
-			res.json(responseBuilder.Response());
-			res.end();
-		} else {
-			challengeManagerInstance.HandleNewChallengeRequest(user.id, function(response){
-				res.json(response);
-				res.end();
-			});
-		}
-		dbm.Close();
-	});
+	challengeManagerInstance.HandleNewChallengeRequest(req, res);
 });
 
+app.get('/getChallengeQuestions', function (req, res) {
+	var dbm = new DBM();
+	var challengeManagerInstance = new ChallengeManager(dbm, errors);
 
+	challengeManagerInstance.HandleGetChallengeQuestionsRequest(req, res);
+});
 
+app.get('/registerChallengeAnswer', function (req, res) {
+	var dbm = new DBM();
+	var challengeManagerInstance = new ChallengeManager(dbm, errors);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	challengeManagerInstance.HandleRegisterChallengeAnswerRequest(req, res);
+});
 
 var server = app.listen(8081, function () {
 

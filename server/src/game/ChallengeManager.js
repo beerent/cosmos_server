@@ -78,7 +78,8 @@ class ChallengeManager {
 
 				/*** GET QUESTIONS! ***/
 				self.GetChallengeQuestions(user.id, req.query.attempt_id, function (questions) {
-					res.json(questions);
+					responseBuilder.SetPayload(questions);
+					res.json(responseBuilder.Response());
 					res.end();
 					self.dbm.Close();
 				});
@@ -90,7 +91,8 @@ class ChallengeManager {
 		var self = this;
 
 		this.DoChallengeRequest(req, res, function(user){
-			if (self.RegisterChallengeAnswerFieldsAreValid(req.query) == false) {	
+			if (self.RegisterChallengeAnswerFieldsAreValid(req.query) == false) {
+				var responseBuilder = new ResponseBuilder();
 				responseBuilder.SetError(self.errors.REGISTER_CHALLENGE_ANSWER_MISSING_ERROR);
 				res.json(responseBuilder.Response());
 				res.end();
@@ -113,7 +115,7 @@ class ChallengeManager {
 		var params = [user_id];
 		this.dbm.ParameterizedInsert(sql, params, function(newChallengeId, err) {
 			var newGameData = {}; 
-			newGameData["game_id"] = newChallengeId;
+			newGameData["attempt_id"] = newChallengeId;
 
 			responseBuilder.SetPayload(newGameData);
 			callback(responseBuilder.Response());
@@ -129,7 +131,8 @@ class ChallengeManager {
 		this.dbm.ParameterizedQuery(sql, params, function(results, err){
 			var idIsValid = true;
 			if (err) {
-				console.log(err.message);
+				idIsValid = false;
+			} else if (results.length == 0) {
 				idIsValid = false;
 			} else {
 				var found_attempt_id = results[0].id;

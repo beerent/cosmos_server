@@ -4,79 +4,157 @@ function AddBucket(bucketName) {
   execute("/bucket/BucketHelper.php?option=add&name=" + bucketName, 'fakediv');
 }
 
-function DisableBuckets() {
-  var bucketTable = document.getElementById("enabled_bucket_table");
-    if (bucketTable == null) {
-    return;
-  }
+function AddToBucketUpdateQueue(bucketId, elementId, originalText) {
+  var bucketsToUpdate = GetObject("buckets_to_update");
+  var textObject = GetObject(elementId);
+  var newText = GetValue(elementId);
 
-  var bucketTableCount = bucketTable.rows.length;
+  var queryString = "";
+  if (bucketsToUpdate.innerHTML != "") {
+    queryString += "(())";
+  } 
 
-  for (var i = 1; i < bucketTableCount; i++) {
-    var bucketId = bucketTable.rows[i].cells[0].innerHTML;
-    var bucketName = bucketTable.rows[i].cells[1].innerHTML;
-    var bucketHtml = bucketTable.rows[i].cells[3].innerHTML;
-    var start = bucketHtml.indexOf("id=") + 4;
-    var end = bucketHtml.indexOf(">") - 1;
-    
-    var id = bucketHtml.substring(start, end);
-    var isChecked = GetObject(id).checked;
-
-    if (!isChecked) {
-      continue;
-    }
-
-    execute(BUCKET_DIR + "/BucketHelper.php?option=disable&id=" + bucketId, 'fakediv');
-  }
+  queryString += bucketId + "{{}}" + newText;
+  bucketsToUpdate.innerHTML = bucketsToUpdate.innerHTML + queryString;
+  UpdateTextColorIfChanged(textObject, originalText);
 }
 
-function EnableBuckets() {
-  var bucketTable = document.getElementById("disabled_bucket_table");
-  if (bucketTable == null) {
-    return;
-  }
+function AddToBucketEnableUpdateQueue(bucketId, elementId, originalText) {
+  var bucketsToToggleEnable = GetObject("buckets_to_toggle_enable");
+  var textObject = GetObject(elementId);
+  var newValue = GetValue(elementId);
 
-  var bucketTableCount = bucketTable.rows.length;
+  var queryString = "";
+  if (bucketsToToggleEnable.innerHTML != "") {
+    queryString += "(())";
+  } 
+
+  queryString += bucketId + "{{}}" + newValue;
+  bucketsToToggleEnable.innerHTML = bucketsToToggleEnable.innerHTML + queryString;
+
+  if (newValue == "enabled") {
+    textObject.value="DISABLED";
+    textObject.innerHTML="DISABLED";
+  } else {
+    textObject.value="enabled";
+    textObject.innerHTML="enabled";
+  }
   
-  for (var i = 1; i < bucketTableCount; i++) {
-    var bucketId = bucketTable.rows[i].cells[0].innerHTML;
-    var bucketHtml = bucketTable.rows[i].cells[2].innerHTML;
-    var start = bucketHtml.indexOf("id=") + 4;
-    var end = bucketHtml.indexOf(">") - 1;
-    
-    var id = bucketHtml.substring(start, end);
-    var isChecked = GetObject(id).checked;
+  UpdateTextColorIfChanged(textObject, originalText);
+}
 
-    if (!isChecked) {
-      continue;
+function CommitBucketUpdates() {
+  var bucketsToUpdate = GetObject("buckets_to_update");
+  var entries = bucketsToUpdate.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    map[entry[0]] = entry[1];
+  });
+
+  Object.keys(map).forEach(function(id) {
+    var newValue = map[id];
+    execute("/bucket/BucketHelper.php?option=rename&id=" + id + "&new=" + newValue, 'fakediv');
+  });
+
+  return true;
+}
+
+function CommitToggleEnableUpdates() {
+  var bucketsToUpdate = GetObject("buckets_to_toggle_enable");
+  var entries = bucketsToUpdate.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    map[entry[0]] = entry[1];
+  });
+
+  Object.keys(map).forEach(function(id) {
+    var newValue = map[id];
+
+    var enabledValue = "disable";
+    if (newValue == "DISABLED") {
+      enabledValue = "enable";
     }
 
-    execute(BUCKET_DIR + "/BucketHelper.php?option=enable&id=" + bucketId, 'fakediv');
+    execute("/bucket/BucketHelper.php?option="+ enabledValue +"&id=" + id, 'fakediv');    
+  });
+
+  return true;
+}
+
+function UpdateTextColorIfChanged(textObject, originalText) {
+  if (originalText == textObject.value) {
+    UpdateTextToBlack(textObject);
+  } else {
+    UpdateTextToRed(textObject);
   }
 }
 
-function RenameBuckets() {
-  var bucketTable = document.getElementById("enabled_bucket_table");
-    if (bucketTable == null) {
-    return;
-  }
-
-  var bucketTableCount = bucketTable.rows.length;
-  
-  for (var i = 1; i < bucketTableCount; i++) {
-    var bucketId = bucketTable.rows[i].cells[0].innerHTML;
-
-    var bucketHtml = bucketTable.rows[i].cells[2].innerHTML;
-    var start = bucketHtml.indexOf("id=") + 4;
-    var end = bucketHtml.indexOf(">") - 1;
-    
-    var id = bucketHtml.substring(start, end);
-    var newValue = GetValue(id);
-    
-    if (newValue == "") {
-      continue;
-    }
-
-    execute(BUCKET_DIR + "/BucketHelper.php?option=rename&id=" + bucketId + "&new=" + newValue, 'fakediv');
-  }
+function UpdateTextToBlack(textObject) {
+    textObject.style.color = "black";
 }
+
+function UpdateTextToRed(textObject) {
+    textObject.style.color = "red";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

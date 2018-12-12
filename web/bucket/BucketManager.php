@@ -60,21 +60,25 @@
 
 		function RenameBucket($bucketId, $newBucketName) {
 			$sql = "update buckets set name = '" . $newBucketName . "' where id = ". $bucketId .";";
+			echo $sql;
 			$this->dbm->insert($sql);
 		}
 
 		function EnableBucket($bucketId) {
 			$sql = "update buckets set enabled = 1 where id = '". $bucketId ."';";
+			echo $sql;
 			$this->dbm->insert($sql);
 		}
 
 		function DisableBucket($bucketId) {
 			$sql = "update buckets set enabled = 0 where id = '". $bucketId ."';";
+			echo $sql;
 			$this->dbm->insert($sql);
 		}
 
 		function AddBucket($bucketName) {
 			$sql = "insert into buckets (name) values ('". $bucketName ."');";
+			echo $sql;
 			$this->dbm->insert($sql);
 		}
 

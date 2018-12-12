@@ -23,17 +23,12 @@
     $invalidCount = 0;
     $trueFalseCount = 0;
     $multipleChoiceCount = 0;
-    $citationCount = 0;
     $reviewCount = 0;
 
     for ($i = 0; $i < count($questions); $i++) {
       $reviews = $reviewManager->GetReviews($questions[$i]->GetId());
       if ($reviews->IsReviewComplete()) {
         $reviewCount ++;
-      }
-
-      if ($questions[$i]->GetCitation() != "") {
-        $citationCount++;
       }
 
       if (count($questions[$i]->GetWrongAnswers()) == 1) {
@@ -58,11 +53,6 @@
     echo "<tr>";
     echo "<td><font size='2'>invalid count</font></td>";
     echo "<td><font size='2'>" . strval($invalidCount) . "</font></td>";
-    echo "</tr>";
-
-    echo "<tr>";
-    echo "<td><font size='2'>total cited</font></td>";
-    echo "<td><font size='2'>" . strval($citationCount) . "</font></td>";
     echo "</tr>";
 
     echo "<tr>";

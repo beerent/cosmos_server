@@ -2,20 +2,11 @@
 <?php
 $include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/BucketManager.php"; include_once($include);
 $include = $_SERVER['DOCUMENT_ROOT']; $include .="/util/StringUtils.php"; include_once($include);
+$include = $_SERVER['DOCUMENT_ROOT']; $include .="/shared/CommonFunctions.php"; include_once($include);
 
 function BuildUpdateDivs() {
   echo '<div id="buckets_to_update" style="display:none"></div>';
   echo '<div id="buckets_to_toggle_enable" style="display:none"></div>';
-}
-
-function DisplayMenu() {
-  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/top.php"; include($include);
-}
-
-function DisplayTitle() {
-  echo "<center>";
-  echo "<h1>Buckets</h1>";
-  echo "</center>";
 }
 
 function DisplayNewBucketOption() {
@@ -93,7 +84,7 @@ function DisplayApplyButton() {
 
     BuildUpdateDivs();
     DisplayMenu();
-    DisplayTitle();
+    DisplayTitle("Buckets");
     DisplayNewBucketOption();
     DisplayApplyButton();
     DisplayBuckets($enabledBuckets, true);
@@ -101,4 +92,3 @@ function DisplayApplyButton() {
     ?>
   </body>
 </html>
-

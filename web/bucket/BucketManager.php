@@ -18,37 +18,27 @@
 
 		function GetBuckets($enabledFlag) {
 			$sql = "select id, name from buckets where enabled = ". $enabledFlag ." order by id";
-
-			$results = $this->dbm->query($sql);
-			$buckets = array();
-			$count = 1;
-			while($row = $results->fetch_assoc()){
-				$bucket = new Bucket($row['id'], $row['name']);
-				$count = $count + 1;
-				array_push($buckets, $bucket);
-			}
-			return $buckets;
+			return $this->GetBucketsFromSql($sql);
 		}
 
 		function GetBucketsForQuestion($id) {
 			$sql = "select buckets.id, buckets.name from buckets join question_bucket_map on buckets.id = question_bucket_map.bucket_id where question_bucket_map.question_id = ". $id;
-
-			$results = $this->dbm->query($sql);
-			
-			$buckets = array();
-			while($row = $results->fetch_assoc()){
-				$bucket = new Bucket($row['id'], $row['name']);
-				array_push($buckets, $bucket);
-			}
-
-			return $buckets;
+			return $this->GetBucketsFromSql($sql);
 		}
 
 		function GetAllBucketsAlphabetical() {
 			$sql = "select id, name from buckets order by name asc";
+			return $this->GetBucketsFromSql($sql);
+		}
 
+		function GetRemainingBucketsForMission($missionId) {
+			$sql = "SELECT buckets.id, buckets.name FROM buckets where buckets.id not in (select bucket_id from stages where mission_id = ". $missionId .") order by name asc";
+			return $this->GetBucketsFromSql($sql);
+		}
+
+		function GetBucketsFromSql($sql) {
 			$results = $this->dbm->query($sql);
-			
+
 			$buckets = array();
 			while($row = $results->fetch_assoc()){
 				$bucket = new Bucket($row['id'], $row['name']);

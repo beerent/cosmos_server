@@ -1,5 +1,4 @@
 function AddNewWrongAnswerField() {
-  var wrongAnswersHtml = GetObject("new_questions_field");
   var tableObject = GetObject("new_question_table");
 
   var row = tableObject.insertRow();

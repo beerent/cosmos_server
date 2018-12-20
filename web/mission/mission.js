@@ -27,3 +27,74 @@ function DeleteRow(rowid) {
 	var row = document.getElementById(rowid);
 	row.parentNode.removeChild(row);
 }
+
+function SubmitAddMission() {
+	var missionTitle = GetObject("add_mission_title");
+	if (missionTitle.value == "") {
+		alert ("Invalid Title!");
+		//return false;
+	}
+
+	var missionSummary = GetObject("add_mission_summary");
+	if (missionSummary.value == "") {
+		alert ("Invalid Summary!");
+		//return false;
+	}
+
+	var table = GetObject("add_mission_stages_table");
+	var rows = table.rows;
+
+	if (rows.length == 1) {
+		alert("Missing Stages!");
+		//return false;
+	}
+
+	var usedBuckets = [];
+	var stages = [];
+	for (var i = 1; i < rows.length; i++) {
+		var cells = rows[i].cells;
+
+		var stageTitle = cells[1].childNodes[0].value;
+		if (stageTitle == "") {
+			alert ("Missing Stage Title!");
+			//return false;
+		}
+
+		var stageStory = cells[2].childNodes[0].value;
+		if (stageStory == "") {
+			alert ("Missing Stage Story!");
+			//return false;
+		}
+
+		var stageBucket = cells[3].childNodes[0].value;
+		if (usedBuckets.includes(stageBucket)) {
+			alert ("Duplicate Stage Bucket Found!");
+			//return false;
+		}
+		usedBuckets.push(stageBucket);
+
+		var stage = {
+			title: stageTitle,
+			story: stageStory,
+			bucket: stageBucket,
+			order: i
+		};
+
+		stages.push(stage);
+	}
+
+	execute("/mission/MissionHelper.php?option=addMission&title=" + missionTitle + "&summary=" + missionSummary, 'fakediv');
+	sleep(3000);
+	for (var i = 0; i < stages.length; i++) {
+		var stage = stages[i];
+		execute("/mission/MissionHelper.php?option=addStage&m=" + missionTitle + "&t=" + stage.title + "&s=" + stage.story + "&b" + stage.bucket + "o=" + stage.order, 'fakediv');
+	}
+	alert("added!");
+}
+
+function sleep(miliseconds) {
+   var currentTime = new Date().getTime();
+
+   while (currentTime + miliseconds >= new Date().getTime()) {
+   }
+}

@@ -33,11 +33,11 @@
   }
 
   function AddTitleField() {
-    echo '<tr><td><font color="red">*</font>Title</td><td><input size="60" type="text" placeholder="enter title..." id="question" value="" maxlength="150"></td></tr>';  	
+    echo '<tr><td><font color="red">*</font>Title</td><td><input size="60" type="text" placeholder="enter title..." id="add_mission_title" value="" maxlength="150"></td></tr>';  	
   }
 
   function AddSummaryField() {
-  	echo '<tr><td><font color="red">*</font>Summary</td><td><textarea rows="4" cols="58" placeholder="enter summary..." id="add_blog_text"></textarea></td></tr>';
+  	echo '<tr><td><font color="red">*</font>Summary</td><td><textarea rows="4" cols="58" placeholder="enter summary..." id="add_mission_summary"></textarea></td></tr>';
   }
 
   function AddLineBreak() {
@@ -64,7 +64,7 @@
   function AddSubmitField() {
   	echo "<center>";
   	echo "<br><br>";
-  	echo "<button onclick='SwapRows();'>Submit!</button>";
+  	echo "<button onclick='SubmitAddMission()'>Submit!</button>";
   	echo "</center>";
   }
 ?>

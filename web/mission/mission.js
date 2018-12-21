@@ -29,16 +29,16 @@ function DeleteRow(rowid) {
 }
 
 function SubmitAddMission() {
-	var missionTitle = GetObject("add_mission_title");
-	if (missionTitle.value == "") {
+	var missionTitle = GetObject("add_mission_title").value;
+	if (missionTitle == "") {
 		alert ("Invalid Title!");
-		//return false;
+		return false;
 	}
 
-	var missionSummary = GetObject("add_mission_summary");
-	if (missionSummary.value == "") {
+	var missionSummary = GetObject("add_mission_summary").value;
+	if (missionSummary == "") {
 		alert ("Invalid Summary!");
-		//return false;
+		return false;
 	}
 
 	var table = GetObject("add_mission_stages_table");
@@ -46,7 +46,7 @@ function SubmitAddMission() {
 
 	if (rows.length == 1) {
 		alert("Missing Stages!");
-		//return false;
+		return false;
 	}
 
 	var usedBuckets = [];
@@ -57,19 +57,19 @@ function SubmitAddMission() {
 		var stageTitle = cells[1].childNodes[0].value;
 		if (stageTitle == "") {
 			alert ("Missing Stage Title!");
-			//return false;
+			return false;
 		}
 
 		var stageStory = cells[2].childNodes[0].value;
 		if (stageStory == "") {
 			alert ("Missing Stage Story!");
-			//return false;
+			return false;
 		}
 
 		var stageBucket = cells[3].childNodes[0].value;
 		if (usedBuckets.includes(stageBucket)) {
 			alert ("Duplicate Stage Bucket Found!");
-			//return false;
+			return false;
 		}
 		usedBuckets.push(stageBucket);
 
@@ -83,13 +83,15 @@ function SubmitAddMission() {
 		stages.push(stage);
 	}
 
-	execute("/mission/MissionHelper.php?option=addMission&title=" + missionTitle + "&summary=" + missionSummary, 'fakediv');
-	sleep(3000);
+	execute("/mission/MissionHelper.php?option=addMission&t=" + missionTitle + "&s=" + missionSummary, 'fakediv');
+	sleep(1500);
 	for (var i = 0; i < stages.length; i++) {
 		var stage = stages[i];
-		execute("/mission/MissionHelper.php?option=addStage&m=" + missionTitle + "&t=" + stage.title + "&s=" + stage.story + "&b" + stage.bucket + "o=" + stage.order, 'fakediv');
+		execute("/mission/MissionHelper.php?option=addStage&m=" + missionTitle + "&t=" + stage.title + "&s=" + stage.story + "&b=" + stage.bucket + "&o=" + stage.order, 'fakediv');
 	}
+	
 	alert("added!");
+	location.reload();
 }
 
 function sleep(miliseconds) {

@@ -9,7 +9,6 @@
 <?php
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/shared/CommonFunctions.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/BucketManager.php"; include_once($include);
-  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/mission/MissionManager.php"; include_once($include);
 
   function CreateHiddenSelectObject() {
   	$bucket_manager = new BucketManager();
@@ -51,7 +50,6 @@
 
   	echo "<table border='1' id='add_mission_stages_table'><tr><td><b>Order</b></td><td><b>Title</b></td><td><b>Story</b></td><td><b>Bucket</b></td><td><b>Delete</b></td></tr>";
     echo "<tbody>";
-
     echo "</tbody>";
     echo "</table>";
 

@@ -89,8 +89,29 @@ function SubmitAddMission() {
 		var stage = stages[i];
 		execute("/mission/MissionHelper.php?option=addStage&m=" + missionTitle + "&t=" + stage.title + "&s=" + stage.story + "&b=" + stage.bucket + "&o=" + stage.order, 'fakediv');
 	}
-	
+
 	alert("added!");
+	location.reload();
+}
+
+function ReorderMissions(startOrder) {
+	var order = startOrder;
+
+	var table = GetObject("manage_missions_table");
+	var rows = table.rows;
+
+	var usedBuckets = [];
+	var stages = [];
+
+	for (var i = 1; i < rows.length; i++) {
+		var cells = rows[i].cells;
+		var missionId = cells[1].childNodes[0].innerHTML;
+		execute("/mission/MissionHelper.php?option=reorderMission&id=" + missionId + "&order=" + order, 'fakediv');
+		order = order + 1;
+	}
+
+	sleep(1000);
+	alert("missions reordered!");
 	location.reload();
 }
 

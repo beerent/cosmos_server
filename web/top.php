@@ -14,4 +14,5 @@
 	<br>
 		|
 	<a href="/mission/add_mission.php">Add Mission</a> |
+	<a href="/mission/manage_missions.php">Manage Missions</a> |
 </center><br>

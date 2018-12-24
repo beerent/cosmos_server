@@ -23,4 +23,11 @@
     $mission = $mission_manager->GetMissionByTitle($missionTitle);
     $mission_manager->AddStage($mission->GetId(), $bucketId, $title, $story, $order);
   }
+
+  else if ($option == "reorderMission") {
+    $id = $_GET['id'];
+    $order = $_GET['order'];
+
+    $mission_manager->UpdateMissionOrder($id, $order);
+  }
 ?>

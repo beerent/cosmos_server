@@ -9,14 +9,6 @@ function BuildUpdateDivs() {
   echo '<div id="buckets_to_toggle_enable" style="display:none"></div>';
 }
 
-function DisplayNewBucketOption() {
-  echo "<center>";
-  echo '<input type="text" name="add_bucket" id="add_bucket">';
-  echo '<button onclick="AddBucket(GetValue(\'add_bucket\')); location.reload();">Add Bucket</button>';
-  echo "<br><br>";
-  echo "</center>";
-}
-
 function DisplayBuckets($buckets, $enabled) {
   $html = "<table border='1'>";
   $html .= "  <tr>";

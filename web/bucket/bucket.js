@@ -2,6 +2,8 @@ var BUCKET_DIR = "/bucket";
 
 function AddBucket(bucketName) {
   execute("/bucket/BucketHelper.php?option=add&name=" + bucketName, 'fakediv');
+  alert("bucket "+ bucketName +" added!");
+  location.reload();
 }
 
 function AddToBucketUpdateQueue(bucketId, elementId, originalText) {

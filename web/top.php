@@ -7,8 +7,8 @@
 	
 	<br>
 		|
-	<a href="/bucket/buckets.php">Add Bucket</a> |
-	<a href="/bucket/buckets.php">Manange Buckets</a> |
+	<a href="/bucket/add_bucket.php">Add Bucket</a> |
+	<a href="/bucket/manage_buckets.php">Manange Buckets</a> |
 
 	<br>
 		|

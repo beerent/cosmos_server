@@ -69,7 +69,7 @@ function DisplayApplyButton() {
 
 <html lang="en">
   <head>
-    <title>Buckets</title>
+    <title>Manage Buckets</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="/base.js"></script>
@@ -84,8 +84,7 @@ function DisplayApplyButton() {
 
     BuildUpdateDivs();
     DisplayMenu();
-    DisplayTitle("Buckets");
-    DisplayNewBucketOption();
+    DisplayTitle("Manage Buckets");
     DisplayApplyButton();
     DisplayBuckets($enabledBuckets, true);
     DisplayBuckets($disabledBuckets, false);

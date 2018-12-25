@@ -39,7 +39,7 @@
 			$sql = "select id, title, summary, added, mission_order, complete from missions where title = '". $this->dbm->GetEscapedString($missionTitle) ."'";
 			$result = $this->dbm->query($sql);
 			$row = $result->fetch_assoc();
-			return $this->GetMissionFromResult($row);
+			return $this->GetMissionFromRow($row);
 		}
 
 		function GetMissionFromRow($row) {

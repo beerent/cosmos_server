@@ -7,9 +7,13 @@
 	
 	<br>
 		|
-	<a href="/question/add_question.php">Add Questions</a> | 
+	<a href="/bucket/buckets.php">Add Bucket</a> |
+	<a href="/bucket/buckets.php">Manange Buckets</a> |
+
+	<br>
+		|
+	<a href="/question/add_question.php">Add Question</a> | 
 	<a href="/question/manage_questions.php">Manage Questions</a> | 
-	<a href="/bucket/buckets.php">Buckets</a> |
 	
 	<br>
 		|

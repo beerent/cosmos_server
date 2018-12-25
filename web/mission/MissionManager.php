@@ -42,6 +42,13 @@
 			return $this->GetMissionFromRow($row);
 		}
 
+		function GetMissionById($missionId) {
+			$sql = "select id, title, summary, added, mission_order, complete from missions where id = '". $missionId ."'";
+			$result = $this->dbm->query($sql);
+			$row = $result->fetch_assoc();
+			return $this->GetMissionFromRow($row);	
+		}
+
 		function GetMissionFromRow($row) {
 			$id = $row['id'];
 			$title = $row['title'];

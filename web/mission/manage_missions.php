@@ -70,7 +70,7 @@
     echo "<td><center><b>Title</b></center></td>";
     echo "<td><center><b>Stages</b></center></td>";
     echo "<td><center><b>Added</b></center></td>";
-    echo "<td><center><b>Edit</b></center></td>";
+    echo "<td><center><b>View</b></center></td>";
     echo "</tr>";
   }
 
@@ -112,7 +112,7 @@
 
   function AddEditField($mission) {
     $url = "manage_mission.php?id=" . $mission->GetId();
-    echo "<td><button onclick='location.href=\"". $url ."\"'>edit</button></td>";  
+    echo "<td><button onclick='location.href=\"". $url ."\"'>View</button></td>";  
   }
 
   function AddSubmitField() {

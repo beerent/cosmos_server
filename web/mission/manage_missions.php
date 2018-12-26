@@ -12,6 +12,16 @@
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/mission/MissionManager.php"; include_once($include);
 
   $startOrder = 0;
+  
+  $enableChecked = true;
+  if (isset($_GET['enabled'])) {
+    $enableChecked = $_GET['enabled'] == "true";
+  }
+
+  $completeChecked = true;
+  if (isset($_GET['complete'])) {
+    $completeChecked = $_GET['complete'] == "true";
+  }
 
   function CreateHiddenSelectObject() {
   	$bucket_manager = new BucketManager();
@@ -24,11 +34,28 @@
   	echo "</select>";
   }
 
-  function DisplayMissions() {
+  function DisplayCheckboxes($enabled, $completed) {
+    echo "<center>";
+    $enabledChecked = "";
+    if ($enabled) {
+      $enabledChecked = " checked ";
+    }
+
+    $completedChecked = "";
+    if ($completed) {
+      $completedChecked = " checked ";
+    }
+    echo '<input type="checkbox" id="manage_missions_enabled_checkbox" '. $enabledChecked .' onclick="OnChecked()"> enabled ';
+    echo '<input type="checkbox" id="manage_missions_completed_checkbox" '. $completedChecked .' onclick="OnChecked()"> completed';
+    echo "</center>";
+  }
+
+
+  function DisplayMissions($enabled, $complete) {
     global $startOrder;
 
     $mission_manager = new MissionManager();
-    $open_missions = $mission_manager->GetOpenMissions();
+    $open_missions = $mission_manager->GetMissions($enabled, $complete);
 
     StartTable();
     AddTableTop();
@@ -45,7 +72,7 @@
       AddTitleField($mission);
       AddStagesField($mission);
       AddAddedField($mission);
-      AddEditField($mission);
+      AddViewField($mission);
       EndRow();
     }
     EndTBody();
@@ -110,7 +137,7 @@
     echo '<td>'. $mission->GetAdded() .'</td>';
   }
 
-  function AddEditField($mission) {
+  function AddViewField($mission) {
     $url = "manage_mission.php?id=" . $mission->GetId();
     echo "<td><button onclick='location.href=\"". $url ."\"'>View</button></td>";  
   }
@@ -126,10 +153,12 @@
 ?>
 
 <?php
+
   CreateHiddenSelectObject();
   DisplayMenu();
   DisplayTitle("Manage Missions");
-  DisplayMissions();
+  DisplayCheckboxes($enableChecked, $completeChecked);
+  DisplayMissions($enableChecked, $completeChecked);
 ?>
 
 

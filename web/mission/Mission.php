@@ -1,6 +1,6 @@
 <?php
 	class Mission {
-		function __construct($id, $title, $summary, $stages, $added, $order, $complete){
+		function __construct($id, $title, $summary, $stages, $added, $order, $complete, $enabled){
 			$this->id = $id;
 			$this->title = $title;
 			$this->summary = $summary;
@@ -8,6 +8,7 @@
 			$this->added = $added;
 			$this->order = $order;
 			$this->complete = $complete;
+			$this->enabled = $enabled;
 		}
 
 		function GetId(){
@@ -36,6 +37,10 @@
 
 		function GetComplete(){
 			return $this->complete;
+		}
+
+		function IsEnabled(){
+			return $this->enabled;
 		}
 	}
 ?>

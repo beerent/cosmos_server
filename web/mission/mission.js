@@ -1,3 +1,18 @@
+function OnChecked() {
+	var enabledStr = "false";
+	var completeStr = "false";
+
+	if (GetObject("manage_missions_enabled_checkbox").checked) {
+		enabledStr = "true";
+	}
+
+	if (GetObject("manage_missions_completed_checkbox").checked) {
+		completeStr = "true";
+	}
+
+	location.href = "/mission/manage_missions.php?enabled=" + enabledStr + "&complete=" + completeStr;
+}
+
 function AddNewStageField() {
   var tableObject = GetObject("add_mission_stages_table");
   var newRowId = tableObject.rows.length;

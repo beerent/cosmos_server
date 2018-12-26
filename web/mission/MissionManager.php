@@ -22,8 +22,19 @@
 		}
 
 
-		function GetOpenMissions() {
-			$sql = "select id, title, summary, added, mission_order, complete from missions where complete = 0 order by mission_order asc";
+		function GetMissions($enabled, $complete) {
+			$enabledStr = "0";
+			if ($enabled) {
+				$enabledStr = "1";
+			}
+
+			$completeStr = "0";
+			if ($complete) {
+				$completeStr = "1";
+			}
+
+			$sql = "select id, title, summary, added, mission_order, complete, enabled from missions where enabled = ". $enabledStr ." and complete = ". $completeStr ." order by mission_order asc";
+
 			$results = $this->dbm->query($sql);
 
 			$missions = array();
@@ -36,14 +47,14 @@
 		}
 
 		function GetMissionByTitle($missionTitle) {
-			$sql = "select id, title, summary, added, mission_order, complete from missions where title = '". $this->dbm->GetEscapedString($missionTitle) ."'";
+			$sql = "select id, title, summary, added, mission_order, complete, enabled from missions where title = '". $this->dbm->GetEscapedString($missionTitle) ."'";
 			$result = $this->dbm->query($sql);
 			$row = $result->fetch_assoc();
 			return $this->GetMissionFromRow($row);
 		}
 
 		function GetMissionById($missionId) {
-			$sql = "select id, title, summary, added, mission_order, complete from missions where id = '". $missionId ."'";
+			$sql = "select id, title, summary, added, mission_order, complete, enabled from missions where id = '". $missionId ."'";
 			$result = $this->dbm->query($sql);
 			$row = $result->fetch_assoc();
 			return $this->GetMissionFromRow($row);	
@@ -56,10 +67,11 @@
 			$added = $row['added'];
 			$order = $row['mission_order'];
 			$complete = $row['complete'] == 1;
+			$enabled = $row['enabled'] == 1;
 
 			$stages = $this->GetStages($id);
 
-			return new Mission($id, $title, $summary, $stages, $added, $order, $complete);
+			return new Mission($id, $title, $summary, $stages, $added, $order, $complete, $enabled);
 		}
 
 		function AddStage($missionId, $bucketId, $title, $story, $order) {

@@ -30,4 +30,45 @@
 
     $mission_manager->UpdateMissionOrder($id, $order);
   }
+
+  else if ($option == "updateMissionTitle") {
+    $id = $_GET['id'];
+    $title = $_GET['title'];
+
+    $mission_manager->UpdateMissionTitle($id, $title);
+  }
+
+  else if ($option == "updateMissionSummary") {
+    $id = $_GET['id'];
+    $summary = $_GET['summary'];
+
+    $mission_manager->UpdateMissionSummary($id, $summary);
+  }
+
+  else if ($option == "updateStageTitle") {
+    $id = $_GET['id'];
+    $title = $_GET['title'];
+
+    $mission_manager->UpdateStageTitle($id, $title);
+  }
+
+  else if ($option == "updateStageStory") {
+    $id = $_GET['id'];
+    $story = $_GET['story'];
+
+    $mission_manager->UpdateStageStory($id, $story);
+  }
+
+  else if ($option == "updateStageBucket") {
+    $id = $_GET['id'];
+    $bucket = $_GET['bucket'];
+
+    $mission_manager->UpdateStageBucket($id, $bucket);
+  }
+
+  else if ($option == "updateStageDelete") {
+    $id = $_GET['id'];
+
+    $mission_manager->DeleteStage($id);
+  }
 ?>

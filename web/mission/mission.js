@@ -1,4 +1,4 @@
-function OnChecked() {
+function OnFilterChecked() {
 	var enabledStr = "false";
 	var completeStr = "false";
 
@@ -109,6 +109,139 @@ function SubmitAddMission() {
 	location.reload();
 }
 
+function SubmitUpdateMission() {
+	if (ConfirmNoDuplicateBuckets() && CommitMissionTitleUpdates() && CommitMissionSummaryUpdates() && CommitStageTitleUpdates() && CommitStageStoryUpdates() && CommitStageBucketUpdates() && CommitStageDeletes()) {
+		alert("update complete!");
+		location.reload();
+	}
+}
+
+function ConfirmNoDuplicateBuckets() {
+	var table = GetObject("add_mission_stages_table");
+	var rows = table.rows;
+
+	var usedBuckets = [];
+
+	for (var i = 1; i < rows.length; i++) {
+		var cells = rows[i].cells;
+
+		var stageBucket = cells[4].childNodes[0].value;
+		if (usedBuckets.includes(stageBucket)) {
+			alert ("Duplicate Stage Bucket Found!");
+			return false;
+		}
+
+		usedBuckets.push(stageBucket);
+	}
+
+	return true;
+}
+
+function CommitMissionTitleUpdates() {
+  var updateList = GetObject("mission_titles_to_update");
+  var entries = updateList.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    map[entry[0]] = entry[1];
+  });
+
+  Object.keys(map).forEach(function(id) {
+    var newValue = map[id];
+    execute("/mission/MissionHelper.php?option=updateMissionTitle&id=" + id + "&title=" + newValue, 'fakediv');
+  });
+
+  return true;
+}
+
+function CommitMissionSummaryUpdates() {
+  var updateList = GetObject("mission_summaries_to_update");
+  var entries = updateList.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    map[entry[0]] = entry[1];
+  });
+
+  Object.keys(map).forEach(function(id) {
+    var newValue = map[id];
+    execute("/mission/MissionHelper.php?option=updateMissionSummary&id=" + id + "&summary=" + newValue, 'fakediv');
+  });
+
+  return true;
+}
+
+function CommitStageTitleUpdates() {
+  var updateList = GetObject("stage_titles_to_update");
+  var entries = updateList.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    map[entry[0]] = entry[1];
+  });
+
+  Object.keys(map).forEach(function(id) {
+    var newValue = map[id];
+    execute("/mission/MissionHelper.php?option=updateStageTitle&id=" + id + "&title=" + newValue, 'fakediv');
+  });
+
+  return true;
+}
+
+function CommitStageStoryUpdates() {
+  var updateList = GetObject("stage_stories_to_update");
+  var entries = updateList.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    map[entry[0]] = entry[1];
+  });
+
+  Object.keys(map).forEach(function(id) {
+    var newValue = map[id];
+    execute("/mission/MissionHelper.php?option=updateStageStory&id=" + id + "&story=" + newValue, 'fakediv');
+  });
+
+  return true;
+}
+
+function CommitStageBucketUpdates() {
+  var updateList = GetObject("stage_buckets_to_update");
+  var entries = updateList.innerHTML.split("(())");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    map[entry[0]] = entry[1];
+  });
+
+  Object.keys(map).forEach(function(id) {
+    var newValue = map[id];
+    execute("/mission/MissionHelper.php?option=updateStageBucket&id=" + id + "&bucket=" + newValue, 'fakediv');
+  });
+
+  return true;
+}
+
+function CommitStageDeletes() {
+  var updateList = GetObject("stage_to_delete");
+  var entries = updateList.innerHTML.split("{{}}");
+
+  var map = {};
+  entries.forEach(function(element) {
+    var entry = element.split("{{}}");
+    var id = entry[0];
+
+    execute("/mission/MissionHelper.php?option=updateStageDelete&id=" + id, 'fakediv');
+  });
+
+  return true;
+}
+
 function ReorderMissions(startOrder) {
 	var order = startOrder;
 
@@ -130,9 +263,49 @@ function ReorderMissions(startOrder) {
 	location.reload();
 }
 
-function sleep(miliseconds) {
-   var currentTime = new Date().getTime();
+function AddToUpdateQueue(id, updateDivId, elementId, originalText) {
+	var updateDiv = GetObject(updateDivId);
+	var textObject = GetObject(elementId);
+	var newText = GetValue(elementId);
 
-   while (currentTime + miliseconds >= new Date().getTime()) {
-   }
+	var queryString = "";
+	if (updateDiv.innerHTML != "") {
+      queryString += "(())";
+	} 
+
+	queryString += id + "{{}}" + newText;
+	updateDiv.innerHTML = updateDiv.innerHTML + queryString;
+	UpdateTextColorIfChanged(textObject, originalText);
 }
+
+function AddToStageDeleteQueue(elementId, stageId, stageTitle) {
+	if (confirm("Are you SURE you want to delete this stage:\n\"" + stageTitle + "\"") == false) {
+	  return;
+	}
+
+	var updateDiv = GetObject("stage_to_delete");
+
+	var queryString = "";
+	if (updateDiv.innerHTML == "") {
+      queryString = "" + stageId;
+	} else {
+      queryString = "{{}}" + stageId;
+	}
+
+	updateDiv.innerHTML = updateDiv.innerHTML + queryString;
+	alert(updateDiv.innerHTML);
+
+	var object = GetObject(elementId);
+	var table = object.parentElement.parentElement.parentElement.parentElement;
+	var rowIndex = object.parentElement.parentElement.parentElement.rowIndex - 1;
+	table.deleteRow(rowIndex);	
+}
+
+
+
+//function sleep(miliseconds) {
+//   var currentTime = new Date().getTime();
+
+//   while (currentTime + miliseconds >= new Date().getTime()) {
+//   }
+//}

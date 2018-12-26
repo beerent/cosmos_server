@@ -15,6 +15,36 @@
 
 			return $missionId;
 		}
+    	
+    	function UpdateMissionTitle($id, $title) {
+			$sql = "update missions set title = '". $this->dbm->GetEscapedString($title) ."' where id = " . $id;
+			$this->dbm->insert($sql);    		
+    	}
+
+    	function UpdateMissionSummary($id, $summary) {
+			$sql = "update missions set summary = '". $this->dbm->GetEscapedString($summary) ."' where id = " . $id;
+			$this->dbm->insert($sql);    		
+    	}
+
+    	function UpdateStageTitle($id, $title) {
+			$sql = "update stages set title = '". $this->dbm->GetEscapedString($title) ."' where id = " . $id;
+			$this->dbm->insert($sql);    		
+    	}
+
+    	function UpdateStageStory($id, $story) {
+			$sql = "update stages set story = '". $this->dbm->GetEscapedString($story) ."' where id = " . $id;
+			$this->dbm->insert($sql);    		
+    	}
+
+    	function UpdateStageBucket($id, $bucket) {
+			$sql = "update stages set bucket_id = '". $bucket ."' where id = " . $id;
+			$this->dbm->insert($sql);    		
+    	}
+
+    	function DeleteStage($id) {
+			$sql = "delete from stages where id = " . $id;
+			$this->dbm->insert($sql);    		
+    	}
 
 		function UpdateMissionOrder($id, $order) {
 			$sql = "update missions set mission_order = " . $order . " where id = " . $id;

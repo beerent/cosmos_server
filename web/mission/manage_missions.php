@@ -45,8 +45,8 @@
     if ($completed) {
       $completedChecked = " checked ";
     }
-    echo '<input type="checkbox" id="manage_missions_enabled_checkbox" '. $enabledChecked .' onclick="OnChecked()"> enabled ';
-    echo '<input type="checkbox" id="manage_missions_completed_checkbox" '. $completedChecked .' onclick="OnChecked()"> completed';
+    echo '<input type="checkbox" id="manage_missions_enabled_checkbox" '. $enabledChecked .' onclick="OnFilterChecked()"> enabled ';
+    echo '<input type="checkbox" id="manage_missions_completed_checkbox" '. $completedChecked .' onclick="OnFilterChecked()"> completed';
     echo "</center>";
   }
 

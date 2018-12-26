@@ -67,3 +67,49 @@ function GetValue(id) {
 function ReplaceAll(str, find, replace) {
     return str.replace(new RegExp(find, 'g'), replace);
 }
+
+function UpdateTextColorIfChanged(textObject, originalText) {
+  if ( textObject.type == 'select-one' ) {
+    UpdateSelectText(textObject, originalText);
+  } else {
+    UpdateTextText(textObject, originalText);    
+  }
+}
+
+function UpdateSelectText(textObject, originalText) {
+  var newText = textObject.value;
+
+  if (originalText == newText) {
+    UpdateSelectToBlack(textObject);
+  } else {
+    UpdateSelectToRed(textObject);
+  }
+}
+
+function UpdateTextText(textObject, originalText) {
+  var newText = textObject.value;
+
+  if (originalText == newText) {
+    UpdateTextToBlack(textObject);
+  } else {
+    UpdateTextToRed(textObject);
+  }
+}
+
+function UpdateTextToBlack(textObject) {
+    textObject.style.color = "black";
+}
+
+function UpdateTextToRed(textObject) {
+    textObject.style.color = "red";
+}
+
+function UpdateSelectToBlack(textObject) {
+  textObject.style.backgroundColor = "rgb(255, 255, 255)";
+  textObject.style.color = "black";
+}
+
+function UpdateSelectToRed(textObject) {
+  textObject.style.backgroundColor = "rgb(139, 0, 0)";
+  textObject.style.color = "white";
+}

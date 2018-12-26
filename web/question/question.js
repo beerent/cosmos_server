@@ -447,33 +447,6 @@ function CommitReviewUpdates() {
   return true;
 }
 
-function UpdateTextColorIfChanged(textObject, originalText) {
-  var newText = textObject.value;
-
-  if (originalText == newText) {
-    UpdateTextToBlack(textObject);
-  } else {
-    UpdateTextToRed(textObject);
-  }
-}
-
-function UpdateTextToBlack(textObject) {
-    textObject.style.color = "black";
-}
-
-function UpdateTextToRed(textObject) {
-    textObject.style.color = "red";
-}
-
-function UpdateTextToDarkRed(textObject) {
-  textObject.style.backgroundColor = "rgb(139, 0, 0)";
-  textObject.style.color = "white";
-}
-
-function UpdateTextToGreen(textObject) {
-  textObject.style.backgroundColor = "rgb(124,252,0)";
-}
-
 function ClearAddQuestionBuckets() {
   var bucketChecklist = GetObjectsByName("new_question_buckets");
   bucketChecklist.forEach(function(bucket) {

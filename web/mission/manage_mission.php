@@ -11,14 +11,27 @@
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/BucketManager.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/mission/MissionManager.php"; include_once($include);
 
-  function GetBucketsWithSelectedValue($id) {
+function BuildUpdateDivs() {
+  echo '<div id="mission_titles_to_update" style="display:none"></div>';
+  echo '<div id="mission_summaries_to_update" style="display:none"></div>';
+
+  echo '<div id="stage_titles_to_update" style="display:none"></div>';
+  echo '<div id="stage_stories_to_update" style="display:none"></div>';
+  echo '<div id="stage_buckets_to_update" style="display:none"></div>';
+  echo '<div id="stage_to_delete" style="display:none"></div>';
+}
+
+  function GetBucketsWithSelectedValue($stage) {
   	$bucket_manager = new BucketManager();
   	$buckets = $bucket_manager->GetEnabledBuckets();
 
-  	$selectObj = "<select>";
+  	$elementId = 'edit_stage_bucket_'. $stage->GetId();
+  	$onchange = "AddToUpdateQueue('". $stage->GetId() ."', 'stage_buckets_to_update', '". $elementId ."', '". $stage->GetBucketId() ."')";
+
+  	$selectObj = '<select id="'. $elementId .'" onchange="'. $onchange .'">';
   	foreach ($buckets as $bucket) {
   		$selected = "";
-  		if ($bucket->GetId() == $id) {
+  		if ($bucket->GetId() == $stage->GetBucketId()) {
   			$selected = " selected ";
   		}
   		$selectObj .= '<option value="' . $bucket->GetId() . '"' . $selected . '>' . $bucket->GetName() . '</option>';
@@ -38,16 +51,28 @@
   	echo "</center>";
   }
 
+  function StartRow() {
+  	echo "<tr>";
+  }
+
+  function EndRow() {
+  	echo "</tr>";
+  }
+
   function AddIdField($mission) {
     echo '<tr><td>ID</td><td>'. $mission->GetId() .'</td></tr>';  	
   }
 
   function AddTitleField($mission) {
-    echo '<tr><td><font color="red">*</font>Title</td><td><input size="60" type="text" placeholder="enter title..." id="add_mission_title" value="'. $mission->GetTitle() .'" maxlength="150"></td></tr>';  	
+  	$elementId = 'edit_mission_title_'. $mission->GetId();
+  	$onchange = "AddToUpdateQueue('". $mission->GetId() ."', 'mission_titles_to_update', '". $elementId ."', '". $mission->GetTitle() ."')";
+    echo '<tr><td><font color="red">*</font>Title</td><td><input size="60" type="text" placeholder="enter title..." value="'. $mission->GetTitle() .'" maxlength="150" id="'. $elementId .'" onchange="'. $onchange .'"></td></tr>';  	
   }
 
   function AddSummaryField($mission) {
-  	echo '<tr><td><font color="red">*</font>Summary</td><td><textarea rows="4" cols="58" placeholder="enter summary..." id="add_mission_summary">'. $mission->GetSummary() .'</textarea></td></tr>';
+  	$elementId = 'edit_mission_summary_'. $mission->GetId();
+  	$onchange = "AddToUpdateQueue('". $mission->GetId() ."', 'mission_summaries_to_update', '". $elementId ."', '". $mission->GetSummary() ."')";
+  	echo '<tr><td><font color="red">*</font>Summary</td><td><textarea rows="4" cols="58" placeholder="enter summary..." id="'. $elementId .'" onchange="'. $onchange .'">'. $mission->GetSummary() .'</textarea></td></tr>';
   }
 
   function AddLineBreak() {
@@ -73,15 +98,14 @@
 
     $stages = $mission->GetStages();
     foreach ($stages as $stage) {
-    	echo "<tr>";
-    	echo "<td><center>≡</center></td>";
-    	echo "<td><center>". $stage->GetId() ."</center></td>";
-
-    	echo '<td><input size="60" placeholder="enter title..." type="text" value="'. $stage->GetTitle() .'" maxlength="500"></td>';
-    	echo '<td><textarea rows="4" cols="58" placeholder="enter story...">'. $stage->GetStory() .'</textarea></td>';
-    	echo "<td>". GetBucketsWithSelectedValue($stage->GetBucketId()) ."</td>";
-    	echo "<td><center><button>-</button></center></td>";
-    	echo "</tr>";
+    	StartRow();
+    	AddStageOrderField();
+    	AddStageIdField($stage);
+    	AddStageTitleField($stage);
+    	AddStageStoryField($stage);
+    	AddStageBucketField($stage);
+    	AddStageDeleteField($stage);
+    	EndRow();
     }
 
     echo "</tbody>";
@@ -94,10 +118,40 @@
   	echo "</center>";
   }
 
+  function AddStageOrderField() {
+  	echo "<td><center>≡</center></td>";
+  }
+
+  function AddStageIdField($stage) {
+    echo '<td>'. $stage->GetId() .'</td>';  	
+  }
+
+  function AddStageTitleField($stage) {
+   	$elementId = 'edit_stage_title_'. $stage->GetId();
+  	$onchange = "AddToUpdateQueue('". $stage->GetId() ."', 'stage_titles_to_update', '". $elementId ."', '". $stage->GetTitle() ."')";
+  	echo '<td><input size="60" placeholder="enter title..." type="text" value="'. $stage->GetTitle() .'" id="'. $elementId .'" onchange="'. $onchange .'" maxlength="500"></td>';
+  }
+
+  function AddStageStoryField($stage) {
+    $elementId = 'edit_stage_story_'. $stage->GetId();
+  	$onchange = "AddToUpdateQueue('". $stage->GetId() ."', 'stage_stories_to_update', '". $elementId ."', '". $stage->GetStory() ."')";
+  	echo '<td><textarea rows="4" cols="58" placeholder="enter story..." id="'. $elementId .'" onchange="'. $onchange .'">'. $stage->GetStory() .'</textarea></td>';
+  }
+
+  function AddStageBucketField($stage) {
+  	echo "<td>". GetBucketsWithSelectedValue($stage) ."</td>";
+  }
+
+  function AddStageDeleteField($stage) {
+    $elementId = 'edit_stage_delete_'. $stage->GetId();
+  	$onclick = "AddToStageDeleteQueue('". $elementId ."', '". $stage->GetId() ."', '". $stage->GetTitle() ."')";
+  	echo '<td><center><button id="'. $elementId .'" onclick="'. $onclick .'">-</button></center></td>';
+  }
+
   function AddSubmitField() {
   	echo "<center>";
   	echo "<br><br>";
-  	echo "<button onclick='SubmitAddMission()'>Submit!</button>";
+  	echo "<button onclick='SubmitUpdateMission()'>Submit!</button>";
   	echo "</center>";
   }
 ?>
@@ -111,8 +165,10 @@
   $mission_manager = new MissionManager();
   $mission = $mission_manager->GetMissionById($missionId);
 
+  BuildUpdateDivs();
   DisplayMenu();
   DisplayTitle("Manage Mission");
+  AddSubmitField();
   StartTable();
   AddIdField($mission);
   AddTitleField($mission);
@@ -120,7 +176,6 @@
   EndTable();
   AddLineBreak();
   AddStagesField($mission);
-  AddSubmitField();
 ?>
 
 

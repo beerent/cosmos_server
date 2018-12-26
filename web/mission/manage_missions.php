@@ -18,7 +18,7 @@
     $enableChecked = $_GET['enabled'] == "true";
   }
 
-  $completeChecked = true;
+  $completeChecked = false;
   if (isset($_GET['complete'])) {
     $completeChecked = $_GET['complete'] == "true";
   }

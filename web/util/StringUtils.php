@@ -12,5 +12,9 @@
 		function EscapeSingleQuotes($string) {
 			return str_replace("'", "\'", $string);
 		}
+
+		function ReplaceStrings($from, $to, $string) {
+			return str_replace($from, $to, $string);
+		}
 	}
 ?>

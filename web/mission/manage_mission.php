@@ -11,6 +11,7 @@
 $include = $_SERVER['DOCUMENT_ROOT']; $include .="/shared/CommonFunctions.php"; include_once($include);
 $include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/BucketManager.php"; include_once($include);
 $include = $_SERVER['DOCUMENT_ROOT']; $include .="/mission/MissionManager.php"; include_once($include);
+$include = $_SERVER['DOCUMENT_ROOT']; $include .="/util/StringUtils.php"; include_once($include);
 
 /***********************************/
 // MISC
@@ -103,9 +104,12 @@ function GetBuckets() {
   }
 
   function AddMissionSummaryField($mission) {
+  	$stringUtils = new StringUtils();
+
   	$elementId = 'edit_mission_summary_'. $mission->GetId();
   	$onchange = "AddToUpdateQueue('". $mission->GetId() ."', 'mission_summaries_to_update', '". $elementId ."', '". $mission->GetSummary() ."')";
-  	echo '<tr><td><font color="red">*</font>Summary</td><td><textarea rows="4" cols="58" placeholder="enter summary..." id="'. $elementId .'" onchange="'. $onchange .'">'. $mission->GetSummary() .'</textarea></td></tr>';
+  	$viewSummary = $stringUtils->ReplaceStrings("{n}", "\n", $mission->GetSummary());
+  	echo '<tr><td><font color="red">*</font>Summary</td><td><textarea rows="4" cols="58" placeholder="enter summary..." id="'. $elementId .'" onchange="'. $onchange .'">'. $viewSummary .'</textarea></td></tr>';
   }
 
   function AddMissionEnabledStateField($mission) {
@@ -160,9 +164,12 @@ function GetBuckets() {
       return;
    	}
 
+  	$stringUtils = new StringUtils();
+
     $elementId = 'edit_stage_story_'. $stage->GetId();
   	$onchange = "AddToUpdateQueue('". $stage->GetId() ."', 'stage_stories_to_update', '". $elementId ."', '". $stage->GetStory() ."')";
-  	echo '<td><textarea rows="4" cols="58" placeholder="enter story..." id="'. $elementId .'" onchange="'. $onchange .'">'. $stage->GetStory() .'</textarea></td>';
+  	$viewStory = $stringUtils->ReplaceStrings("{n}", "\n", $stage->GetStory());
+  	echo '<td><textarea rows="4" cols="58" placeholder="enter story..." id="'. $elementId .'" onchange="'. $onchange .'">'. $viewStory .'</textarea></td>';
   }
 
   function AddStageBucketField($stage) {

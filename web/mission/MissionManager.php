@@ -23,6 +23,7 @@
 
     	function UpdateMissionSummary($id, $summary) {
 			$sql = "update missions set summary = '". $this->dbm->GetEscapedString($summary) ."' where id = " . $id;
+			echo $sql;
 			$this->dbm->insert($sql);    		
     	}
 

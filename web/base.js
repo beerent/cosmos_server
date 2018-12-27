@@ -78,6 +78,7 @@ function UpdateTextColorIfChanged(textObject, originalText) {
 
 function UpdateSelectText(textObject, originalText) {
   var newText = textObject.value;
+  newText = ReplaceAll(newText, "\n", "{n}");
 
   if (originalText == newText) {
     UpdateSelectToBlack(textObject);
@@ -88,6 +89,7 @@ function UpdateSelectText(textObject, originalText) {
 
 function UpdateTextText(textObject, originalText) {
   var newText = textObject.value;
+  newText = ReplaceAll(newText, "\n", "{n}");
 
   if (originalText == newText) {
     UpdateTextToBlack(textObject);

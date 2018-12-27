@@ -2,6 +2,7 @@
 	class BlogManager {
 		function __construct(){
 			$include = $_SERVER['DOCUMENT_ROOT']; $include .="/database/DatabaseManager.php"; include_once($include);
+			$include = $_SERVER['DOCUMENT_ROOT']; $include .="/util/StringUtils.php"; include_once($include);
 			$include = $_SERVER['DOCUMENT_ROOT']; $include .="/blog/Blog.php"; include_once($include);
 
 			$this->dbm = new DatabaseManager();
@@ -21,7 +22,9 @@
 			while($row = $results->fetch_assoc()){
 				$id = $row['id'];
 				$blogText = $row['blog'];
-				$blogText = $this->ReplaceStrings("{n}", "<br>", $blogText);
+
+				$stringUtils = new StringUtils();
+				$blogText = $stringUtils->ReplaceStrings("{n}", "<br>", $blogText);
 				$author = $row['author'];
 				$date = $row['date'];
 				$blog = new Blog($id, $blogText, $author, $date);
@@ -39,7 +42,9 @@
 			while($row = $results->fetch_assoc()){
 				$id = $row['id'];
 				$blogText = $row['blog'];
-				$blogText = $this->ReplaceStrings("{n}", "<br>", $blogText);
+				$stringUtils = new StringUtils();
+
+				$blogText = $stringUtils->ReplaceStrings("{n}", "<br>", $blogText);
 				$author = $row['author'];
 				$date = $row['date'];
 				$blog = new Blog($id, $blogText, $author, $date);
@@ -53,10 +58,6 @@
 			$sql = "update blogs set enabled = 0 where id = " . $id;
 			echo $sql;
 			$this->dbm->insert($sql);
-		}
-
-		function ReplaceStrings($from, $to, $string) {
-			return str_replace($from, $to, $string);
 		}
 	}
 ?>

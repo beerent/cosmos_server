@@ -50,6 +50,7 @@ function AddNewStageFieldToExistingMission(missionTitle, order) {
 		alert("Missing story!");
 		return false;
 	}
+	story = ReplaceAll(story, "\n", "{n}");
 
 	var modifiedStageBuckets = GetObject("stage_buckets_to_update").innerHTML;
 	if (modifiedStageBuckets != "") {
@@ -85,6 +86,7 @@ function SubmitAddMission() {
 		alert ("Invalid Summary!");
 		return false;
 	}
+	missionSummary = ReplaceAll(missionSummary, "\n", "{n}");
 
 	var table = GetObject("add_mission_stages_table");
 	var rows = table.rows;
@@ -110,6 +112,7 @@ function SubmitAddMission() {
 			alert ("Missing Stage Story!");
 			return false;
 		}
+		stageStory = ReplaceAll(stageStory, "\n", "{n}");
 
 		var stageBucket = cells[3].childNodes[0].value;
 		if (usedBuckets.includes(stageBucket)) {
@@ -201,6 +204,11 @@ function CommitMissionTitleUpdates() {
 
 function CommitMissionSummaryUpdates() {
   var updateList = GetObject("mission_summaries_to_update");
+
+  if (updateList.innerHTML == "") {
+  	return true;
+  }
+
   var entries = updateList.innerHTML.split("(())");
 
   var map = {};
@@ -211,6 +219,8 @@ function CommitMissionSummaryUpdates() {
 
   Object.keys(map).forEach(function(id) {
     var newValue = map[id];
+    newValue = ReplaceAll(newValue, "\n", "{n}");
+    alert("/mission/MissionHelper.php?option=updateMissionSummary&id=" + id + "&summary=" + newValue, 'fakediv');
     execute("/mission/MissionHelper.php?option=updateMissionSummary&id=" + id + "&summary=" + newValue, 'fakediv');
   });
 
@@ -323,7 +333,7 @@ function ReorderMissionStages() {
 function AddToUpdateQueue(id, updateDivId, elementId, originalText) {
 	var updateDiv = GetObject(updateDivId);
 	var textObject = GetObject(elementId);
-	var newText = GetValue(elementId);
+	var newText = ReplaceAll(GetValue(elementId), "\n", "{n}");
 
 	var queryString = "";
 	if (updateDiv.innerHTML != "") {

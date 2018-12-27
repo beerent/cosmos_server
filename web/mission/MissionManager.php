@@ -46,6 +46,16 @@
 			$this->dbm->insert($sql);    		
     	}
 
+    	function EnableMission($id) {
+			$sql = "update missions set enabled = 1 where id = " . $id;
+			$this->dbm->insert($sql);
+    	}
+
+    	function DisableMission($id) {
+			$sql = "update missions set enabled = 0 where id = " . $id;
+			$this->dbm->insert($sql);	
+    	}
+
 		function UpdateMissionOrder($id, $order) {
 			$sql = "update missions set mission_order = " . $order . " where id = " . $id;
 			$this->dbm->insert($sql);

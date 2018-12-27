@@ -365,6 +365,12 @@ function AddToStageDeleteQueue(elementId, stageId, stageTitle) {
 	table.deleteRow(rowIndex);	
 }
 
+function ToggleMissionState(missionId, stateToGo) {
+	execute("/mission/MissionHelper.php?option=toggleMissionState&id=" + missionId + "&state=" + stateToGo, 'fakediv');
+	alert("mission updated!");
+	location.reload();
+}
+
 
 
 

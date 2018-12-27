@@ -21,6 +21,7 @@ $startOrder = -1;
 function BuildUpdateDivs() {
 	echo '<div id="mission_titles_to_update" style="display:none"></div>';
 	echo '<div id="mission_summaries_to_update" style="display:none"></div>';
+	echo '<div id="mission_enabled_state_to_update" style="display:none"></div>';
 
 	echo '<div id="stage_titles_to_update" style="display:none"></div>';
 	echo '<div id="stage_stories_to_update" style="display:none"></div>';
@@ -107,6 +108,27 @@ function GetBuckets() {
   	$elementId = 'edit_mission_summary_'. $mission->GetId();
   	$onchange = "AddToUpdateQueue('". $mission->GetId() ."', 'mission_summaries_to_update', '". $elementId ."', '". $mission->GetSummary() ."')";
   	echo '<tr><td><font color="red">*</font>Summary</td><td><textarea rows="4" cols="58" placeholder="enter summary..." id="'. $elementId .'" onchange="'. $onchange .'">'. $mission->GetSummary() .'</textarea></td></tr>';
+  }
+
+  function AddMissionEnabledStateField($mission) {
+  	echo "<tr>";
+  	echo "  <td>";
+  	echo "    State";
+  	echo "  </td>";
+  	echo "  <td>";
+  	
+  	$stateToSet = "1";
+  	$confirmString = "Are you sure you want to enable this mission?";
+  	$stateString = "DISABLED";
+  	if ($mission->IsEnabled()) {
+  		$stateToSet = "0";
+	  	$confirmString = "Are you sure you want to disable this mission?";
+  		$stateString = "enabled";
+  	}
+
+  	echo "    <button onclick='if (confirm(\"". $confirmString ."\")) {ToggleMissionState(". $mission->GetId() .", ". $stateToSet .")}'>". $stateString ."</button>";
+  	echo "  </td>";
+  	echo "</tr>";
   }
 
 /***********************************/
@@ -257,6 +279,7 @@ function GetBuckets() {
   AddMissionIdField($mission);
   AddMissionTitleField($mission);
   AddMissionSummaryField($mission);
+  AddMissionEnabledStateField($mission);
   EndTable();
   AddLineBreak();
   AddStagesField($mission);

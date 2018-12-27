@@ -71,4 +71,15 @@
 
     $mission_manager->DeleteStage($id);
   }
+
+  else if ($option == "toggleMissionState") {
+    $id = $_GET['id'];
+    $state = $_GET['state'];
+
+    if ($state == "0") {
+      $mission_manager->DisableMission($id);
+    } else if ($state == "1") {
+      $mission_manager->EnableMission($id);
+    }
+  }
 ?>

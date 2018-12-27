@@ -7,18 +7,66 @@
 
 
 <?php
-  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/shared/CommonFunctions.php"; include_once($include);
-  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/BucketManager.php"; include_once($include);
-  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/mission/MissionManager.php"; include_once($include);
+
+$include = $_SERVER['DOCUMENT_ROOT']; $include .="/shared/CommonFunctions.php"; include_once($include);
+$include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/BucketManager.php"; include_once($include);
+$include = $_SERVER['DOCUMENT_ROOT']; $include .="/mission/MissionManager.php"; include_once($include);
+
+$startOrder = -1;
+
+/***********************************/
+// MISC
+/***********************************/
 
 function BuildUpdateDivs() {
-  echo '<div id="mission_titles_to_update" style="display:none"></div>';
-  echo '<div id="mission_summaries_to_update" style="display:none"></div>';
+	echo '<div id="mission_titles_to_update" style="display:none"></div>';
+	echo '<div id="mission_summaries_to_update" style="display:none"></div>';
 
-  echo '<div id="stage_titles_to_update" style="display:none"></div>';
-  echo '<div id="stage_stories_to_update" style="display:none"></div>';
-  echo '<div id="stage_buckets_to_update" style="display:none"></div>';
-  echo '<div id="stage_to_delete" style="display:none"></div>';
+	echo '<div id="stage_titles_to_update" style="display:none"></div>';
+	echo '<div id="stage_stories_to_update" style="display:none"></div>';
+	echo '<div id="stage_buckets_to_update" style="display:none"></div>';
+	echo '<div id="stage_to_delete" style="display:none"></div>';
+}
+
+function StartTable() {
+	echo "<center>";
+	echo "<table>";
+}
+
+function EndTable() {
+	echo "</table>";
+	echo "</center>";
+}
+
+function StartRow() {
+	echo "<tr>";
+}
+
+function EndRow() {
+	echo "</tr>";
+}
+
+function AddLineBreak() {
+	echo "<br>";
+}
+
+/***********************************/
+// BUCKETS
+/***********************************/
+
+function GetBuckets() {
+	$bucket_manager = new BucketManager();
+	$buckets = $bucket_manager->GetEnabledBuckets();
+
+	$elementId = 'add_stage_bucket';
+
+	$selectObj = '<select id="'. $elementId .'">';
+	foreach ($buckets as $bucket) {
+		$selectObj .= '<option value="' . $bucket->GetId() .'">' . $bucket->GetName() . '</option>';
+	}
+	$selectObj .= "</select>";
+
+	return $selectObj;	
 }
 
   function GetBucketsWithSelectedValue($stage) {
@@ -41,45 +89,111 @@ function BuildUpdateDivs() {
   	return $selectObj;
   }
 
-  function StartTable() {
-  	echo "<center>";
-  	echo "<table>";
-  }
+/***********************************/
+// MISSION
+/***********************************/
 
-  function EndTable() {
-  	echo "</table>";
-  	echo "</center>";
-  }
-
-  function StartRow() {
-  	echo "<tr>";
-  }
-
-  function EndRow() {
-  	echo "</tr>";
-  }
-
-  function AddIdField($mission) {
+  function AddMissionIdField($mission) {
     echo '<tr><td>ID</td><td>'. $mission->GetId() .'</td></tr>';  	
   }
 
-  function AddTitleField($mission) {
+  function AddMissionTitleField($mission) {
   	$elementId = 'edit_mission_title_'. $mission->GetId();
   	$onchange = "AddToUpdateQueue('". $mission->GetId() ."', 'mission_titles_to_update', '". $elementId ."', '". $mission->GetTitle() ."')";
     echo '<tr><td><font color="red">*</font>Title</td><td><input size="60" type="text" placeholder="enter title..." value="'. $mission->GetTitle() .'" maxlength="150" id="'. $elementId .'" onchange="'. $onchange .'"></td></tr>';  	
   }
 
-  function AddSummaryField($mission) {
+  function AddMissionSummaryField($mission) {
   	$elementId = 'edit_mission_summary_'. $mission->GetId();
   	$onchange = "AddToUpdateQueue('". $mission->GetId() ."', 'mission_summaries_to_update', '". $elementId ."', '". $mission->GetSummary() ."')";
   	echo '<tr><td><font color="red">*</font>Summary</td><td><textarea rows="4" cols="58" placeholder="enter summary..." id="'. $elementId .'" onchange="'. $onchange .'">'. $mission->GetSummary() .'</textarea></td></tr>';
   }
 
-  function AddLineBreak() {
+/***********************************/
+// STAGES
+/***********************************/
+
+  function AddStageOrderField() {
+  	echo "<td><center>≡</center></td>";
+  }
+
+  function AddStageIdField($stage) {
+    echo '<td>'. $stage->GetId() .'</td>';  	
+  }
+
+  function AddStageTitleField($stage) {
+  	if ($stage == "") {
+	   	$elementId = 'add_stage_title';
+  		echo '<td><input size="60" placeholder="enter title..." type="text" id="'. $elementId .'" maxlength="500"></td>';
+  		return;
+  	}
+
+   	$elementId = 'edit_stage_title_'. $stage->GetId();
+  	$onchange = "AddToUpdateQueue('". $stage->GetId() ."', 'stage_titles_to_update', '". $elementId ."', '". $stage->GetTitle() ."')";
+  	echo '<td><input size="60" placeholder="enter title..." type="text" value="'. $stage->GetTitle() .'" id="'. $elementId .'" onchange="'. $onchange .'" maxlength="500"></td>';
+  }
+
+  function AddStageStoryField($stage) {
+  	if ($stage == "") {
+      $elementId = 'edit_stage_story';
+      echo '<td><textarea rows="4" cols="58" placeholder="enter story..." id="'. $elementId .'"></textarea></td>';
+      return;
+   	}
+
+    $elementId = 'edit_stage_story_'. $stage->GetId();
+  	$onchange = "AddToUpdateQueue('". $stage->GetId() ."', 'stage_stories_to_update', '". $elementId ."', '". $stage->GetStory() ."')";
+  	echo '<td><textarea rows="4" cols="58" placeholder="enter story..." id="'. $elementId .'" onchange="'. $onchange .'">'. $stage->GetStory() .'</textarea></td>';
+  }
+
+  function AddStageBucketField($stage) {
+  	if ($stage == "") {
+  		echo "<td>". GetBuckets() ."</td>";
+  		return;
+  	}
+
+  	echo "<td>". GetBucketsWithSelectedValue($stage) ."</td>";
+  }
+
+  function AddStageDeleteField($stage) {
+    $elementId = 'edit_stage_delete_'. $stage->GetId();
+  	$onclick = "AddToStageDeleteQueue('". $elementId ."', '". $stage->GetId() ."', '". $stage->GetTitle() ."')";
+  	echo '<td><center><button id="'. $elementId .'" onclick="'. $onclick .'">-</button></center></td>';
+  }
+
+/***********************************/
+// BUTTONS
+/***********************************/
+  function AddSubmitField() {
+  	echo "<center>";
   	echo "<br>";
+  	echo "<button onclick='SubmitUpdateMission()'>Submit!</button>";
+  	echo "</center>";
+  }
+
+  function AddAddStageField($mission, $highestOrder) {
+  	echo "<center>";
+  	echo "<br>";
+  	echo "<button onclick='AddNewStageFieldToExistingMission(\"". $mission->GetTitle() ."\", \"". ($highestOrder + 1) ."\")'>Add New Stage!</button>";
+  	echo "</center>";
+  }
+
+  function AddNewStageField($mission, $highestOrder) {
+	echo "<h3>Add Stage</h3>";
+	echo "<table border='1'>";
+	StartRow();
+	AddStageTitleField("");
+	AddStageStoryField("");
+	AddStageBucketField("");
+	EndRow();
+	echo "</table>";
+	AddAddStageField($mission, $highestOrder);
+	echo "<br><br><br><br><br>";
   }
 
   function AddStagesField($mission) {
+  	global $startOrder;
+  	$highestOrder = -1;
+
   	echo "<center>";
 
   	echo "<h3>Stages</h3>";
@@ -98,6 +212,14 @@ function BuildUpdateDivs() {
 
     $stages = $mission->GetStages();
     foreach ($stages as $stage) {
+    	if ($startOrder == -1) {
+    		$startOrder = $stage->GetOrder();
+    	}
+
+    	if ($stage->GetOrder() > $highestOrder) {
+    		$highestOrder = $stage->GetOrder();
+    	}
+    	
     	StartRow();
     	AddStageOrderField();
     	AddStageIdField($stage);
@@ -107,51 +229,14 @@ function BuildUpdateDivs() {
     	AddStageDeleteField($stage);
     	EndRow();
     }
-
     echo "</tbody>";
-
     echo "</table>";
 
-  	echo "<br>";
-  	echo "<button onclick='AddNewStageField();'>Add Stage</button>";
+  	AddSubmitField();
 
-  	echo "</center>";
-  }
+    echo "<br>";
+    AddNewStageField($mission, $highestOrder);
 
-  function AddStageOrderField() {
-  	echo "<td><center>≡</center></td>";
-  }
-
-  function AddStageIdField($stage) {
-    echo '<td>'. $stage->GetId() .'</td>';  	
-  }
-
-  function AddStageTitleField($stage) {
-   	$elementId = 'edit_stage_title_'. $stage->GetId();
-  	$onchange = "AddToUpdateQueue('". $stage->GetId() ."', 'stage_titles_to_update', '". $elementId ."', '". $stage->GetTitle() ."')";
-  	echo '<td><input size="60" placeholder="enter title..." type="text" value="'. $stage->GetTitle() .'" id="'. $elementId .'" onchange="'. $onchange .'" maxlength="500"></td>';
-  }
-
-  function AddStageStoryField($stage) {
-    $elementId = 'edit_stage_story_'. $stage->GetId();
-  	$onchange = "AddToUpdateQueue('". $stage->GetId() ."', 'stage_stories_to_update', '". $elementId ."', '". $stage->GetStory() ."')";
-  	echo '<td><textarea rows="4" cols="58" placeholder="enter story..." id="'. $elementId .'" onchange="'. $onchange .'">'. $stage->GetStory() .'</textarea></td>';
-  }
-
-  function AddStageBucketField($stage) {
-  	echo "<td>". GetBucketsWithSelectedValue($stage) ."</td>";
-  }
-
-  function AddStageDeleteField($stage) {
-    $elementId = 'edit_stage_delete_'. $stage->GetId();
-  	$onclick = "AddToStageDeleteQueue('". $elementId ."', '". $stage->GetId() ."', '". $stage->GetTitle() ."')";
-  	echo '<td><center><button id="'. $elementId .'" onclick="'. $onclick .'">-</button></center></td>';
-  }
-
-  function AddSubmitField() {
-  	echo "<center>";
-  	echo "<br><br>";
-  	echo "<button onclick='SubmitUpdateMission()'>Submit!</button>";
   	echo "</center>";
   }
 ?>
@@ -168,11 +253,10 @@ function BuildUpdateDivs() {
   BuildUpdateDivs();
   DisplayMenu();
   DisplayTitle("Manage Mission");
-  AddSubmitField();
   StartTable();
-  AddIdField($mission);
-  AddTitleField($mission);
-  AddSummaryField($mission);
+  AddMissionIdField($mission);
+  AddMissionTitleField($mission);
+  AddMissionSummaryField($mission);
   EndTable();
   AddLineBreak();
   AddStagesField($mission);

@@ -38,6 +38,36 @@ function AddNewStageField() {
   x.innerHTML = "<center><button onclick=' if (confirm(\"Delete Row?\")) { DeleteRow("+ newRowId +"); } '>-</button></center>";
 }
 
+function AddNewStageFieldToExistingMission(missionTitle, order) {
+	var title = GetObject("add_stage_title").value;
+	if (title == "") {
+		alert("Missing title!");
+		return false;
+	}
+
+	var story = GetObject("edit_stage_story").value;
+	if (story == "") {
+		alert("Missing story!");
+		return false;
+	}
+
+	var modifiedStageBuckets = GetObject("stage_buckets_to_update").innerHTML;
+	if (modifiedStageBuckets != "") {
+		alert ("I am sorry, but since above buckets were modified, I cannot prove you are adding a bucket that isn't already used. Please copy your data to a temporary location, reload the page and try again. If this is a recurring issue, we can make this smarter.");
+		return false;
+	}
+
+	var bucketId = GetObject("add_stage_bucket").value;
+	if (BucketIsAlreadySelected(bucketId)) {
+		alert("This bucket is already selected! Please pick a different one.");
+		return false;
+	}
+
+	execute("/mission/MissionHelper.php?option=addStage&m=" + missionTitle + "&t=" + title + "&s=" + story + "&b=" + bucketId + "&o=" + order, 'fakediv');
+	alert("Stage Added!");
+	location.reload();
+}
+
 function DeleteRow(rowid) {
 	var row = document.getElementById(rowid);
 	row.parentNode.removeChild(row);
@@ -114,6 +144,20 @@ function SubmitUpdateMission() {
 		alert("update complete!");
 		location.reload();
 	}
+}
+
+function BucketIsAlreadySelected(bucketId) {
+	var rows = GetObject("add_mission_stages_table").rows;
+	for (var i = 1; i < rows.length; i++) {
+		var cells = rows[i].cells;
+
+		var stageBucket = cells[4].childNodes[0].value;
+		if (stageBucket == bucketId) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 function ConfirmNoDuplicateBuckets() {
@@ -263,6 +307,27 @@ function ReorderMissions(startOrder) {
 	location.reload();
 }
 
+function ReorderMissionStages(missionId, startOrder) {
+	var order = startOrder;
+
+	var table = GetObject("manage_missions_table");
+	var rows = table.rows;
+
+	var usedBuckets = [];
+	var stages = [];
+
+	for (var i = 1; i < rows.length; i++) {
+		var cells = rows[i].cells;
+		var missionId = cells[1].childNodes[0].innerHTML;
+		execute("/mission/MissionHelper.php?option=reorderMission&id=" + missionId + "&order=" + order, 'fakediv');
+		order = order + 1;
+	}
+
+	sleep(1000);
+	alert("missions reordered!");
+	location.reload();
+}
+
 function AddToUpdateQueue(id, updateDivId, elementId, originalText) {
 	var updateDiv = GetObject(updateDivId);
 	var textObject = GetObject(elementId);
@@ -293,7 +358,6 @@ function AddToStageDeleteQueue(elementId, stageId, stageTitle) {
 	}
 
 	updateDiv.innerHTML = updateDiv.innerHTML + queryString;
-	alert(updateDiv.innerHTML);
 
 	var object = GetObject(elementId);
 	var table = object.parentElement.parentElement.parentElement.parentElement;
@@ -303,9 +367,4 @@ function AddToStageDeleteQueue(elementId, stageId, stageTitle) {
 
 
 
-//function sleep(miliseconds) {
-//   var currentTime = new Date().getTime();
 
-//   while (currentTime + miliseconds >= new Date().getTime()) {
-//   }
-//}

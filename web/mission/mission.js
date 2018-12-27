@@ -64,6 +64,7 @@ function AddNewStageFieldToExistingMission(missionTitle, order) {
 		return false;
 	}
 
+	alert("/mission/MissionHelper.php?option=addStage&m=" + missionTitle + "&t=" + title + "&s=" + story + "&b=" + bucketId + "&o=" + order, 'fakediv');
 	execute("/mission/MissionHelper.php?option=addStage&m=" + missionTitle + "&t=" + title + "&s=" + story + "&b=" + bucketId + "&o=" + order, 'fakediv');
 	alert("Stage Added!");
 	location.reload();

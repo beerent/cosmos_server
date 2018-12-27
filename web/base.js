@@ -48,8 +48,9 @@ function execute(url) {
   req.send(null);
 }
 
-function sleep(ms){
-  return new Promise(resolve => setTimeout(resolve, ms));
+function sleep(miliseconds) {
+   var currentTime = new Date().getTime();
+   while (currentTime + miliseconds >= new Date().getTime()) {}
 }
 
 function GetObjectsByName(id) {

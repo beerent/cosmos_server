@@ -140,7 +140,7 @@ function SubmitAddMission() {
 }
 
 function SubmitUpdateMission() {
-	if (ConfirmNoDuplicateBuckets() && CommitMissionTitleUpdates() && CommitMissionSummaryUpdates() && CommitStageTitleUpdates() && CommitStageStoryUpdates() && CommitStageBucketUpdates() && CommitStageDeletes()) {
+	if (ConfirmNoDuplicateBuckets() && CommitMissionTitleUpdates() && CommitMissionSummaryUpdates() && CommitStageTitleUpdates() && CommitStageStoryUpdates() && CommitStageBucketUpdates() && CommitStageDeletes() && ReorderMissionStages()) {
 		alert("update complete!");
 		location.reload();
 	}
@@ -307,25 +307,17 @@ function ReorderMissions(startOrder) {
 	location.reload();
 }
 
-function ReorderMissionStages(missionId, startOrder) {
-	var order = startOrder;
-
-	var table = GetObject("manage_missions_table");
-	var rows = table.rows;
-
-	var usedBuckets = [];
-	var stages = [];
+function ReorderMissionStages() {
+	var rows = GetObject("add_mission_stages_table").rows;
 
 	for (var i = 1; i < rows.length; i++) {
 		var cells = rows[i].cells;
-		var missionId = cells[1].childNodes[0].innerHTML;
-		execute("/mission/MissionHelper.php?option=reorderMission&id=" + missionId + "&order=" + order, 'fakediv');
-		order = order + 1;
+
+		var stageId = cells[1].innerHTML;
+		execute("/mission/MissionHelper.php?option=reorderMissionStage&id=" + stageId + "&order=" + i, 'fakediv');
 	}
 
-	sleep(1000);
-	alert("missions reordered!");
-	location.reload();
+	return true;
 }
 
 function AddToUpdateQueue(id, updateDivId, elementId, originalText) {

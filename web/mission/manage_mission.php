@@ -12,8 +12,6 @@ $include = $_SERVER['DOCUMENT_ROOT']; $include .="/shared/CommonFunctions.php"; 
 $include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/BucketManager.php"; include_once($include);
 $include = $_SERVER['DOCUMENT_ROOT']; $include .="/mission/MissionManager.php"; include_once($include);
 
-$startOrder = -1;
-
 /***********************************/
 // MISC
 /***********************************/
@@ -213,7 +211,6 @@ function GetBuckets() {
   }
 
   function AddStagesField($mission) {
-  	global $startOrder;
   	$highestOrder = -1;
 
   	echo "<center>";
@@ -234,9 +231,6 @@ function GetBuckets() {
 
     $stages = $mission->GetStages();
     foreach ($stages as $stage) {
-    	if ($startOrder == -1) {
-    		$startOrder = $stage->GetOrder();
-    	}
 
     	if ($stage->GetOrder() > $highestOrder) {
     		$highestOrder = $stage->GetOrder();

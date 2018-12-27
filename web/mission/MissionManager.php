@@ -61,6 +61,11 @@
 			$this->dbm->insert($sql);
 		}
 
+		function UpdateStageOrder($id, $order) {
+			$sql = "update stages set stage_order = " . $order . " where id = " . $id;
+			echo $sql;
+			$this->dbm->insert($sql);
+		}
 
 		function GetMissions($enabled, $complete) {
 			$enabledStr = "0";
@@ -122,7 +127,7 @@
 		}
 
 		function GetStages($missionId) {
-			$sql = "select id, mission_id, bucket_id, title, story, stage_order, added from stages where mission_id = '". $missionId ."'";
+			$sql = "select id, mission_id, bucket_id, title, story, stage_order, added from stages where mission_id = '". $missionId ."' order by stage_order asc";
 			$results = $this->dbm->query($sql);
 
 			$stages = array();

@@ -147,3 +147,6 @@ ALTER TABLE `cosmos`.`stages` CHANGE COLUMN `order` `stage_order` INT(11) NOT NU
 drop table `cosmos`.`mission_queue`;
 ALTER TABLE `cosmos`.`missions` ADD COLUMN `order` INT(11) NOT NULL DEFAULT -1  AFTER `added` , ADD COLUMN `complete` INT(11) NOT NULL DEFAULT 0  AFTER `order` ;
 ALTER TABLE `cosmos`.`missions` CHANGE COLUMN `order` `mission_order` INT(11) NOT NULL DEFAULT '-1';
+
+ALTER TABLE `cosmos`.`missions` ADD COLUMN `enabled` INT(11) NOT NULL DEFAULT 1  AFTER `complete` ;
+

@@ -31,6 +31,13 @@
     $mission_manager->UpdateMissionOrder($id, $order);
   }
 
+  else if ($option == "reorderMissionStage") {
+    $id = $_GET['id'];
+    $order = $_GET['order'];
+
+    $mission_manager->UpdateStageOrder($id, $order);
+  }
+
   else if ($option == "updateMissionTitle") {
     $id = $_GET['id'];
     $title = $_GET['title'];
@@ -82,4 +89,9 @@
       $mission_manager->EnableMission($id);
     }
   }
+
+
+
+
+
 ?>

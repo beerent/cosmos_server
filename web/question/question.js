@@ -11,13 +11,22 @@ function AddNewWrongAnswerField() {
   x.innerHTML = '<input type="text" name="extra_wrong_answer" value="" size="60" maxlength="150">';
 }
 
-function UpdateQuestionsPage(bucketId, enabled, reviewed) {
-  var reviewedString = "0";
-  if (reviewed) {
-    reviewedString = "1";
+function UpdateManageQuestionsPage() {
+  var bucketId = GetValue("bucket_select");
+  var enabled = GetObject("enabled_checked").checked;
+  var review = GetObject("review_checked").checked;
+
+  var enabledString = "0";
+  if (enabled) {
+    enabledString = "1";
   }
 
-  window.location.replace(window.location.href.substring(0, window.location.href.indexOf("?")) + "?id=" + bucketId + "&type=" + enabled  + "&for_me_to_review=" + reviewedString);
+  var reviewString = "0";
+  if (review) {
+    reviewString = "1";
+  }
+
+  window.location.replace("/question/manage_questions.php?id=" + bucketId + "&enabled=" + enabledString  + "&review=" + reviewString);
 }
 
 function OnEditQuestionClicked(questionId) {

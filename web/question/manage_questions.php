@@ -15,8 +15,15 @@
     $reviewManager = new ReviewManager();
 
     $ipAddress = $_SERVER['REMOTE_ADDR'];
-    $beerentsIp = $ipAddress == "104.54.224.18" || $ipAddress == "::1";
+    $beerentsIp = $ipAddress == "104.54.224.18";
     $bobsIp = $ipAddress == "72.43.89.50" || $ipAddress == "71.115.202.168";
+
+    if ($forMeToReview && !$beerentsIp && !$bobsIp) {
+      echo "<center>";
+      echo "unrecognized IP address, contact brent!";
+      echo "</center>";
+      return;
+    }
 
     echo "<center>";
     
@@ -362,36 +369,31 @@
 <p id="updateID"></p>
 
 <?php
-  $currentBucketId = $_GET['id'];
+  $currentBucketId = -1;
+  if (isset($_GET['id'])) {
+    $currentBucketId = $_GET['id'];
+  }
   
-  $showEnabledType=$_GET['type'];
-  if ($showEnabledType == "") {
-    $showEnabledType = "enabled";
+  $enabledOptionChecked = true;
+  if (isset($_GET['enabled'])) {
+    $enabledOptionChecked = $_GET['enabled'] == "1";
   }
 
-  $forMeToReview = $_GET['for_me_to_review'] == "1";
-
-  echo "<table>";
-  echo "<tr>";
-
-  echo "<td>";
-  echo "<b>Bucket:</b>";
-  echo "</td>";
-  echo "<td>";
-
-
+  $forMeToReview = false;
+  if (isset($_GET['review'])) {
+    $forMeToReview = $_GET['review'] == "1";
+  }
 
 
 /************************************************/
 // BUCKET SELECT
 /************************************************/
-  echo "<select id=\"bucket_select\" onchange='UpdateQuestionsPage(GetValue(\"bucket_select\"), GetValue(\"enable_select\"), GetObject(\"for_me_to_review\").checked)'>";
-  if ($currentBucketId == "") {
-    echo '<option value="">select a bucket!</option>';
-  }
+  echo "bucket ";
+  echo "<select id=\"bucket_select\" onchange='UpdateManageQuestionsPage(\"". $currentBucketId ."\")'>";
 
   foreach ($buckets as $bucket) {
-    if ($bucket->GetId() == $currentBucketId) {
+    if (($bucket->GetId() == $currentBucketId) || ($currentBucketId == -1)) {
+      $currentBucketId = $bucket->GetId();
       echo '<option selected value="' . $bucket->GetId() . '">' . $bucket->GetName() . '</option>';
     } else {
       echo '<option value="' . $bucket->GetId() . '">' . $bucket->GetName() . '</option>';
@@ -405,78 +407,46 @@
   }
 
   echo "</select>";
-  echo "</td>";
-  echo "</tr>";
-  echo "<tr>";
-  echo "<td>";
-  echo "<b>Enabled:</b>";
-  echo "</td>";
-  echo "<td>";
-
-
 
 /************************************************/
-// ENABLED SELECT
+// ENABLED CHECKBOX
 /************************************************/
-  echo  "<select id=\"enable_select\" onchange='UpdateQuestionsPage(GetValue(\"bucket_select\"), GetValue(\"enable_select\"), GetObject(\"for_me_to_review\").checked)'>";
-  if ($showEnabledType == "enabled") {
-      echo '<option selected value="enabled">enabled</option>';
-  } else {
-      echo '<option value="enabled">enabled</option>';
+  $enabledChecked ="";
+  if ($enabledOptionChecked) {
+    $enabledChecked = " checked ";
   }
+  $enabledCheckbox = "<input type='checkbox' id=\"enabled_checked\" " . $enabledChecked . " onchange='UpdateManageQuestionsPage(\"". $currentBucketId ."\")'>";
+  echo " enabled ";
+  echo $enabledCheckbox;
 
-  if ($showEnabledType == "disabled") {
-      echo '<option selected value="disabled">disabled</option>';
-  } else {
-      echo '<option value="disabled">disabled</option>';
-  }
-
-  echo "</select>";
-  echo "</td>";
-  echo "</tr>";
-
-  echo "<tr>";
-  echo "<td><b></>To Review:</td>";
-  echo "<td><center>";
+/************************************************/
+// REVIEWED CHECKBOX
+/************************************************/
+  
   $reviewChecked ="";
   if ($forMeToReview) {
     $reviewChecked = " checked ";
   }
-  $reviewedCheckbox = "<input type='checkbox' id=\"for_me_to_review\" " . $reviewChecked . " onchange='UpdateQuestionsPage(GetValue(\"bucket_select\"), GetValue(\"enable_select\"), GetObject(\"for_me_to_review\").checked)'>";
+  $reviewedCheckbox = "<input type='checkbox' id=\"review_checked\" " . $reviewChecked . " onchange='UpdateManageQuestionsPage(\"". $currentBucketId ."\")'>";
+  echo " for me to review ";
   echo $reviewedCheckbox;
-  echo "</center></td>";
-  echo "</tr>";
 
-  echo "</table>";
   echo "<br><br>";
-  if (isset($currentBucketId)) {
-    echo "<button onclick='if (CommitQuestionUpdates() && CommitCitationUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds() && CommitBucketUpdates() && CommitReviewUpdates()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
-  }
+
+  echo "<button onclick='if (CommitQuestionUpdates() && CommitCitationUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds() && CommitBucketUpdates() && CommitReviewUpdates()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
 
 
   echo "</center>";
   echo "<br><br>";
 
-if ($currentBucketId != "") {
-
-  if ($currentBucketId == "-1") {
-    if ($showEnabledType == "enabled") {
-      $enabledQuestions = $questionManager->GetBucketlessQuestions(1);
-      DisplayQuestions($enabledQuestions, $forMeToReview);
-    } else if ($showEnabledType == "disabled") {
-      $disabledQuestions = $questionManager->GetBucketlessQuestions(0);
-      DisplayQuestions($disabledQuestions, $forMeToReview);
-    }
-  }else{
-    if ($showEnabledType == "enabled") {
-      $enabledQuestions = $questionManager->GetEnabledQuestions($currentBucketId);
-      DisplayQuestions($enabledQuestions, $forMeToReview);
-    } else if ($showEnabledType == "disabled") {
-      $disabledQuestions = $questionManager->GetDisabledQuestions($currentBucketId);
-      DisplayQuestions($disabledQuestions, $forMeToReview);
-    }
+  $questions = array();
+  if ($enabledOptionChecked) {
+    $questions = $questionManager->GetEnabledQuestions($currentBucketId);
+  } else {
+    $questions = $questionManager->GetDisabledQuestions($currentBucketId);
   }
-}
+
+  DisplayQuestions($questions, $forMeToReview);
 ?>
   </body>
 </html>

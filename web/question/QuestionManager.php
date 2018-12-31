@@ -14,8 +14,16 @@
 			return $this->GetQuestions($bucketId, 1);
 		}
 
+		function GetAllEnabledQuestions() {
+			return $this->GetAllQuestions(1);
+		}
+
 		function GetDisabledQuestions($bucketId) {
 			return $this->GetQuestions($bucketId, 0);
+		}
+
+		function GetAllDisabledQuestions() {
+			return $this->GetAllQuestions(0);
 		}
 
 		function EnableQuestion($questionId) {
@@ -28,8 +36,22 @@
 			$this->dbm->insert($sql);
 		}
 
-		function GetAllQuestions($bucketId) {
+		function TempGetAllQuestions($bucketId) {
 			$sql = "select questions.id from questions join question_bucket_map on question_bucket_map.question_id = questions.id where bucket_id = '" . $bucketId . "' order by questions.id desc";
+			$results = $this->dbm->query($sql);
+
+			$questions = array();
+			while($row = $results->fetch_assoc()){
+				$questionId = $row['id'];
+				$question = $this->GetQuestion($questionId);
+				array_push($questions, $question);
+			}
+
+			return $questions;			
+		}
+
+		function GetAllQuestions($enabled) {
+			$sql = "select questions.id from questions where enabled = " . $enabled;
 			$results = $this->dbm->query($sql);
 
 			$questions = array();

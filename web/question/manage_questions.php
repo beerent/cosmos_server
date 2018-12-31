@@ -398,9 +398,14 @@
   echo "bucket ";
   echo "<select id=\"bucket_select\" onchange='UpdateManageQuestionsPage(\"". $currentBucketId ."\")'>";
 
+  if ("-2" == $currentBucketId) {
+    echo '<option selected value="-2">ALL</option>';
+  } else {
+    echo '<option value="-2">ALL</option>';
+  }
+
   foreach ($buckets as $bucket) {
     if (($bucket->GetId() == $currentBucketId) || ($currentBucketId == -1)) {
-      $currentBucketId = $bucket->GetId();
       echo '<option selected value="' . $bucket->GetId() . '">' . $bucket->GetName() . '</option>';
     } else {
       echo '<option value="' . $bucket->GetId() . '">' . $bucket->GetName() . '</option>';
@@ -448,9 +453,21 @@
 
   $questions = array();
   if ($enabledOptionChecked) {
-    $questions = $questionManager->GetEnabledQuestions($currentBucketId);
+    if ($currentBucketId == -1) {
+      $questions = $questionManager->GetBucketlessQuestions("1");
+    } else if ($currentBucketId == -2) {
+      $questions = $questionManager->GetAllEnabledQuestions();
+    }else {
+      $questions = $questionManager->GetEnabledQuestions($currentBucketId);      
+    }
   } else {
-    $questions = $questionManager->GetDisabledQuestions($currentBucketId);
+    if ($currentBucketId == -1) {
+      $questions = $questionManager->GetBucketlessQuestions("0");
+    } else if ($currentBucketId == -2) {
+      $questions = $questionManager->GetAllDisabledQuestions();
+    } else {
+      $questions = $questionManager->GetDisabledQuestions($currentBucketId);      
+    }
   }
 
   DisplayQuestions($questions, $forMeToReview);

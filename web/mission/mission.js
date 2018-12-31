@@ -64,7 +64,6 @@ function AddNewStageFieldToExistingMission(missionTitle, order) {
 		return false;
 	}
 
-	alert("/mission/MissionHelper.php?option=addStage&m=" + missionTitle + "&t=" + title + "&s=" + story + "&b=" + bucketId + "&o=" + order, 'fakediv');
 	execute("/mission/MissionHelper.php?option=addStage&m=" + missionTitle + "&t=" + title + "&s=" + story + "&b=" + bucketId + "&o=" + order, 'fakediv');
 	alert("Stage Added!");
 	location.reload();
@@ -221,7 +220,6 @@ function CommitMissionSummaryUpdates() {
   Object.keys(map).forEach(function(id) {
     var newValue = map[id];
     newValue = ReplaceAll(newValue, "\n", "{n}");
-    alert("/mission/MissionHelper.php?option=updateMissionSummary&id=" + id + "&summary=" + newValue, 'fakediv');
     execute("/mission/MissionHelper.php?option=updateMissionSummary&id=" + id + "&summary=" + newValue, 'fakediv');
   });
 

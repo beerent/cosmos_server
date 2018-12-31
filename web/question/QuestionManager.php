@@ -50,6 +50,17 @@
 			return $row['count'];
 		}
 
+		function GetToReviewCount($name) {
+
+			$sql = "select count(questions.id) as count from questions join question_reviews on questions.id = question_reviews.question_id join reviewer on question_reviews.reviewer_id = reviewer.id where reviewer.name = '". $name ."' and questions.enabled = 1;";
+			$result = $this->dbm->query($sql);
+			$row = $result->fetch_assoc();
+			$toReview = $row['count'];
+			$totalEnabledCount = $this->GetEnabledQuestionCount();
+
+			return intval($totalEnabledCount) - intval($toReview);
+		}
+
 		function GetQuestions($bucketId, $enabledToggle) {
 			$sql = "select questions.id from questions join question_bucket_map on question_bucket_map.question_id = questions.id where bucket_id = '" . $bucketId . "' and questions.enabled = " . $enabledToggle . " order by questions.id desc";
 			$results = $this->dbm->query($sql);

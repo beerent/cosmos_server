@@ -1,6 +1,5 @@
 <br><center>
 	<h1>Know Your Cosmos Dashboard<hr><br></h1> 
-	Bob To Review Brent To Review
 		| 
 	<a href="/index.php">Home</a> | 
 	<a href="/blog/add_blog.php">Add Blog</a> | 

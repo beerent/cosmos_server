@@ -22,7 +22,7 @@
       echo "<center>";
       echo "unrecognized IP address, contact brent!";
       echo "</center>";
-      return;
+      return; 
     }
 
     echo "<center>";
@@ -363,7 +363,14 @@
       <h1>Manage Questions</h1>
       <?php
         $enabledQuestionCount = $questionManager->GetEnabledQuestionCount();
-        echo "<font size='2'>Total Question Count: ". $enabledQuestionCount ."</font>";
+        $bobToReviewCount = $questionManager->GetToReviewCount("bob");
+        $beerentToReviewCount = $questionManager->GetToReviewCount("beerent");
+        echo "<font size='2'>Total Questions: ". $enabledQuestionCount ."</font>";
+        echo "<br>";
+        echo "<font size='2'>Remaining for Bob to review: ". $bobToReviewCount ."</font>";
+        echo "<br>";
+        echo "<font size='2'>Remaining for Brent to review: ". $beerentToReviewCount ."</font>";
+        echo "<br>";
       ?>
       <hr>
 <p id="updateID"></p>

@@ -376,7 +376,7 @@
 <p id="updateID"></p>
 
 <?php
-  $currentBucketId = -1;
+  $currentBucketId = -2;
   if (isset($_GET['id'])) {
     $currentBucketId = $_GET['id'];
   }

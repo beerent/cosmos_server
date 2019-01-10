@@ -100,7 +100,7 @@ class ChallengeManager {
 				return;
 			}
 
-			self.RegisterChallengeAnswer(user.id, req.query.attempt_id, req.query.answer_id, function(response){
+			self.RegisterChallengeAnswer(req.query.attempt_id, req.query.answer_id, function(response){
 				res.json(response);
 				res.end();
 				self.dbm.Close();
@@ -148,11 +148,11 @@ class ChallengeManager {
 		question_manager.GetAllQuestions(callback);
 	}
 
-	RegisterChallengeAnswer(user_id, attempt_id, answer_id, callback) {
+	RegisterChallengeAnswer(attempt_id, answer_id, callback) {
 		var responseBuilder = new ResponseBuilder();
 
-		var sql = "insert into challenge_answers (user_id, attempt_id, answer_id) values (?, ?, ?)";
-		var params = [user_id, attempt_id, answer_id];
+		var sql = "insert into challenge_answers (attempt_id, answer_id) values (?, ?)";
+		var params = [attempt_id, answer_id];
 
 		var errors = this.errors;
 		this.dbm.ParameterizedInsert(sql, params, function(newChallengeAnswerId, err) {

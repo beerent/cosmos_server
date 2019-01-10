@@ -1,7 +1,7 @@
 var express = require('express');
 var DBM = require("./database/DBM.js");
 var QuestionManager = require("./question/QuestionManager.js");
-var ChallengeManager = require("./game/ChallengeManager.js");
+var ChallengeManager = require("./game/challenge/ChallengeManager.js");
 var Authenticator = require("./authentication/Authenticator.js");
 var ResponseBuilder = require("./response/ResponseBuilder.js");
 var UserManager = require("./user/UserManager.js");
@@ -44,7 +44,6 @@ app.get('/registerChallengeAnswer', function (req, res) {
 });
 
 app.get('/getChallengeLeaderboard', function (req, res) {
-	console.log("in");
 	var dbm = new DBM();
 	var challengeManagerInstance = new ChallengeManager(dbm, errors);
 

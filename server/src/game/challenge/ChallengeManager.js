@@ -1,6 +1,8 @@
-var ResponseBuilder = require("../response/ResponseBuilder.js");
-var QuestionManager = require("../question/QuestionManager.js");
-var UserManager = require("../user/UserManager.js");
+var ResponseBuilder = require("../../response/ResponseBuilder.js");
+var QuestionManager = require("../../question/QuestionManager.js");
+var UserManager = require("../../user/UserManager.js");
+
+var ChallengeLeaderboardManager = require("./ChallengeLeaderboardManager.js");
 
 class ChallengeManager {
 
@@ -100,7 +102,7 @@ class ChallengeManager {
 				return;
 			}
 
-			self.RegisterChallengeAnswer(user.id, req.query.attempt_id, req.query.answer_id, function(response) {
+			self.RegisterChallengeAnswer(req.query.attempt_id, req.query.answer_id, function(response){
 				res.json(response);
 				res.end();
 				self.dbm.Close();
@@ -111,7 +113,7 @@ class ChallengeManager {
 	HandleGetChallengeLeaderboardRequest(req, res) {
 		var self = this;
 
-		self.GetChallengeLeaderboard(function (leaderboard) {
+		self.GetChallengeLeaderboard(function (response) {
 			res.json(response);
 			res.end();
 			self.dbm.Close();
@@ -160,27 +162,15 @@ class ChallengeManager {
 	}
 
 	GetChallengeLeaderboard(callback) {
-		var responseBuilder = new ResponseBuilder();
-
-		var sql = "insert into challenge_answers (user_id, attempt_id, answer_id) values (?, ?, ?)";
-		var params = [user_id, attempt_id, answer_id];
-
-		var errors = this.errors;
-		this.dbm.ParameterizedInsert(sql, params, function(newChallengeAnswerId, err) {
-			if (err) {
-				responseBuilder.SetError(errors.REGISTER_CHALLENGE_ANSWER_INVALID_ERROR);
-			} 
-
-			callback(responseBuilder.Response());
-		});
-	}				
+		var challenge_leaderboard_manager = new ChallengeLeaderboardManager(this.dbm, this.errors);
+		challenge_leaderboard_manager.GetLeaderboard(callback);
 	}
 
-	RegisterChallengeAnswer(user_id, attempt_id, answer_id, callback) {
+	RegisterChallengeAnswer(attempt_id, answer_id, callback) {
 		var responseBuilder = new ResponseBuilder();
 
-		var sql = "insert into challenge_answers (user_id, attempt_id, answer_id) values (?, ?, ?)";
-		var params = [user_id, attempt_id, answer_id];
+		var sql = "insert into challenge_answers (attempt_id, answer_id) values (?, ?)";
+		var params = [attempt_id, answer_id];
 
 		var errors = this.errors;
 		this.dbm.ParameterizedInsert(sql, params, function(newChallengeAnswerId, err) {

@@ -49,5 +49,3 @@ class DBM {
 };
 
 module.exports = DBM;
-
-select users.username, challenge_answers.attempt_id, count(challenge_answers.id) as points from challenge_answers join answers on challenge_answers.answer_id = answers.id join challenge_attempts on challenge_answers.attempt_id = challenge_attempts.id join users on challenge_attempts.user_id = users.id group by challenge_attempts.id order by points desc limit 10;

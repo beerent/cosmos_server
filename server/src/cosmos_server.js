@@ -43,6 +43,14 @@ app.get('/registerChallengeAnswer', function (req, res) {
 	challengeManagerInstance.HandleRegisterChallengeAnswerRequest(req, res);
 });
 
+app.get('/getChallengeLeaderboard', function (req, res) {
+	console.log("in");
+	var dbm = new DBM();
+	var challengeManagerInstance = new ChallengeManager(dbm, errors);
+
+	challengeManagerInstance.HandleGetChallengeLeaderboardRequest(req, res);
+});
+
 var server = app.listen(8081, function () {
 
   var host = server.address().address

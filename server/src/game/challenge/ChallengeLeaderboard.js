@@ -2,15 +2,15 @@ var ChallengeLeaderboardEntry = require("./ChallengeLeaderboardEntry.js");
 
 class ChallengeLeaderboard {
 	constructor () {
-		this.entries = [];
+		this.leaderboardEntries = [];
 	}
 
 	AddLeaderboardEntry(entry) {
-		this.entries.push(entry);
+		this.leaderboardEntries.push(entry);
 	}
 
 	GetLeaderboard() {
-		return this.entries;
+		return this.leaderboardEntries;
 	}
 };
 

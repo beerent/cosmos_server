@@ -3,6 +3,9 @@
 		| 
 	<a href="/index.php">Home</a> | 
 	<a href="/blog/add_blog.php">Add Blog</a> | 
+
+	<br>
+		|
 	<a href="https://trello.com/b/GYwNpHfP/cosmo" target="_blank">Trello</a> |
 	<a href="https://drive.google.com/drive/folders/1dR1Icfz2uQIuG6HAsif-_6_8PnRZdMtk?ths=true" target="_blank">Google Docs</a> |
 	

@@ -10,6 +10,7 @@ class UserManager {
 	HandleAuthenticationRequest(req, res) {
 		var self = this;
 		this.AuthenticationRequest(req.query, function(response) {
+			response.request = "authenticate";
 			res.json(response);
 			res.end();
 			self.dbm.Close();

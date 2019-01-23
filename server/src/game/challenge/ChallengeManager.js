@@ -48,6 +48,7 @@ class ChallengeManager {
 
 		this.DoChallengeRequest(req, res, function(user){
 			self.CreateNewChallenge(user.id, function(response){
+				response.request = "newChallenge";
 				res.json(response);
 				res.end();
 			});
@@ -62,7 +63,9 @@ class ChallengeManager {
 
 			if (self.GetChallengeQuestionsFieldsAreValid(req.query) == false) {
 				responseBuilder.SetError(self.errors.GET_CHALLENGE_QUESTIONS_ERROR);
-				res.json(responseBuilder.Response());
+				var response = responseBuilder.Response();
+				response.request = "getChallengeQuestions";
+				res.json(response);
 				res.end();
 				self.dbm.Close();
 				return;
@@ -72,7 +75,9 @@ class ChallengeManager {
 			self.ValidateChallengeAttemptId(user.id, req.query.attempt_id, function (attemptIdIsValid) {
 				if (false == attemptIdIsValid) {
 					responseBuilder.SetError(self.errors.GET_CHALLENGE_INVALID_ID);
-					res.json(responseBuilder.Response());
+					var response = responseBuilder.Response();
+					response.request = "getChallengeQuestions";
+					res.json(response);
 					res.end();
 					self.dbm.Close();
 					return;
@@ -81,7 +86,9 @@ class ChallengeManager {
 				/*** GET QUESTIONS! ***/
 				self.GetChallengeQuestions(user.id, req.query.attempt_id, function (questions) {
 					responseBuilder.SetPayload(questions);
-					res.json(responseBuilder.Response());
+					var response = responseBuilder.Response();
+					response.request = "getChallengeQuestions";
+					res.json(response);
 					res.end();
 					self.dbm.Close();
 				});
@@ -96,13 +103,16 @@ class ChallengeManager {
 			if (self.RegisterChallengeAnswerFieldsAreValid(req.query) == false) {
 				var responseBuilder = new ResponseBuilder();
 				responseBuilder.SetError(self.errors.REGISTER_CHALLENGE_ANSWER_MISSING_ERROR);
-				res.json(responseBuilder.Response());
+				var response = responseBuilder.Response();
+				response.request = "registerChallengeAnswer";
+				res.json(response);
 				res.end();
 				self.dbm.Close();
 				return;
 			}
 
 			self.RegisterChallengeAnswer(req.query.attempt_id, req.query.answer_id, function(response){
+				response.request = "registerChallengeAnswer";
 				res.json(response);
 				res.end();
 				self.dbm.Close();
@@ -114,6 +124,7 @@ class ChallengeManager {
 		var self = this;
 
 		self.GetChallengeLeaderboard(function (response) {
+			response.request = "getChallengeLeaderboard";
 			res.json(response);
 			res.end();
 			self.dbm.Close();

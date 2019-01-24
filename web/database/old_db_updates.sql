@@ -156,3 +156,7 @@ ALTER TABLE `cosmos`.`challenge_answers` DROP FOREIGN KEY `challenge_answers_use
 ALTER TABLE `cosmos`.`challenge_answers` DROP COLUMN `user_id` 
 , DROP INDEX `challenge_answers_user_id_fk_idx` ;
 
+insert into users (username, email, password_salt) values ("cosmic_bob", "nbarletta5@gmail.com", "brentsmells");
+insert into users (username, email, password_salt) values ("meatbadnoeat", "idk@gmail.com", "wheatbread");
+
+

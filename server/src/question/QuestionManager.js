@@ -1,5 +1,6 @@
 var Question = require("./Question.js");
 var Answer = require("./Answer.js");
+var QuestionsBuilder = require("./QuestionsBuilder.js");
 
 
 class QuestionManager {
@@ -9,52 +10,29 @@ class QuestionManager {
 	}
 
 	GetAllQuestions(callback) {
-		var sql = "SELECT questions.id as qid, questions.question, questions.citation, questions.enabled, questions.added, answers.id as aid, answers.answer, answers.correct FROM questions join answers on questions.id = answers.question_id order by answers.question_id DESC limit 40;";
+		var sql = "SELECT questions.id as qid, questions.question, answers.id as aid, answers.answer, answers.correct FROM questions join answers on questions.id = answers.question_id where questions.enabled = 1 order by answers.question_id DESC limit 400;";
 		var self = this;
 		this.dbm.Query(sql, function (results) {
-			var questions = [];
-
-			var questionId = undefined;
-			var questionText = undefined;
-			var questionCitation = undefined;
-			var questionAdded = undefined;
-			var correctAnswer = undefined;
-			var incorrectAnswers = [];
+			var questionsBuilder = new QuestionsBuilder();
 
 			results.forEach(function(entry) {
-				if (entry.qid != questionId) {
-					if (questionId != undefined) {
-						var newQuestion = new Question(questionId, questionText, questionCitation, questionAdded, correctAnswer, incorrectAnswers); 
-						questions.push(newQuestion);
-					}
-
-					questionId = entry.qid;
-					questionText = entry.question;
-					questionCitation = entry.citation;
-					questionAdded = entry.added;	
-					correctAnswer = undefined;
-					incorrectAnswers = [];
-				}
-
-				var answer = new Answer(entry.aid, entry.answer, (entry.correct == 1));
-				if (answer.IsCorrect()) {
-					correctAnswer = answer;
-				} else {
-					incorrectAnswers.push(answer);
-				}
-
+				//console.log(entry);
+				var questionId = entry.qid;
+				var questionText = entry.question;	
+				var answerId = entry.aid;
+				var answerText = entry.answer;
+				var answerCorrect = entry.correct == 1;
+				questionsBuilder.AddQueryEntry(questionId, questionText, answerId, answerText, answerCorrect);
 			});
 
-			if (questionId != undefined) {
-				var newQuestion = new Question(questionId, questionText, questionCitation, questionAdded, correctAnswer, incorrectAnswers); 
-				questions.push(newQuestion);
-			}
-			questions = self.shuffle(questions);
+			var questions = questionsBuilder.GetQuestions();
+			self.ShuffleQuestions(questions);
+
 			callback(questions);
 		});
 	}
 	
-	shuffle(array) {
+	ShuffleQuestions(array) {
 		var m = array.length, t, i;
 		// While there remain elements to shuffle…
 		while (m) {

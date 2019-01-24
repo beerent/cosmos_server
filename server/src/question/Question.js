@@ -1,9 +1,7 @@
 class Question {
-	constructor (id, question, citation, date_added, correctAnswer, incorrectAnswers) {
+	constructor (id, question, correctAnswer, incorrectAnswers) {
 		this.id = id;
 		this.question = question;
-		this.citation = citation;
-		this.date_added = date_added;
 		this.correctAnswer = correctAnswer;
 		this.incorrectAnswers = incorrectAnswers;
 	}
@@ -14,14 +12,6 @@ class Question {
 
 	GetQuestion() {
 		return this.question;
-	}
-
-	GetCitation() {
-		return this.citation;
-	}
-
-	GetDateAdded() {
-		return this.date_added;
 	}
 
 	GetCorrectAnswer() {

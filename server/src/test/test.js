@@ -578,6 +578,30 @@ function TestNewChallengeValidUser() {
 /********** GET CHALLENGE QUESTIONS ************/
 /***********************************************/
 
+function TestGetChallengeQuestionsReturnsRequest() {
+	var functionName = "TestGetChallengeQuestionsReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "getChallengeQuestions";
+
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
 function TestGetChallengeQuestionsNoParameters() {
 	var functionName = "TestGetChallengeQuestionsNoParameters\n";
 	var failures = "";
@@ -860,6 +884,30 @@ function TestGetChallengeQuestionsValidUserValidAttemptId() {
 /***********************************************/
 /********* REGISTER CHALLENGE ANSWER ***********/
 /***********************************************/
+
+function TestRegisterChallengeAnswerReturnsRequest() {
+	var functionName = "TestRegisterChallengeAnswerReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "registerChallengeAnswer";
+
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
 
 function TestRegisterChallengeAnswerNoParameters() {
 	var functionName = "TestRegisterChallengeAnswerNoParameters\n";
@@ -1185,13 +1233,41 @@ function TestRegisterChallengeAnswerValidUserValid() {
 	}
 }
 
+/***********************************************/
+/********* GET CHALLENGE LEADERBOARD ***********/
+/***********************************************/
+
+function TestGetChallengeLearderboardReturnsRequest() {
+	var functionName = "TestGetChallengeLearderboardReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "getChallengeLeaderboard";
+
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
 function TestGetChallengeLearderboardNoParameters() {
 	var functionName = "TestGetChallengeLearderboardNoParameters\n";
 	var failures = "";
 	testsRanCount++;
 
 
-	var url = server + "/GetChallengeLeaderboard";
+	var url = server + "/getChallengeLeaderboard";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1241,6 +1317,7 @@ TestNewChallengeIncorrectPassword();
 TestNewChallengeValidUser();
 
 /* GET CHALLENGE QUESTIONS */
+TestGetChallengeQuestionsReturnsRequest();
 TestGetChallengeQuestionsNoParameters();
 TestGetChallengeQuestionsMissingUsername();
 TestGetChallengeQuestionsMissingPassword();
@@ -1253,6 +1330,7 @@ TestGetChallengeQuestionsValidUserInvalidAttemptId();
 TestGetChallengeQuestionsValidUserValidAttemptId();
 
 /* REGISTER CHALLENGE ANSWER */
+TestRegisterChallengeAnswerReturnsRequest();
 TestRegisterChallengeAnswerNoParameters();
 TestRegisterChallengeAnswerMissingUsername();
 TestRegisterChallengeAnswerMissingPassword();
@@ -1267,6 +1345,7 @@ TestRegisterChallengeAnswerValidUserInvalidAnswerId();
 TestRegisterChallengeAnswerValidUserValid();
 
 /* GET CHALLENGE LEADERBOARD */
+TestGetChallengeLearderboardReturnsRequest();
 TestGetChallengeLearderboardNoParameters();
 
 PrintResults();

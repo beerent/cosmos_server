@@ -31,6 +31,29 @@ function PrintResults() {
 /***********************************************/
 /**************** AUTHENTICATE *****************/
 /***********************************************/
+function TestAuthenticateReturnsRequest() {
+	var functionName = "TestAuthenticateReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "authenticate";
+
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
 
 function TestAuthenticateNoParameters() {
 	var functionName = "TestAuthenticateNoParameters\n";
@@ -258,6 +281,30 @@ function TestAuthenticateValidUser() {
 /***********************************************/
 /**************** NEW CHALLENGE ****************/
 /***********************************************/
+
+function TestNewChallengeReturnsRequest() {
+	var functionName = "TestNewChallengeReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "newChallenge";
+
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
 
 function TestNewChallengeNoParameters() {
 	var functionName = "TestNewChallengeNoParameters\n";
@@ -1138,7 +1185,41 @@ function TestRegisterChallengeAnswerValidUserValid() {
 	}
 }
 
+function TestGetChallengeLearderboardNoParameters() {
+	var functionName = "TestGetChallengeLearderboardNoParameters\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/GetChallengeLeaderboard";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success == false) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (response.payload.leaderboardEntries == undefined) {
+		failures += "  - leaderboardEntries was " + response.payload.leaderboardEntries + ", expected data\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+
 /* AUTHENTICATE */
+TestAuthenticateReturnsRequest();
 TestAuthenticateNoParameters();
 TestAuthenticateMissingUsername();
 TestAuthenticateMissingPassword();
@@ -1149,6 +1230,7 @@ TestAuthenticateIncorrectPassword();
 TestAuthenticateValidUser();
 
 /* NEW CHALLENGE */
+TestNewChallengeReturnsRequest();
 TestNewChallengeNoParameters();
 TestNewChallengeMissingUsername();
 TestNewChallengeMissingPassword();
@@ -1183,6 +1265,9 @@ TestRegisterChallengeAnswerValidUserMissingAnswerId();
 TestRegisterChallengeAnswerValidUserInvalidAttemptId();
 TestRegisterChallengeAnswerValidUserInvalidAnswerId();
 TestRegisterChallengeAnswerValidUserValid();
+
+/* GET CHALLENGE LEADERBOARD */
+TestGetChallengeLearderboardNoParameters();
 
 PrintResults();
 

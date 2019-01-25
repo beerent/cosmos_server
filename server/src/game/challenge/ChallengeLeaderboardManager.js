@@ -11,7 +11,7 @@ class ChallengeLeaderboardManager {
 		this.errors = errors;
 	}
 
-	GetLeaderboard(callback) {
+	GetLeaderboard(responseBuilder, callback) {
 		var self = this;
 
 		var sql = "select users.username, challenge_answers.attempt_id, count(challenge_answers.id) as points from challenge_answers";
@@ -35,7 +35,6 @@ class ChallengeLeaderboardManager {
 				challengeLeaderboard.AddLeaderboardEntry(challengeLeaderboardEntry);
 			});
 
-			var responseBuilder = new ResponseBuilder();
 			responseBuilder.SetPayload(challengeLeaderboard);
 			
 			callback(responseBuilder.Response());

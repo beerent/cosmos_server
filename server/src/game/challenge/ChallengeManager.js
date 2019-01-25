@@ -1,4 +1,3 @@
-var ResponseBuilder = require("../../response/ResponseBuilder.js");
 var QuestionManager = require("../../question/QuestionManager.js");
 var UserManager = require("../../user/UserManager.js");
 
@@ -19,9 +18,8 @@ class ChallengeManager {
 		return query.answer_id != undefined && query.attempt_id != undefined;
 	}
 
-	DoChallengeRequest(req, res, callback) {
+	DoChallengeRequest(req, res, responseBuilder, callback) {
 		var userManager = new UserManager(this.dbm);
-		var responseBuilder = new ResponseBuilder();
 
 		var self = this;
 		if (userManager.CredentialFieldsAreValid(req.query) == false) {
@@ -37,34 +35,33 @@ class ChallengeManager {
 				responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
 				res.json(responseBuilder.Response());
 				res.end();
+				self.dbm.Close();				
 			} else {
 				callback(user);
 			}
 		});
 	}
 
-	HandleNewChallengeRequest(req, res) {
+	HandleNewChallengeRequest(req, res, responseBuilder) {
 		var self = this;
 
-		this.DoChallengeRequest(req, res, function(user){
-			self.CreateNewChallenge(user.id, function(response){
-				response.request = "newChallenge";
+		this.DoChallengeRequest(req, res, responseBuilder, function(user){
+			self.CreateNewChallenge(user.id, responseBuilder, function(response){
 				res.json(response);
 				res.end();
+				self.dbm.Close();
 			});
 		});
 	}
 
-	HandleGetChallengeQuestionsRequest(req, res) {
+	HandleGetChallengeQuestionsRequest(req, res, responseBuilder) {
 		var self = this;
 
-		this.DoChallengeRequest(req, res, function(user){
-			var responseBuilder = new ResponseBuilder();
+		this.DoChallengeRequest(req, res, responseBuilder, function(user){
 
 			if (self.GetChallengeQuestionsFieldsAreValid(req.query) == false) {
 				responseBuilder.SetError(self.errors.GET_CHALLENGE_QUESTIONS_ERROR);
 				var response = responseBuilder.Response();
-				response.request = "getChallengeQuestions";
 				res.json(response);
 				res.end();
 				self.dbm.Close();
@@ -76,18 +73,16 @@ class ChallengeManager {
 				if (false == attemptIdIsValid) {
 					responseBuilder.SetError(self.errors.GET_CHALLENGE_INVALID_ID);
 					var response = responseBuilder.Response();
-					response.request = "getChallengeQuestions";
 					res.json(response);
 					res.end();
 					self.dbm.Close();
 					return;
 				}
 
-				/*** GET QUESTIONS! ***/
+				/*** GET QUESTIONS ***/
 				self.GetChallengeQuestions(user.id, req.query.attempt_id, function (questions) {
 					responseBuilder.SetPayload(questions);
 					var response = responseBuilder.Response();
-					response.request = "getChallengeQuestions";
 					res.json(response);
 					res.end();
 					self.dbm.Close();
@@ -96,23 +91,20 @@ class ChallengeManager {
 		});
 	}
 
-	HandleRegisterChallengeAnswerRequest(req, res) {
+	HandleRegisterChallengeAnswerRequest(req, res, responseBuilder) {
 		var self = this;
 
-		this.DoChallengeRequest(req, res, function(user){
+		this.DoChallengeRequest(req, res, responseBuilder, function(user){
 			if (self.RegisterChallengeAnswerFieldsAreValid(req.query) == false) {
-				var responseBuilder = new ResponseBuilder();
 				responseBuilder.SetError(self.errors.REGISTER_CHALLENGE_ANSWER_MISSING_ERROR);
 				var response = responseBuilder.Response();
-				response.request = "registerChallengeAnswer";
 				res.json(response);
 				res.end();
 				self.dbm.Close();
 				return;
 			}
 
-			self.RegisterChallengeAnswer(req.query.attempt_id, req.query.answer_id, function(response){
-				response.request = "registerChallengeAnswer";
+			self.RegisterChallengeAnswer(req.query.attempt_id, req.query.answer_id, responseBuilder, function(response){
 				res.json(response);
 				res.end();
 				self.dbm.Close();
@@ -120,11 +112,10 @@ class ChallengeManager {
 		});
 	}
 
-	HandleGetChallengeLeaderboardRequest(req, res) {
+	HandleGetChallengeLeaderboardRequest(req, res, responseBuilder) {
 		var self = this;
 
-		self.GetChallengeLeaderboard(function (response) {
-			response.request = "getChallengeLeaderboard";
+		self.GetChallengeLeaderboard(responseBuilder, function (response) {
 			res.json(response);
 			res.end();
 			self.dbm.Close();
@@ -132,9 +123,7 @@ class ChallengeManager {
 
 	}
 
-	CreateNewChallenge(user_id, callback) {
-		var responseBuilder = new ResponseBuilder();
-
+	CreateNewChallenge(user_id, responseBuilder, callback) {
 		var sql = "insert into challenge_attempts (user_id) values (?)";
 		var params = [user_id];
 		this.dbm.ParameterizedInsert(sql, params, function(newChallengeId, err) {
@@ -147,8 +136,6 @@ class ChallengeManager {
 	}
 
 	ValidateChallengeAttemptId(user_id, attempt_id, callback) {
-		var responseBuilder = new ResponseBuilder();
-		
 		var sql = "select id from challenge_attempts where user_id = ? and id = ?";
 		var params = [user_id, attempt_id];
 
@@ -172,14 +159,12 @@ class ChallengeManager {
 		question_manager.GetAllQuestions(callback);
 	}
 
-	GetChallengeLeaderboard(callback) {
+	GetChallengeLeaderboard(responseBuilder, callback) {
 		var challenge_leaderboard_manager = new ChallengeLeaderboardManager(this.dbm, this.errors);
-		challenge_leaderboard_manager.GetLeaderboard(callback);
+		challenge_leaderboard_manager.GetLeaderboard(responseBuilder, callback);
 	}
 
-	RegisterChallengeAnswer(attempt_id, answer_id, callback) {
-		var responseBuilder = new ResponseBuilder();
-
+	RegisterChallengeAnswer(attempt_id, answer_id, responseBuilder, callback) {
 		var sql = "insert into challenge_answers (attempt_id, answer_id) values (?, ?)";
 		var params = [attempt_id, answer_id];
 

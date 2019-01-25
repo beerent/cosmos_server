@@ -19,35 +19,40 @@ app.get('/authenticate', function (req, res) {
 	var dbm = new DBM();
 	var user_manager = new UserManager(dbm, errors);
 
-	user_manager.HandleAuthenticationRequest(req, res);
+	var responseBuilder = new ResponseBuilder("authenticate");
+	user_manager.HandleAuthenticationRequest(req, res, responseBuilder);
 });
 
 app.get('/newChallenge', function (req, res) {
 	var dbm = new DBM();
 	var challengeManagerInstance = new ChallengeManager(dbm, errors);
 
-	challengeManagerInstance.HandleNewChallengeRequest(req, res);
+	var responseBuilder = new ResponseBuilder("newChallenge");
+	challengeManagerInstance.HandleNewChallengeRequest(req, res, responseBuilder);
 });
 
 app.get('/getChallengeQuestions', function (req, res) {
 	var dbm = new DBM();
 	var challengeManagerInstance = new ChallengeManager(dbm, errors);
 
-	challengeManagerInstance.HandleGetChallengeQuestionsRequest(req, res);
+	var responseBuilder = new ResponseBuilder("getChallengeQuestions");
+	challengeManagerInstance.HandleGetChallengeQuestionsRequest(req, res, responseBuilder);
 });
 
 app.get('/registerChallengeAnswer', function (req, res) {
 	var dbm = new DBM();
 	var challengeManagerInstance = new ChallengeManager(dbm, errors);
 
-	challengeManagerInstance.HandleRegisterChallengeAnswerRequest(req, res);
+	var responseBuilder = new ResponseBuilder("registerChallengeAnswer");
+	challengeManagerInstance.HandleRegisterChallengeAnswerRequest(req, res, responseBuilder);
 });
 
 app.get('/getChallengeLeaderboard', function (req, res) {
 	var dbm = new DBM();
 	var challengeManagerInstance = new ChallengeManager(dbm, errors);
 
-	challengeManagerInstance.HandleGetChallengeLeaderboardRequest(req, res);
+	var responseBuilder = new ResponseBuilder("getChallengeLeaderboard");
+	challengeManagerInstance.HandleGetChallengeLeaderboardRequest(req, res, responseBuilder);
 });
 
 var server = app.listen(8081, function () {

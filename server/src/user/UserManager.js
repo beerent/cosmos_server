@@ -7,18 +7,16 @@ class UserManager {
 		this.errors = errors;
 	}
 
-	HandleAuthenticationRequest(req, res) {
+	HandleAuthenticationRequest(req, res, responseBuilder) {
 		var self = this;
-		this.AuthenticationRequest(req.query, function(response) {
-			response.request = "authenticate";
+		this.AuthenticationRequest(req.query, responseBuilder, function(response) {
 			res.json(response);
 			res.end();
 			self.dbm.Close();
 		});
 	}
 
-	AuthenticationRequest(query, callback) {
-		var responseBuilder = new ResponseBuilder();
+	AuthenticationRequest(query, responseBuilder, callback) {
 		var errors = this.errors;
 
 		if (this.CredentialFieldsAreValid(query) == false) {

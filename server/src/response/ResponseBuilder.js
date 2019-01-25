@@ -1,6 +1,7 @@
 class ResponseBuilder {
 
-	constructor() {
+	constructor(request) {
+		this.request = request;
 		this.error = undefined;
 		this.payload = undefined;
 		this.success = true;
@@ -18,6 +19,7 @@ class ResponseBuilder {
 
 	Response() {
 		var response = {};
+		response.request = this.request;
 		response.success = this.success;
 		response.op = this.op;
 

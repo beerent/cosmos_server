@@ -36,7 +36,7 @@ class QuestionManager {
 			skip_question_id_string = "-1";
 		}
 
-		var sql = "SELECT distinct questions.id as qid FROM questions join answers on questions.id = answers.question_id where questions.enabled = 1 and question_id not in ("+ skip_question_id_string +") order by rand() limit 4;";
+		var sql = "SELECT distinct questions.id as qid FROM questions join answers on questions.id = answers.question_id where questions.enabled = 1 and question_id not in ("+ skip_question_id_string +") order by rand() limit 10;";
 		var self = this;
 
 		this.dbm.Query(sql, function (results) {

@@ -156,7 +156,35 @@ class ChallengeManager {
 
 	GetChallengeQuestions(user_id, attempt_id, callback) {
 		var question_manager = new QuestionManager(this.dbm);
-		question_manager.GetAllQuestions(callback);
+
+		this.GetAskedQuestions(attempt_id, function (question_skip_list){			
+
+			var question_skip_list_str = "";
+			if (question_skip_list.length > 0) {
+				question_skip_list_str += question_skip_list[0];
+			}
+
+			for (var i = 1; i < question_skip_list.length; i++) {
+				question_skip_list_str += ", " + question_skip_list[i];
+			}
+
+			question_manager.GetUnaskedQuestions(question_skip_list_str, callback);
+		});
+	}
+
+	GetAskedQuestions(attempt_id, callback) {
+		var sql = "select questions.id from questions join answers on questions.id = answers.question_id join challenge_answers on answers.id = challenge_answers.answer_id where challenge_answers.attempt_id = ?";
+		var params = [attempt_id];
+
+		var asked_answer_ids = "";
+		var questionIds = [];
+		this.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
+			queryResults.forEach(function (entry){
+				questionIds.push(entry.id);
+			});
+	
+			callback(questionIds);
+		});
 	}
 
 	GetChallengeLeaderboard(responseBuilder, callback) {

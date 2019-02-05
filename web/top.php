@@ -10,8 +10,7 @@
 	<a href="/question/add_question.php">Add Question</a> | 
 	<a href="/question/manage_questions.php">Manage Questions</a> | 
 	<a href="/mission/add_mission.php">Add Mission</a> |
-	<a href="/mission/manage_missions.php">Manage Missions</a> |
-	<a href="/admin/admin_panel.php">Admin</a>
+	<a href="/mission/manage_missions.php">Manage Missions</a>
 	|
 
 </center><br>

@@ -1,0 +1,7 @@
+function UpdateHQWebsite() {
+
+}
+
+function UpdateHQDatabase() {
+	
+}

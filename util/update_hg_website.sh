@@ -5,5 +5,7 @@ pushd "$COSMOS"
 git pull
 popd
 
-sudo rm "$WWW/*"
-sudo cp -r "$COSMOS/web/* $WWW"
+sudo rm -r $WWW/*
+sudo cp -r $COSMOS/web/* $WWW
+
+echo "update complete!"

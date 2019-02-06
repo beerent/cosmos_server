@@ -55,7 +55,7 @@ app.get('/getChallengeLeaderboard', function (req, res) {
 	challengeManagerInstance.HandleGetChallengeLeaderboardRequest(req, res, responseBuilder);
 });
 
-var server = app.listen(8081, function () {
+var server = app.listen(13213, function () {
 
   var host = server.address().address
   var port = server.address().port

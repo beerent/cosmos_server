@@ -1,4 +1,8 @@
-var express = require('express');
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const express = require('express');
+
 var DBM = require("./database/DBM.js");
 var QuestionManager = require("./question/QuestionManager.js");
 var ChallengeManager = require("./game/challenge/ChallengeManager.js");
@@ -6,11 +10,68 @@ var Authenticator = require("./authentication/Authenticator.js");
 var ResponseBuilder = require("./response/ResponseBuilder.js");
 var UserManager = require("./user/UserManager.js");
 
+function GetRunMode() {
+	var runMode = "debug";
+	if (process.argv.length > 2) {
+		if (process.argv[2] == "live") {
+			runMode = "live";
+		}
+	}
+
+	return runMode;
+}
+
+function RunServer() {
+	if (GetRunMode() == "live") {
+		RunLiveServer();
+	} else {
+		RunDebugServer();
+	}
+}
+
+function RunDebugServer() {
+	const httpServer = http.createServer(app);
+	httpServer.listen(8081, () => {
+		console.log('HTTP Server running on port 8081');
+	});
+
+	//var server = app.listen(13213, function () {
+
+	//  var host = server.address().address
+	//  var port = server.address().port
+
+	//  console.log("listening at http://%s:%s", host, port)
+	//});
+}
+
+function RunLiveServer() {
+	// Certificate
+	const privateKey = fs.readFileSync('/etc/ssl/private/knowyourcosmos.key', 'utf8');
+	const certificate = fs.readFileSync('/etc/ssl/knowyourcosmos_com.crt', 'utf8');
+	const ca = fs.readFileSync('/etc/ssl/knowyourcosmos_com.ca-bundle', 'utf8');
+
+	const credentials = {
+		key: privateKey,
+		cert: certificate,
+		ca: ca
+	};
+
+	const httpsServer = https.createServer(credentials, app);
+	httpsServer.listen(13213, () => {
+		console.log('HTTPS Server running on port 13213');
+	});
+}
+
 function LoadErrors() {
 	var fs = require('fs');
 	var obj = JSON.parse(fs.readFileSync('./response/errors.json', 'utf8'));
 	return obj;
 }
+
+
+
+
+
 
 var app = express();
 var errors = LoadErrors();
@@ -55,13 +116,4 @@ app.get('/getChallengeLeaderboard', function (req, res) {
 	challengeManagerInstance.HandleGetChallengeLeaderboardRequest(req, res, responseBuilder);
 });
 
-var server = app.listen(13213, function () {
-
-  var host = server.address().address
-  var port = server.address().port
-
-  console.log("listening at http://%s:%s", host, port)
-});
-
-
-
+RunServer();

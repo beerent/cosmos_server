@@ -40,6 +40,33 @@ class ChallengeLeaderboardManager {
 			callback(responseBuilder.Response());
 		});
 	}
+
+	/* THIS IS TERRIBLE PERFORMANCE, CONSIDER OPTIMIZING */
+	GetUserChallengeLeaderboardData(user_id, callback) {
+		var self = this;
+
+		var sql = "select users.id as user_id, challenge_answers.attempt_id, count(challenge_answers.id) as points from challenge_answers";
+		sql += " join answers on challenge_answers.answer_id = answers.id";
+		sql += " join challenge_attempts on challenge_answers.attempt_id = challenge_attempts.id";
+		sql += " join users on challenge_attempts.user_id = users.id";
+		sql += " where answers.correct = 1";
+		sql += " group by challenge_attempts.id order by points desc limit 1000;";
+
+		this.dbm.Query(sql, function(results) {
+			var position = 1;
+			var points = 0;
+			for (var i = 0; i < results.length; i++){
+				if(user_id == results[i].user_id) {
+					points = results[i].points;
+					break;
+				}
+
+				position++;
+			}
+
+			callback(points, position);
+		});
+	}
 }
 
 module.exports = ChallengeLeaderboardManager;

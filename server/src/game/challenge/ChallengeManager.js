@@ -212,6 +212,30 @@ class ChallengeManager {
 			callback(responseBuilder.Response());
 		});
 	}
+
+	GetUserChallengeData(user_id, callback) {
+		var challengeData = {};
+		var challenge_leaderboard_manager = new ChallengeLeaderboardManager(this.dbm, this.errors);
+
+		this.GetUserChallengeAttemptCount(user_id, function(challengeCount) {
+			challengeData.challengeCount = challengeCount;
+
+			challenge_leaderboard_manager.GetUserChallengeLeaderboardData(user_id, function(points, position) {
+				challengeData.challengeHighScore = points;
+				challengeData.challengeLeaderboardPosition = position;
+				callback(challengeData);
+			});
+		});
+	}
+
+	GetUserChallengeAttemptCount(user_id, callback) {
+		var sql = "SELECT count(*) as count from challenge_attempts where user_id = ?";
+		var params = [user_id];
+
+		this.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
+			callback(queryResults[0].count);
+		});
+	}
 };
 
 module.exports = ChallengeManager;

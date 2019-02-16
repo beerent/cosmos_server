@@ -1293,6 +1293,109 @@ function TestGetChallengeLearderboardNoParameters() {
 	}
 }
 
+/***********************************************/
+/*********     GET USER PROFILE      ***********/
+/***********************************************/
+function TestGetUserProfileReturnsRequest() {
+	var functionName = "TestGetUserProfileReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "getUserProfile";
+
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestGetUserProfileNoParameters() {
+	var functionName = "TestGetUserProfileNoParameters\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/getUserProfile";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 101) {
+		failures += "  - op was " + response.op + ", expected 101\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestGetUserProfileValidUserContainsChallengeStats() {
+	var functionName = "TestGetUserProfileValidUserContainsChallengeStats\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/getUserProfile";
+	url += "?username=beerent&password=turtle12";
+
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success == false) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	//challengeCount":17,"challengeHighScore":1,"challengeLeaderboardPosition
+	if (!response.payload.challengeData) {
+		failures += "  - missing challenge data field";
+		success = false;
+	} else {
+		if (!response.payload.challengeData.challengeCount) {
+			failures += "  - missing challenge data challenge count field";
+			success = false;
+		}
+
+		if (!response.payload.challengeData.challengeHighScore) {
+			failures += "  - missing challenge data challenge high score field";
+			success = false;
+		}
+
+		if (!response.payload.challengeData.challengeLeaderboardPosition) {
+			failures += "  - missing challenge data challenge leaderboard position field";
+			success = false;
+		}
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
 
 /* AUTHENTICATE */
 TestAuthenticateReturnsRequest();
@@ -1347,6 +1450,12 @@ TestRegisterChallengeAnswerValidUserValid();
 /* GET CHALLENGE LEADERBOARD */
 TestGetChallengeLearderboardReturnsRequest();
 TestGetChallengeLearderboardNoParameters();
+
+/* GET USER PROFILE */
+TestGetUserProfileReturnsRequest();
+TestGetUserProfileNoParameters();
+TestGetUserProfileValidUserContainsChallengeStats();
+
 
 PrintResults();
 

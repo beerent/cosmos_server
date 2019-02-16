@@ -16,6 +16,21 @@ class UserManager {
 		});
 	}
 
+	HandleGetUserProfileRequest(req, res, responseBuilder) {
+		var self = this;
+		if (self.CredentialFieldsAreValid(req.query) == false) {
+			responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
+			res.json(responseBuilder.Response());
+			res.end();
+			self.dbm.Close();
+			return;
+		}
+
+		res.json(responseBuilder.Response());
+		res.end();
+		self.dbm.Close();
+	}
+
 	AuthenticationRequest(query, responseBuilder, callback) {
 		var errors = this.errors;
 

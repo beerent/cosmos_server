@@ -9,6 +9,7 @@ var ChallengeManager = require("./game/challenge/ChallengeManager.js");
 var Authenticator = require("./authentication/Authenticator.js");
 var ResponseBuilder = require("./response/ResponseBuilder.js");
 var UserManager = require("./user/UserManager.js");
+var UserProfileManager = require("./user/UserProfileManager.js");
 
 function GetRunMode() {
 	var runMode = "debug";
@@ -82,6 +83,14 @@ app.get('/authenticate', function (req, res) {
 
 	var responseBuilder = new ResponseBuilder("authenticate");
 	user_manager.HandleAuthenticationRequest(req, res, responseBuilder);
+});
+
+app.get('/getUserProfile', function (req, res) {
+	var dbm = new DBM();
+	var user_profile_manager = new UserProfileManager(dbm, errors);
+
+	var responseBuilder = new ResponseBuilder("getUserProfile");
+	user_profile_manager.HandleGetUserProfileRequest(req, res, responseBuilder);
 });
 
 app.get('/newChallenge', function (req, res) {

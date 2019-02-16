@@ -57,7 +57,7 @@ class ChallengeLeaderboardManager {
 			var points = 0;
 			for (var i = 0; i < results.length; i++){
 				if(user_id == results[i].user_id) {
-					points = results[i].points;
+					points = results[i].points * self.POINTS_MULTIPLIER;
 					break;
 				}
 

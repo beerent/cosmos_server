@@ -158,5 +158,6 @@ ALTER TABLE `cosmos`.`challenge_answers` DROP COLUMN `user_id`
 
 insert into users (username, email, password_salt) values ("cosmic_bob", "nbarletta5@gmail.com", "brentsmells");
 insert into users (username, email, password_salt) values ("meatbadnoeat", "idk@gmail.com", "wheatbread");
+insert into users (username, email, password_salt) values ("pixietyger", "idk2@gmail.com", "orion");
 
 

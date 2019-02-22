@@ -1,5 +1,5 @@
 <br><center>
-	<h1>Know Your Cosmos Dashboard<hr><br></h1> 
+	<h1>Know Your Cosmos HQ<hr><br></h1> 
 	| 
 	<a href="/index.php">Home</a> | 
 	<a href="/blog/add_blog.php">Add Blog</a> | 
@@ -10,7 +10,8 @@
 	<a href="/question/add_question.php">Add Question</a> | 
 	<a href="/question/manage_questions.php">Manage Questions</a> | 
 	<a href="/mission/add_mission.php">Add Mission</a> |
-	<a href="/mission/manage_missions.php">Manage Missions</a>
+	<a href="/mission/manage_missions.php">Manage Missions</a> |
+	<a href="/live/challenge/challenge_mode.php">Live Data</a>
 	|
 
 </center><br>

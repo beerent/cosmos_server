@@ -21,6 +21,36 @@
   	echo "</center>";
   }
 
+  function DisplayMostWrongQuestions() {
+  	global $challenge_manager;
+
+  	$wrongAnswers = $challenge_manager->GetMostWrongQuestions();
+
+  	echo "<center>";
+  	echo "<table border='1'>";
+  	echo "<tr><td><b>Question</b></td><td><b>Count</b></td></tr>";
+  	foreach ($wrongAnswers as $entry) {
+  		echo "<tr><td>". $entry->GetQuestion() . "</td><td>" . $entry->GetCount() . "</td></tr>";
+  	}
+  	echo "</table>";
+  	echo "</center>";
+  }
+
+  function DisplayMostCorrectQuestions() {
+  	global $challenge_manager;
+
+  	$wrongAnswers = $challenge_manager->GetMostCorrectQuestions();
+
+  	echo "<center>";
+  	echo "<table border='1'>";
+  	echo "<tr><td><b>Question</b></td><td><b>Count</b></td></tr>";
+  	foreach ($wrongAnswers as $entry) {
+  		echo "<tr><td>". $entry->GetQuestion() . "</td><td>" . $entry->GetCount() . "</td></tr>";
+  	}
+  	echo "</table>";
+  	echo "</center>";
+  }
+
   function DisplayMostWrongAnswers() {
   	global $challenge_manager;
 
@@ -81,6 +111,15 @@
   DisplayLeaderboard();
   echo "<hr><br><br>";
 
+  echo "<center><b>MOST WRONG QUESTIONS</b></center>";
+  echo "<hr>";
+  DisplayMostWrongQuestions();
+  echo "<hr><br><br>";
+
+  echo "<center><b>MOST CORRECT QUESTIONS</b></center>";
+  echo "<hr>";
+  DisplayMostCorrectQuestions();
+  echo "<hr><br><br>";
 
   echo "<center><b>MOST WRONG ANSWERS</b></center>";
   echo "<hr>";

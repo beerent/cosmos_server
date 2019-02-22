@@ -3,6 +3,7 @@
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/live/challenge/ChallengeLeaderboardEntry.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/live/challenge/SelectedAnswer.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/live/challenge/ChallengeUserAttempts.php"; include_once($include);
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/live/challenge/QuestionCount.php"; include_once($include);
 
 	class ChallengeManager {
 		function __construct(){
@@ -37,6 +38,32 @@
 			$sql = "select users.username, questions.question, answers.answer, answers.correct, challenge_answers.id from challenge_attempts join users on challenge_attempts.user_id = users.id join challenge_answers on challenge_answers.attempt_id = challenge_attempts.id join answers on challenge_answers.answer_id = answers.id join questions on questions.id = answers.question_id order by challenge_attempts.id desc, challenge_answers.id desc;";
 
 			$results = $this->dbm->query($sql);
+		}
+
+		function GetMostWrongQuestions() {
+			$sql = "select count(questions.id) as times, questions.question from challenge_answers join answers on challenge_answers.answer_id = answers.id join challenge_attempts on challenge_attempts.id = challenge_answers.attempt_id join questions on answers.question_id = questions.id where answers.correct = 0 group by questions.id order by times desc limit 15";
+			$results = $this->dbm->query($sql);
+
+			$questions = array();
+			while($row = $results->fetch_assoc()){
+				$entry = new QuestionCount($row['question'], $row['times']);
+				array_push($questions, $entry);
+			}
+
+			return $questions;			
+		}
+
+		function GetMostCorrectQuestions() {
+			$sql = "select count(questions.id) as times, questions.question from challenge_answers join answers on challenge_answers.answer_id = answers.id join challenge_attempts on challenge_attempts.id = challenge_answers.attempt_id join questions on answers.question_id = questions.id where answers.correct = 1 group by questions.id order by times desc limit 15";
+			$results = $this->dbm->query($sql);
+
+			$questions = array();
+			while($row = $results->fetch_assoc()){
+				$entry = new QuestionCount($row['question'], $row['times']);
+				array_push($questions, $entry);
+			}
+
+			return $questions;			
 		}
 
 		function GetMostWrongAnswers() {

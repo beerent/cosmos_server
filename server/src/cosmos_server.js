@@ -35,14 +35,6 @@ function RunDebugServer() {
 	httpServer.listen(8081, () => {
 		console.log('HTTP Server running on port 8081');
 	});
-
-	//var server = app.listen(13213, function () {
-
-	//  var host = server.address().address
-	//  var port = server.address().port
-
-	//  console.log("listening at http://%s:%s", host, port)
-	//});
 }
 
 function RunLiveServer() {

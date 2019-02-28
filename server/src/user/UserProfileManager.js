@@ -14,7 +14,7 @@ class UserProfileManager {
 		var challengeManager = new ChallengeManager(this.dbm);
 
 		var self = this;
-		if (userManager.CredentialFieldsAreValid(req.query) == false) {
+		if (!req.query.username) {
 			responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
 			res.json(responseBuilder.Response());
 			res.end();
@@ -22,7 +22,7 @@ class UserProfileManager {
 			return;
 		}
 
-		userManager.GetUserFromCredentials(req.query.username, req.query.password, function (user) {
+		userManager.GetUserByUsername(req.query.username, function (user) {
 			challengeManager.GetUserChallengeData(user.id, function(challengeData) {
 				var gameData = {};
 				gameData.challengeData = challengeData;

@@ -1,5 +1,7 @@
 var ResponseBuilder = require("../response/ResponseBuilder.js");
 
+var BASE_USER_QUERY = "select id, username, email from users";
+
 class UserManager {
 
 	constructor (dbm, errors) {
@@ -14,21 +16,6 @@ class UserManager {
 			res.end();
 			self.dbm.Close();
 		});
-	}
-
-	HandleGetUserProfileRequest(req, res, responseBuilder) {
-		var self = this;
-		if (self.CredentialFieldsAreValid(req.query) == false) {
-			responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
-			res.json(responseBuilder.Response());
-			res.end();
-			self.dbm.Close();
-			return;
-		}
-
-		res.json(responseBuilder.Response());
-		res.end();
-		self.dbm.Close();
 	}
 
 	AuthenticationRequest(query, responseBuilder, callback) {
@@ -55,7 +42,7 @@ class UserManager {
 
 	GetUserFromCredentials(username, password, callback) {
 		var params = [username, password];
-		var sql = "select id, username, email from users where username = ? and password_salt = ?";
+		var sql = BASE_USER_QUERY + " where username = ? and password_salt = ?";
 		this.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
 			if (err || queryResults.length == 0) {
 				var user = undefined;
@@ -72,8 +59,23 @@ class UserManager {
 		});
 	}
 
-	GetUserByEmail(username, password) {
+	GetUserByUsername(username, callback) {
+		var params = [username];
+		var sql = BASE_USER_QUERY + " where username = ?";
+		this.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
+			if (err || queryResults.length == 0) {
+				var user = undefined;
+				callback(user);
+				return;
+			}
 
+			var user = {};
+			user.id = queryResults[0].id;
+			user.username = queryResults[0].username;
+			user.email = queryResults[0].email;
+
+			callback(user);
+		});		
 	}
 };
 

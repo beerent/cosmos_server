@@ -19,7 +19,7 @@ class ChallengeLeaderboardManager {
 		sql += " join challenge_attempts on challenge_answers.attempt_id = challenge_attempts.id";
 		sql += " join users on challenge_attempts.user_id = users.id";
 		sql += " where answers.correct = 1";
-		sql += " group by challenge_attempts.id order by points desc, challenge_attempts.id limit 10;";
+		sql += " group by challenge_attempts.id order by points desc, challenge_attempts.id asc limit 10;";
 
 		this.dbm.Query(sql, function(results) {
 			var username = undefined;
@@ -50,7 +50,7 @@ class ChallengeLeaderboardManager {
 		sql += " join challenge_attempts on challenge_answers.attempt_id = challenge_attempts.id";
 		sql += " join users on challenge_attempts.user_id = users.id";
 		sql += " where answers.correct = 1";
-		sql += " group by challenge_attempts.id order by points desc limit 1000;";
+		sql += " group by challenge_attempts.id order by points desc, challenge_attempts.id asc limit 1000;";
 
 		this.dbm.Query(sql, function(results) {
 			var position = 1;

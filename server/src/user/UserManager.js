@@ -62,6 +62,7 @@ class UserManager {
 	GetUserByUsername(username, callback) {
 		var params = [username];
 		var sql = BASE_USER_QUERY + " where username = ?";
+
 		this.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
 			if (err || queryResults.length == 0) {
 				var user = undefined;

@@ -15,7 +15,7 @@ class UserProfileManager {
 
 		var self = this;
 		if (!req.query.username) {
-			responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
+			responseBuilder.SetError(self.errors.GET_USER_PROFILE_MISSING_SPECIFIER);
 			res.json(responseBuilder.Response());
 			res.end();
 			self.dbm.Close();
@@ -23,6 +23,14 @@ class UserProfileManager {
 		}
 
 		userManager.GetUserByUsername(req.query.username, function (user) {
+			if (user == undefined) {
+				responseBuilder.SetError(self.errors.GET_USER_PROFILE_INVALID_SPECIFIER);
+				res.json(responseBuilder.Response());
+				res.end();
+				self.dbm.Close();
+				return;
+			}
+		
 			challengeManager.GetUserChallengeData(user.id, function(challengeData) {
 				var gameData = {};
 				gameData.challengeData = challengeData;

@@ -27,5 +27,15 @@
     "GET_CHALLENGE_INVALID_ID": {
         "id": 106,
         "note": "challenge id is invalid"
+    },
+
+    "GET_USER_PROFILE_MISSING_SPECIFIER": {
+        "id": 107,
+        "note": "missing user specifier"
+    },
+
+    "GET_USER_PROFILE_INVALID_SPECIFIER": {
+        "id": 108,
+        "note": "user not found by specifier"
     }
 } 

@@ -1335,8 +1335,36 @@ function TestGetUserProfileNoParameters() {
 		success = false;
 	}
 
-	if (response.op != 101) {
-		failures += "  - op was " + response.op + ", expected 101\n";
+	if (response.op != 107) {
+		failures += "  - op was " + response.op + ", expected 107\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestGetUserProfileInvalidSpecifier() {
+	var functionName = "TestGetUserProfileInvalidSpecifier\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/getUserProfile";
+	url += "?username=beerentStinks";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 108) {
+		failures += "  - op was " + response.op + ", expected 108\n";
 		success = false;
 	}
 
@@ -1354,7 +1382,7 @@ function TestGetUserProfileValidUserContainsChallengeStats() {
 
 
 	var url = server + "/getUserProfile";
-	url += "?username=beerent&password=turtle12";
+	url += "?username=beerent";
 
 	var response = GetHTTPResponse(url);
 
@@ -1454,6 +1482,7 @@ TestGetChallengeLearderboardNoParameters();
 /* GET USER PROFILE */
 TestGetUserProfileReturnsRequest();
 TestGetUserProfileNoParameters();
+TestGetUserProfileInvalidSpecifier();
 TestGetUserProfileValidUserContainsChallengeStats();
 
 

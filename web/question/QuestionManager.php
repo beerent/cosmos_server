@@ -111,6 +111,20 @@
 			return $questions;	
 		}
 
+		function GetFlaggedQuestions() {
+			$sql = "select distinct question_id as id from flagged_questions where resolved = '0'";
+			$results = $this->dbm->query($sql);
+
+			$questions = array();
+			while($row = $results->fetch_assoc()){
+				$questionId = $row['id'];
+				$question = $this->GetQuestion($questionId);
+				array_push($questions, $question);
+			}
+
+			return $questions;	
+		}
+
 		function GetQuestion($questionId) {
 			$sql = "select question, enabled, citation, subtime(added, '5:0:0') as added from questions where id = '". $questionId ."'";
 			$questionResult = $this->dbm->query($sql);
@@ -178,6 +192,11 @@
     	function DeleteBucketMapping($questionId, $bucketId) {
 			$sql = "delete from question_bucket_map where question_id = ". $questionId ." and bucket_id = " . $bucketId;
 			$this->dbm->insert($sql);
+    	}
+
+    	function UnflagQuestion($questionId) {
+   			$sql = "update flagged_questions set resolved = '1', resolved_date = now() where question_id = ". $questionId;
+			$this->dbm->insert($sql);	
     	}
 
 	}

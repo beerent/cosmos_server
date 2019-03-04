@@ -65,4 +65,9 @@
     $bucketId = $_GET['bid'];
     $questionManager->DeleteBucketMapping($questionId, $bucketId);
   }
+
+  else if ($option == "unflag") {
+    $questionId = $_GET['qid'];
+    $questionManager->UnflagQuestion($questionId);
+  }
 ?>

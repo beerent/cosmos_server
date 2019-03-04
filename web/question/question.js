@@ -14,19 +14,19 @@ function AddNewWrongAnswerField() {
 function UpdateManageQuestionsPage() {
   var bucketId = GetValue("bucket_select");
   var enabled = GetObject("enabled_checked").checked;
-  var review = GetObject("review_checked").checked;
+  var flagged = GetObject("flagged_checked").checked;
 
   var enabledString = "0";
   if (enabled) {
     enabledString = "1";
   }
 
-  var reviewString = "0";
-  if (review) {
-    reviewString = "1";
+  var flaggedString = "0";
+  if (flagged) {
+    flaggedString = "1";
   }
 
-  window.location.replace("/question/manage_questions.php?id=" + bucketId + "&enabled=" + enabledString  + "&review=" + reviewString);
+  window.location.replace("/question/manage_questions.php?id=" + bucketId + "&enabled=" + enabledString  + "&flagged=" + flaggedString);
 }
 
 function OnEditQuestionClicked(questionId) {
@@ -267,6 +267,18 @@ function AddToUpdateBucketsQueue(questionId, bucketId, originalState, currentSta
   }
 }
 
+function AddToQuestionUnflagQueue(questionId) {
+  var questionsToUnflag = GetObject("questions_to_unflag");
+
+  var queryString = "";
+  if (questionsToUnflag.innerHTML != "") {
+    queryString += "(())";
+  } 
+
+  queryString += questionId;
+  questionsToUnflag.innerHTML = questionsToUnflag.innerHTML + queryString;
+}
+
 function AddToUpdateReviewQueue(elementId, questionId, reviewerId, originalState, currentState) {
   var reviewsToUpdate = GetObject("reviews_to_update");
   var element = GetObject(elementId);
@@ -453,6 +465,21 @@ function CommitReviewUpdates() {
     }
   });
 
+  return true;
+}
+
+function CommitUnflaggedQuestions() {
+  var questionsToUnflag = GetObject("questions_to_unflag");
+  var entries = questionsToUnflag.innerHTML.split("(())");
+
+  var updated = [];
+  entries.forEach(function(questionId) {
+    if (updated.includes(questionId) == false) {
+      execute("/question/QuestionHelper.php?option=unflag&qid=" + questionId, 'fakediv');
+      updated.push(questionId);
+    }
+  });
+  
   return true;
 }
 

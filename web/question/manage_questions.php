@@ -1,7 +1,6 @@
 
 <?php
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/bucket/BucketManager.php"; include_once($include);
-  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/review/ReviewManager.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/question/QuestionManager.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/util/StringUtils.php"; include_once($include);
 
@@ -11,33 +10,15 @@
 ?>
 
 <?php
-  function DisplayQuestions($questions, $forMeToReview) {
-    $reviewManager = new ReviewManager();
-
-    $ipAddress = $_SERVER['REMOTE_ADDR'];
-    $beerentsIp = $ipAddress == "104.54.224.18";
-    $bobsIp = $ipAddress == "72.43.89.50" || $ipAddress == "71.115.202.168";
-
-    if ($forMeToReview && !$beerentsIp && !$bobsIp) {
-      echo "<center>";
-      echo "unrecognized IP address, contact brent!";
-      echo "</center>";
-      return; 
-    }
+  function DisplayQuestions($questions) {
 
     echo "<center>";
     
     $invalidCount = 0;
     $trueFalseCount = 0;
     $multipleChoiceCount = 0;
-    $reviewCount = 0;
 
     for ($i = 0; $i < count($questions); $i++) {
-      $reviews = $reviewManager->GetReviews($questions[$i]->GetId());
-      if ($reviews->IsReviewComplete()) {
-        $reviewCount ++;
-      }
-
       if (count($questions[$i]->GetWrongAnswers()) == 1) {
         $trueFalseCount++;
       } else if (count($questions[$i]->GetWrongAnswers()) == 0 || count($questions[$i]->GetWrongAnswers()) == 2) {
@@ -63,11 +44,6 @@
     echo "</tr>";
 
     echo "<tr>";
-    echo "<td><font size='2'>total reviewed</font></td>";
-    echo "<td><font size='2'>" . strval($reviewCount) . "</font></td>";
-    echo "</tr>";
-
-    echo "<tr>";
     echo "<td><font size='2'>total questions</font></td>";
     echo "<td><font size='2'>" . strval(count($questions)) . "</font></td>";
     echo "</tr>";
@@ -77,21 +53,6 @@
     echo "</center>";
 
     foreach ($questions as $question) {
-      $reviews = $reviewManager->GetReviews($question->GetId());
-
-      if ($forMeToReview) {
-        if ($beerentsIp) {
-          if ($reviews->BeerentReviewed()) {
-            continue;
-          }
-        } else if ($bobsIp) {
-          if ($reviews->BobReviewed()) {
-            continue;
-          }
-        } else {
-          continue;
-        }
-      }
 
       echo "<hr>";
       echo "<center>";
@@ -128,7 +89,7 @@
       $questionText = $question->GetQuestion();
       $singleQuoteEscapedQuestionText = $stringUtils->EscapeSingleQuotes($questionText);
 
-      echo '<input type="text" size="60" id="'.$elementId.'" value="'.htmlspecialchars($questionText).'" maxlength="150" onchange="AddToQuestionUpdateQueue(\''.$questionId.'\', \''.$elementId.'\', \''.htmlspecialchars($singleQuoteEscapedQuestionText).'\');">';
+      echo '<input type="text" size="60" id="'.$elementId.'" value="'.htmlspecialchars($questionText).'" maxlength="150" onchange="AddToQuestionUpdateQueue(\''.$questionId.'\', \''.$elementId.'\', \''.htmlspecialchars($singleQuoteEscapedQuestionText).'\'); AddToQuestionUnflagQueue(\''. $questionId .'\');">';
 
       echo "    </td>";
       echo "  </tr>";
@@ -154,7 +115,7 @@
       }
 
       echo "<input type='text' readonly size='60' id='". $elementId ."' value='". $originalState ."' maxlength='150'>";
-      echo "<button onclick='AddToQuestionEnableUpdateQueue(\"". $questionId ."\", \"". $elementId ."\", \"". $originalState ."\");'>toggle</button>";
+      echo "<button onclick='AddToQuestionEnableUpdateQueue(\"". $questionId ."\", \"". $elementId ."\", \"". $originalState ."\"); AddToQuestionUnflagQueue(\''. $questionId .'\');'>toggle</button>";
 
       echo "    </td>";
       echo "  </tr>";
@@ -176,7 +137,7 @@
       $elementId = "edit_question_citation_id_". $questionId;
       $singleQuoteEscapedCitationText = $stringUtils->EscapeSingleQuotes($originalCitation);
 
-      echo '<input type="text" size="60" id="'.$elementId.'" value="'.htmlspecialchars($originalCitation).'" maxlength="500" onchange="AddToCitationUpdateQueue(\''.$questionId.'\', \''.$elementId.'\', \''.htmlspecialchars($singleQuoteEscapedCitationText).'\');">';
+      echo '<input type="text" size="60" id="'.$elementId.'" value="'.htmlspecialchars($originalCitation).'" maxlength="500" onchange="AddToCitationUpdateQueue(\''.$questionId.'\', \''.$elementId.'\', \''.htmlspecialchars($singleQuoteEscapedCitationText).'\'); AddToQuestionUnflagQueue(\''. $questionId .'\');">';
 
       echo "    </td>";
       echo "  </tr>";
@@ -207,7 +168,7 @@
         $answerText = $answer->GetAnswer();
         $singleQuoteEscapedAnswerText = $stringUtils->EscapeSingleQuotes($answerText);
 
-        echo '<input type="text" size="60" id="'. $elementId .'" value="'. htmlspecialchars($answerText) .'" maxlength="150" onchange="AddToAnswerUpdateQueue(\''.$answerId .'\', \''. $elementId .'\', \''. htmlspecialchars($singleQuoteEscapedAnswerText) .'\');">';
+        echo '<input type="text" size="60" id="'. $elementId .'" value="'. htmlspecialchars($answerText) .'" maxlength="150" onchange="AddToAnswerUpdateQueue(\''.$answerId .'\', \''. $elementId .'\', \''. htmlspecialchars($singleQuoteEscapedAnswerText) .'\'); AddToQuestionUnflagQueue(\''. $questionId .'\');">';
 
         if (!$answer->IsCorrect()) {
           echo "<button id='". $elementDeleteId ."' onclick='AddAnswerToDeleteQueue(\"$answerId\", \"$elementId\", \"$elementDeleteId\");'>-</button>";
@@ -228,64 +189,9 @@
       echo "<td>";
       $elementAddId = "new_answer_text_id_" . $questionId;
       echo "<input type='text' size='60' id='".$elementAddId."' maxlength='150' placeholder='add new wrong answer...'>";
-      echo "<button id='new_answer_button_id_". $questionId ."' onclick='AddAnswerToAddQueue(\"$questionId\", \"$elementAddId\");'>+</button>";
+      echo "<button id='new_answer_button_id_". $questionId ."' onclick='AddAnswerToAddQueue(\"$questionId\", \"$elementAddId\"); AddToQuestionUnflagQueue(\'". $questionId ."\');'>+</button>";
       echo "</td>";
       echo "</tr>";
-
-
-
-
-/************************************************/
-// REVIEW FIELD
-//************************************************/
-      echo "<tr>";
-      echo "<td>reviews</td>";
-      echo "<td>";
-      $beerentId = "beerent_" . $questionId . "_review";
-      echo "<div style='display:inline' id='". $beerentId ."'>";
-
-      $disabled = "";
-      if (!$beerentsIp) {
-        $disabled = " disabled ";
-      }
-
-      $originalState = "false";
-      $checked = "";
-      if ($reviews->BeerentReviewed()) {
-        $originalState = "true";
-        $checked = " checked ";
-      }
-
-      echo '<input '. $disabled .' '. $checked .' type="checkbox" onchange="AddToUpdateReviewQueue(\''. $beerentId .'\', \''. $questionId .'\', 0, '. $originalState .', this.checked)">';
-      echo "beerent ";
-
-      echo "</div>";
-      
-      $bobId = "bob_" . $questionId . "_review";
-      echo "<div style='display:inline' id='". $bobId ."'>";
-
-      $disabled = "";
-      if (!$bobsIp) {
-        $disabled = " disabled ";
-      }
-
-      $originalState = "false";
-
-      $checked = "";
-      if ($reviews->BobReviewed()) {
-        $originalState = "true";
-        $checked = " checked ";
-      }
-
-      echo '<input '. $disabled .' '. $checked .' type="checkbox" onchange="AddToUpdateReviewQueue(\''. $bobId .'\', \''. $questionId .'\', 1, '. $originalState .', this.checked)">';
-      echo "bob";
-
-      echo "</div>";
-
-      echo "</td>";
-      echo "</tr>";
-
-
 
 
 /************************************************/
@@ -311,9 +217,9 @@
         $bucket = $allBuckets[$i];
         $cellElementId = "update_bucket_id_" . $bucket->GetId() . "_" . $questionId;
         if ($bucket_manager->BucketListContainsBucket($currentBuckets, $bucket)) {
-          echo '<td id="'. $cellElementId .'" align="right">' . $bucket->GetName() . ' <input type="checkbox" value="true" onchange="AddToUpdateBucketsQueue(\''.$questionId.'\', \''.$bucket->GetId().'\', this.value, this.checked, \''. $cellElementId .'\')" checked="checked"></td>';
+          echo '<td id="'. $cellElementId .'" align="right">' . $bucket->GetName() . ' <input type="checkbox" value="true" onchange="AddToUpdateBucketsQueue(\''.$questionId.'\', \''.$bucket->GetId().'\', this.value, this.checked, \''. $cellElementId .'\'); AddToQuestionUnflagQueue(\''. $questionId .'\');" checked="checked"></td>';
         } else {
-          echo '<td id="'. $cellElementId .'" align="right">' . $bucket->GetName() . ' <input type="checkbox" value="false" onchange="AddToUpdateBucketsQueue(\''.$questionId.'\', \''.$bucket->GetId().'\', this.value, this.checked, \''. $cellElementId .'\')" ></td>';
+          echo '<td id="'. $cellElementId .'" align="right">' . $bucket->GetName() . ' <input type="checkbox" value="false" onchange="AddToUpdateBucketsQueue(\''.$questionId.'\', \''.$bucket->GetId().'\', this.value, this.checked, \''. $cellElementId .'\'); AddToQuestionUnflagQueue(\''. $questionId .'\');" ></td>';
         }
         
         $count++;
@@ -350,6 +256,7 @@
   <body>
     <?php  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/top.php"; include($include); ?>
 
+    <div id="questions_to_unflag" style="display:none"></div>
     <div id="questions_to_update" style="display:none"></div>
     <div id="citations_to_update" style="display:none"></div>
     <div id="questions_to_toggle_enable" style="display:none"></div>
@@ -363,14 +270,7 @@
       <h1>Manage Questions</h1>
       <?php
         $enabledQuestionCount = $questionManager->GetEnabledQuestionCount();
-        $bobToReviewCount = $questionManager->GetToReviewCount("bob");
-        $beerentToReviewCount = $questionManager->GetToReviewCount("beerent");
         echo "<font size='2'>Total Questions: ". $enabledQuestionCount ."</font>";
-        echo "<br>";
-        echo "<font size='2'>Remaining for Bob to review: ". $bobToReviewCount ."</font>";
-        echo "<br>";
-        echo "<font size='2'>Remaining for Brent to review: ". $beerentToReviewCount ."</font>";
-        echo "<br>";
       ?>
       <hr>
 <p id="updateID"></p>
@@ -386,9 +286,9 @@
     $enabledOptionChecked = $_GET['enabled'] == "1";
   }
 
-  $forMeToReview = false;
-  if (isset($_GET['review'])) {
-    $forMeToReview = $_GET['review'] == "1";
+  $flagged = false;
+  if (isset($_GET['flagged'])) {
+    $flagged = $_GET['flagged'] == "1";
   }
 
 
@@ -435,24 +335,27 @@
 // REVIEWED CHECKBOX
 /************************************************/
   
-  $reviewChecked ="";
-  if ($forMeToReview) {
-    $reviewChecked = " checked ";
+  $flaggedChecked ="";
+  if ($flagged) {
+    $flaggedChecked = " checked ";
   }
-  $reviewedCheckbox = "<input type='checkbox' id=\"review_checked\" " . $reviewChecked . " onchange='UpdateManageQuestionsPage(\"". $currentBucketId ."\")'>";
-  echo " for me to review ";
-  echo $reviewedCheckbox;
+  $flaggedCheckbox = "<input type='checkbox' id=\"flagged_checked\" " . $flaggedChecked. " onchange='UpdateManageQuestionsPage(\"". $currentBucketId ."\")'>";
+  echo " flagged ";
+  echo $flaggedCheckbox;
 
   echo "<br><br>";
 
-  echo "<button onclick='if (CommitQuestionUpdates() && CommitCitationUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds() && CommitBucketUpdates() && CommitReviewUpdates()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
+  echo "<button onclick='if (CommitQuestionUpdates() && CommitCitationUpdates() && CommitToggleEnableUpdates() && CommitAnswerUpdates() && CommitAnswerDeletes() && CommitAnswerAdds() && CommitBucketUpdates() && CommitReviewUpdates() && CommitUnflaggedQuestions()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
 
 
   echo "</center>";
   echo "<br><br>";
 
   $questions = array();
-  if ($enabledOptionChecked) {
+
+  if ($flaggedChecked) {
+    $questions = $questionManager->GetFlaggedQuestions();
+  } else if ($enabledOptionChecked) {
     if ($currentBucketId == -1) {
       $questions = $questionManager->GetBucketlessQuestions("1");
     } else if ($currentBucketId == -2) {
@@ -470,7 +373,7 @@
     }
   }
 
-  DisplayQuestions($questions, $forMeToReview);
+  DisplayQuestions($questions);
 ?>
   </body>
 </html>

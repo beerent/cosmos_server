@@ -161,3 +161,8 @@ insert into users (username, email, password_salt) values ("meatbadnoeat", "idk@
 insert into users (username, email, password_salt) values ("pixietyger", "idk2@gmail.com", "orion");
 
 
+
+UPDATE `cosmos`.`reviewer` SET `name`='cosmic_bob' WHERE `id`='1';
+
+
+

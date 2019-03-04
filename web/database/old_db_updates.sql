@@ -203,3 +203,6 @@ ALTER TABLE `cosmos`.`buckets` ADD COLUMN `added` DATETIME NOT NULL DEFAULT now(
 ALTER TABLE `cosmos`.`blogs` CHANGE COLUMN `date` `date` DATETIME NOT NULL DEFAULT now()  ;
 
 ALTER TABLE `cosmos`.`answers` ADD COLUMN `added` DATETIME NOT NULL DEFAULT now()  AFTER `question_id` ;
+
+
+ALTER TABLE `cosmos`.`flagged_questions` CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT  ;

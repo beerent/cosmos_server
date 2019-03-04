@@ -1425,6 +1425,116 @@ function TestGetUserProfileValidUserContainsChallengeStats() {
 	}
 }
 
+/***********************************************/
+/*********       FLAG QUESTION       ***********/
+/***********************************************/
+function TestFlagQuestionReturnsRequest() {
+	var functionName = "TestFlagQuestionReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "flagQuestion";
+
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestFlagQuestionNoParameters() {
+	var functionName = "TestFlagQuestionNoParameters\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/flagQuestion";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 101) {
+		failures += "  - op was " + response.op + ", expected 101\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestFlagQuestionValidUser() {
+	var functionName = "TestFlagQuestionValidUser\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/flagQuestion";
+	url += "?username=beerent&password=turtle12";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 109) {
+		failures += "  - op was " + response.op + ", expected 109\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestFlagQuestionValidQuestion() {
+	var functionName = "TestFlagQuestionValidQuestion\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/flagQuestion";
+	url += "?username=beerent&password=turtle12&question_id=28";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
 /* AUTHENTICATE */
 TestAuthenticateReturnsRequest();
 TestAuthenticateNoParameters();
@@ -1485,6 +1595,11 @@ TestGetUserProfileNoParameters();
 TestGetUserProfileInvalidSpecifier();
 TestGetUserProfileValidUserContainsChallengeStats();
 
+/* FLAG QUESTION */
+TestFlagQuestionReturnsRequest();
+TestFlagQuestionNoParameters();
+TestFlagQuestionValidUser();
+TestFlagQuestionValidQuestion();
 
 PrintResults();
 

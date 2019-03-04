@@ -5,6 +5,7 @@ const express = require('express');
 
 var DBM = require("./database/DBM.js");
 var QuestionManager = require("./question/QuestionManager.js");
+var QuestionManager = require("./question/QuestionManager.js");
 var ChallengeManager = require("./game/challenge/ChallengeManager.js");
 var Authenticator = require("./authentication/Authenticator.js");
 var ResponseBuilder = require("./response/ResponseBuilder.js");
@@ -115,6 +116,14 @@ app.get('/getChallengeLeaderboard', function (req, res) {
 
 	var responseBuilder = new ResponseBuilder("getChallengeLeaderboard");
 	challengeManagerInstance.HandleGetChallengeLeaderboardRequest(req, res, responseBuilder);
+});
+
+app.get('/flagQuestion', function (req, res) {
+	var dbm = new DBM();
+	var questionManagerInstance = new QuestionManager(dbm, errors);
+
+	var responseBuilder = new ResponseBuilder("flagQuestion");
+	questionManagerInstance.HandleFlagQuestionRequest(req, res, responseBuilder);
 });
 
 RunServer();

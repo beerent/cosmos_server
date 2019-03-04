@@ -37,5 +37,10 @@
     "GET_USER_PROFILE_INVALID_SPECIFIER": {
         "id": 108,
         "note": "user not found by specifier"
+    },
+
+    "FLAG_QUESTION_MISSING_SPECIFIER": {
+        "id": 109,
+        "note": "unable to flag question - unknown."
     }
 } 

@@ -1,12 +1,14 @@
 var Question = require("./Question.js");
 var Answer = require("./Answer.js");
 var QuestionsBuilder = require("./QuestionsBuilder.js");
+var UserManager = require("../user/UserManager.js");
 
 
 class QuestionManager {
 
-	constructor (dbm) {
+	constructor (dbm, errors) {
 		this.dbm = dbm;
+		this.errors = errors;
 	}
 
 	GetAllQuestions(callback) {
@@ -53,8 +55,9 @@ class QuestionManager {
 	}
 
 	GetQuestionsByIds(ids_list, callback) {
-		var sql = "SELECT questions.id as qid, questions.question, answers.id as aid, answers.answer, answers.correct FROM questions join answers on questions.id = answers.question_id where questions.enabled = 1 and question_id in ("+ ids_list +");";
 		var self = this;
+
+		var sql = "SELECT questions.id as qid, questions.question, answers.id as aid, answers.answer, answers.correct FROM questions join answers on questions.id = answers.question_id where questions.enabled = 1 and question_id in ("+ ids_list +");";
 		this.dbm.Query(sql, function (results) {
 			var questionsBuilder = new QuestionsBuilder();
 
@@ -72,6 +75,50 @@ class QuestionManager {
 
 			callback(questions);
 		});
+	}
+
+	HandleFlagQuestionRequest(req, res, responseBuilder) {
+		var self = this;
+		var userManager = new UserManager(this.dbm);
+
+		var self = this;
+		if (userManager.CredentialFieldsAreValid(req.query) == false) {
+			responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
+			res.json(responseBuilder.Response());
+			res.end();
+			self.dbm.Close();
+			return;
+		}
+
+		if (self.FlagQuestionFieldsAreValid(req.query) == false) {
+			responseBuilder.SetError(self.errors.FLAG_QUESTION_MISSING_SPECIFIER);
+			var response = responseBuilder.Response();
+			res.json(response);
+			res.end();
+			self.dbm.Close();
+			return;
+		}
+
+		userManager.GetUserFromCredentials(req.query.username, req.query.password, function(user) {
+			if (undefined == user) {
+				responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
+				res.json(responseBuilder.Response());
+				res.end();
+				self.dbm.Close();				
+			} else {
+				var params = [req.query.question_id, user.id];
+				var sql = "insert into flagged_questions (question_id, user_id) values (?, ?)";
+				self.dbm.ParameterizedQuery	(sql, params, function (results) {
+					res.json(responseBuilder.Response());
+					res.end();
+					self.dbm.Close();
+				});
+			}
+		});
+	}
+
+	FlagQuestionFieldsAreValid(query) {
+		return query.question_id != undefined;
 	}
 	
 	ShuffleQuestions(array) {

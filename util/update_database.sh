@@ -3,11 +3,11 @@ COSMOS="/home/ubuntu/server/cosmos_ios/web/database/"
 pushd "$COSMOS"
 git pull
 
-mysql -u root -pRyczak13! cosmos < current_db_update.sql
+mysql -u root -pRyczak13! cosmos < current_db_updates.sql
 
 echo "" >> old_db_updates.sql
 cat current_db_updates.sql >> old_db_updates.sql
-rm current_db_update.sql
+rm current_db_updates.sql
 touch current_db_updates.sql
 
 git add .

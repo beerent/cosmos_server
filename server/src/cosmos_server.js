@@ -39,7 +39,6 @@ function RunDebugServer() {
 }
 
 function RunLiveServer() {
-	// Certificate
 	const privateKey = fs.readFileSync('/etc/ssl/private/knowyourcosmos.key', 'utf8');
 	const certificate = fs.readFileSync('/etc/ssl/knowyourcosmos_com.crt', 'utf8');
 	const ca = fs.readFileSync('/etc/ssl/knowyourcosmos_com.ca-bundle', 'utf8');
@@ -70,6 +69,7 @@ function LoadErrors() {
 var app = express();
 var errors = LoadErrors();
 
+//USER MANAGER
 app.get('/authenticate', function (req, res) {
 	var dbm = new DBM();
 	var user_manager = new UserManager(dbm, errors);
@@ -86,6 +86,8 @@ app.get('/getUserProfile', function (req, res) {
 	user_profile_manager.HandleGetUserProfileRequest(req, res, responseBuilder);
 });
 
+
+//CHALLENGE MANAGER
 app.get('/newChallenge', function (req, res) {
 	var dbm = new DBM();
 	var challengeManagerInstance = new ChallengeManager(dbm, errors);
@@ -118,12 +120,20 @@ app.get('/getChallengeLeaderboard', function (req, res) {
 	challengeManagerInstance.HandleGetChallengeLeaderboardRequest(req, res, responseBuilder);
 });
 
+
+//QUESTION MANAGER
 app.get('/flagQuestion', function (req, res) {
 	var dbm = new DBM();
 	var questionManagerInstance = new QuestionManager(dbm, errors);
 
 	var responseBuilder = new ResponseBuilder("flagQuestion");
 	questionManagerInstance.HandleFlagQuestionRequest(req, res, responseBuilder);
+});
+
+
+
+app.get('*', function(req, res){
+  res.status(404).send('cosmic fail!');
 });
 
 RunServer();

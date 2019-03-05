@@ -16,20 +16,11 @@ class QuestionsBuilder {
 	}
 
 	AddQuestion(questionId, questionText) {
-		//console.log("[Added Question]");
-		//console.log("   questionId: " + questionId);
-		//console.log("   questionText " + questionText);
 		var question = new Question(questionId, questionText, undefined, []);
 		this.questions[questionId] = question;
 	}
 
 	AddAnswer(questionId, answerId, answerText, answerCorrect) {
-		//console.log("[Added Answer]");
-		//console.log("   questionId: " + questionId);
-		//console.log("   answerId: " + answerId);
-		//console.log("   answerText: " + answerText);
-		//console.log("   answerCorrect: " + answerCorrect);
-
 		var answer = new Answer(answerId, answerText, answerCorrect);
 
 		if (answerCorrect) {

@@ -41,6 +41,6 @@
 
     "FLAG_QUESTION_MISSING_SPECIFIER": {
         "id": 109,
-        "note": "unable to flag question - unknown."
+        "note": "missing question specifier."
     }
 } 

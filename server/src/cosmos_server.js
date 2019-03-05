@@ -7,7 +7,6 @@ var DBM = require("./database/DBM.js");
 var QuestionManager = require("./question/QuestionManager.js");
 var QuestionManager = require("./question/QuestionManager.js");
 var ChallengeManager = require("./game/challenge/ChallengeManager.js");
-var Authenticator = require("./authentication/Authenticator.js");
 var ResponseBuilder = require("./response/ResponseBuilder.js");
 var UserManager = require("./user/UserManager.js");
 var UserProfileManager = require("./user/UserProfileManager.js");

@@ -6,9 +6,10 @@ var UserManager = require("../user/UserManager.js");
 
 class QuestionManager {
 
-	constructor (dbm, errors) {
+	constructor (dbm, errors, privileges) {
 		this.dbm = dbm;
 		this.errors = errors;
+		this.privileges = privileges;
 	}
 
 	GetAllQuestions(callback) {
@@ -117,7 +118,60 @@ class QuestionManager {
 		});
 	}
 
+	HandleReviewQuestionRequest(req, res, responseBuilder) {
+		var self = this;
+		var userManager = new UserManager(this.dbm);
+
+		var self = this;
+		if (userManager.CredentialFieldsAreValid(req.query) == false) {
+			responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
+			res.json(responseBuilder.Response());
+			res.end();
+			self.dbm.Close();
+			return;
+		}
+
+		if (self.ReviewQuestionFieldsAreValid(req.query) == false) {
+			responseBuilder.SetError(self.errors.REVIEW_QUESTION_MISSING_SPECIFIER);
+			var response = responseBuilder.Response();
+			res.json(response);
+			res.end();
+			self.dbm.Close();
+			return;
+		}
+
+		userManager.GetUserFromCredentials(req.query.username, req.query.password, function(user) {
+			if (undefined == user) {
+				responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
+				res.json(responseBuilder.Response());
+				res.end();
+				self.dbm.Close();				
+			} else {
+				userManager.UserHasPrivilege(user, self.privileges.ADMIN, function(hasPrivilege) {
+					if (hasPrivilege) {
+						var params = [req.query.question_id, user.id];
+						var sql = "insert into question_reviews (question_id, user_id) values (?, ?)";
+						self.dbm.ParameterizedQuery	(sql, params, function (results) {
+							res.json(responseBuilder.Response());
+							res.end();
+							self.dbm.Close();
+						});
+					} else {
+						responseBuilder.SetError(self.errors.INSUFFICIENT_PRIVILEGE);
+						res.json(responseBuilder.Response());
+						res.end();
+						self.dbm.Close();
+					}
+				});
+			}
+		});
+	}
+
 	FlagQuestionFieldsAreValid(query) {
+		return query.question_id != undefined;
+	}
+
+	ReviewQuestionFieldsAreValid(query) {
 		return query.question_id != undefined;
 	}
 	

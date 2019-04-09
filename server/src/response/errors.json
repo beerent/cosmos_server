@@ -42,5 +42,15 @@
     "FLAG_QUESTION_MISSING_SPECIFIER": {
         "id": 109,
         "note": "missing question specifier."
+    },
+
+    "REVIEW_QUESTION_MISSING_SPECIFIER": {
+        "id": 110,
+        "note": "missing question specifier."
+    },
+
+    "INSUFFICIENT_PRIVILEGE": {
+        "id": 111,
+        "note": "account does not have sufficient privileges."
     }
 } 

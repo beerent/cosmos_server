@@ -78,6 +78,25 @@ class UserManager {
 			callback(user);
 		});		
 	}
+
+	UserHasPrivilege(user, privilege, callback) {
+		if (user == undefined) {
+			callback(false);
+			return;
+		}
+
+		var params = [user.id, privilege.id];
+		var sql = "select id from user_privilege_map where user_id = ? and privilege_id = ?";
+
+		this.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
+			if (err || queryResults.length == 0) {
+				callback(false);
+				return;
+			}
+
+			callback(true);
+		});
+	}
 };
 
 module.exports = UserManager;

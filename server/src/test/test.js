@@ -1507,13 +1507,151 @@ function TestFlagQuestionValidUser() {
 	}
 }
 
-function TestFlagQuestionValidQuestion() {
-	var functionName = "TestFlagQuestionValidQuestion\n";
+function TestFlagQuestionValidUserAndValidQuestion() {
+	var functionName = "TestFlagQuestionValidUserAndValidQuestion\n";
 	var failures = "";
 	testsRanCount++;
 
 
 	var url = server + "/flagQuestion";
+	url += "?username=beerent&password=turtle12&question_id=28";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+/***********************************************/
+/*********      REVIEW QUESTION      ***********/
+/***********************************************/
+function TestReviewQuestionReturnsRequest() {
+	var functionName = "TestReviewQuestionReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "reviewQuestion";
+
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestReviewQuestionNoParameters() {
+	var functionName = "TestReviewQuestionNoParameters\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/reviewQuestion";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 101) {
+		failures += "  - op was " + response.op + ", expected 101\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestReviewQuestionValidUser() {
+	var functionName = "TestReviewQuestionValidUser\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/reviewQuestion";
+	url += "?username=beerent&password=turtle12";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 110) {
+		failures += "  - op was " + response.op + ", expected 109\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestReviewQuestionValidUserAndValidQuestionInvalidPrivileges() {
+	var functionName = "TestReviewQuestionValidUserAndValidQuestionInvalidPrivileges\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/reviewQuestion";
+	url += "?username=meatbadnoeat&password=wheatbread&question_id=28";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 111) {
+		failures += "  - op was " + response.op + ", expected 111\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestReviewQuestionValidUserAndValidQuestionValidPrivileges() {
+	var functionName = "TestReviewQuestionValidUserAndValidQuestionValidPrivileges\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/reviewQuestion";
 	url += "?username=beerent&password=turtle12&question_id=28";
 	var response = GetHTTPResponse(url);
 
@@ -1599,7 +1737,14 @@ TestGetUserProfileValidUserContainsChallengeStats();
 TestFlagQuestionReturnsRequest();
 TestFlagQuestionNoParameters();
 TestFlagQuestionValidUser();
-TestFlagQuestionValidQuestion();
+TestFlagQuestionValidUserAndValidQuestion();
+
+/* REVIEW QUESTION */
+TestReviewQuestionReturnsRequest();
+TestReviewQuestionNoParameters();
+TestReviewQuestionValidUser();
+TestReviewQuestionValidUserAndValidQuestionInvalidPrivileges();
+TestReviewQuestionValidUserAndValidQuestionValidPrivileges();
 
 PrintResults();
 

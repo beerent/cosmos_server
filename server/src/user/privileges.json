@@ -1,0 +1,7 @@
+{
+    "ADMIN": {
+        "id": 1,
+        "name": "admin",
+        "note": "currently used for reviewing questions"
+    }
+}

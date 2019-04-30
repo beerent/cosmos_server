@@ -60,6 +60,12 @@ function LoadErrors() {
 	return obj;
 }
 
+function LoadPrivileges() {
+	var fs = require('fs');
+	var obj = JSON.parse(fs.readFileSync('./user/privileges.json', 'utf8'));
+	return obj;	
+}
+
 
 
 
@@ -67,6 +73,7 @@ function LoadErrors() {
 
 var app = express();
 var errors = LoadErrors();
+var privileges = LoadPrivileges();
 
 //USER MANAGER
 app.get('/authenticate', function (req, res) {
@@ -79,7 +86,7 @@ app.get('/authenticate', function (req, res) {
 
 app.get('/getUserProfile', function (req, res) {
 	var dbm = new DBM();
-	var user_profile_manager = new UserProfileManager(dbm, errors);
+	var user_profile_manager = new UserProfileManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("getUserProfile");
 	user_profile_manager.HandleGetUserProfileRequest(req, res, responseBuilder);
@@ -89,7 +96,7 @@ app.get('/getUserProfile', function (req, res) {
 //CHALLENGE MANAGER
 app.get('/newChallenge', function (req, res) {
 	var dbm = new DBM();
-	var challengeManagerInstance = new ChallengeManager(dbm, errors);
+	var challengeManagerInstance = new ChallengeManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("newChallenge");
 	challengeManagerInstance.HandleNewChallengeRequest(req, res, responseBuilder);
@@ -97,7 +104,7 @@ app.get('/newChallenge', function (req, res) {
 
 app.get('/getChallengeQuestions', function (req, res) {
 	var dbm = new DBM();
-	var challengeManagerInstance = new ChallengeManager(dbm, errors);
+	var challengeManagerInstance = new ChallengeManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("getChallengeQuestions");
 	challengeManagerInstance.HandleGetChallengeQuestionsRequest(req, res, responseBuilder);
@@ -105,7 +112,7 @@ app.get('/getChallengeQuestions', function (req, res) {
 
 app.get('/registerChallengeAnswer', function (req, res) {
 	var dbm = new DBM();
-	var challengeManagerInstance = new ChallengeManager(dbm, errors);
+	var challengeManagerInstance = new ChallengeManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("registerChallengeAnswer");
 	challengeManagerInstance.HandleRegisterChallengeAnswerRequest(req, res, responseBuilder);
@@ -113,23 +120,27 @@ app.get('/registerChallengeAnswer', function (req, res) {
 
 app.get('/getChallengeLeaderboard', function (req, res) {
 	var dbm = new DBM();
-	var challengeManagerInstance = new ChallengeManager(dbm, errors);
+	var challengeManagerInstance = new ChallengeManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("getChallengeLeaderboard");
 	challengeManagerInstance.HandleGetChallengeLeaderboardRequest(req, res, responseBuilder);
 });
 
-
-//QUESTION MANAGER
 app.get('/flagQuestion', function (req, res) {
 	var dbm = new DBM();
-	var questionManagerInstance = new QuestionManager(dbm, errors);
+	var questionManagerInstance = new QuestionManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("flagQuestion");
 	questionManagerInstance.HandleFlagQuestionRequest(req, res, responseBuilder);
 });
 
+app.get('/reviewQuestion', function (req, res) {
+	var dbm = new DBM();
+	var questionManagerInstance = new QuestionManager(dbm, errors, privileges);
 
+	var responseBuilder = new ResponseBuilder("reviewQuestion");
+	questionManagerInstance.HandleReviewQuestionRequest(req, res, responseBuilder);
+});
 
 app.get('*', function(req, res){
   res.status(404).send('cosmic fail!');

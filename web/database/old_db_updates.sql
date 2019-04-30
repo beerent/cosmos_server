@@ -240,3 +240,23 @@ CREATE  TABLE `cosmos`.`user_privilege_map` (
 
 INSERT INTO `cosmos`.`user_privilege_map` (`id`, `user_id`, `privilege_id`) VALUES ('1', '1', '1');
 INSERT INTO `cosmos`.`user_privilege_map` (`id`, `user_id`, `privilege_id`) VALUES ('2', '2', '1');
+
+CREATE  TABLE `cosmos`.`question_reviews` (
+  `review_id` INT NOT NULL AUTO_INCREMENT ,
+  `question_id` INT NULL ,
+  `user_id` INT NULL ,
+  PRIMARY KEY (`review_id`) ,
+  UNIQUE INDEX `unique_pair` (`question_id` ASC, `user_id` ASC) );
+ALTER TABLE `cosmos`.`question_reviews` 
+  ADD CONSTRAINT `q_r_q_id`
+  FOREIGN KEY (`question_id` )
+  REFERENCES `cosmos`.`questions` (`id` )
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION, 
+  ADD CONSTRAINT `q_r_u_id`
+  FOREIGN KEY (`user_id` )
+  REFERENCES `cosmos`.`users` (`id` )
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION
+, ADD INDEX `q_r_q_id_idx` (`question_id` ASC) 
+, ADD INDEX `q_r_u_id_idx` (`user_id` ASC) ;

@@ -4,14 +4,15 @@ var ChallengeManager = require("../game/challenge/ChallengeManager.js");
 
 class UserProfileManager {
 
-	constructor (dbm, errors) {
+	constructor (dbm, errors, privileges) {
 		this.dbm = dbm;
 		this.errors = errors;
+		this.privileges = privileges;
 	}
 
 	HandleGetUserProfileRequest(req, res, responseBuilder) {
 		var userManager = new UserManager(this.dbm);
-		var challengeManager = new ChallengeManager(this.dbm);
+		var challengeManager = new ChallengeManager(this.dbm, this.errors, this.privileges);
 
 		var self = this;
 		if (!req.query.username) {

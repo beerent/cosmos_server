@@ -5,9 +5,10 @@ var ChallengeLeaderboardManager = require("./ChallengeLeaderboardManager.js");
 
 class ChallengeManager {
 
-	constructor (dbm, errors) {
+	constructor (dbm, errors, privileges) {
 		this.dbm = dbm;
 		this.errors = errors;
+		this.privileges = privileges;
 	}
 
 	GetChallengeQuestionsFieldsAreValid(query) {
@@ -155,7 +156,7 @@ class ChallengeManager {
 	}
 
 	GetChallengeQuestions(user_id, attempt_id, callback) {
-		var question_manager = new QuestionManager(this.dbm);
+		var question_manager = new QuestionManager(this.dbm, this.errors, this.privileges);
 
 		this.GetAskedQuestions(attempt_id, function (question_skip_list){			
 

@@ -3,7 +3,7 @@ var mysql = require('mysql');
 class DBM {
 	constructor () {
 		this.con = mysql.createConnection({
-		  host: "localhost",
+		  host: "127.0.0.1",
 		  database: "cosmos",
 		  user: "root",
 		  password: "Ryczak13!"

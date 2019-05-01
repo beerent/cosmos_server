@@ -1,0 +1,1 @@
+ssh -i ~/.ssh/cosmos_hq.pem ubuntu@www.knowyourcosmos.com './server/cosmos_ios/util/hq/db_connections.sh'

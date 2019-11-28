@@ -36,22 +36,8 @@
 			$this->dbm->insert($sql);
 		}
 
-		function TempGetAllQuestions($bucketId) {
-			$sql = "select questions.id from questions join question_bucket_map on question_bucket_map.question_id = questions.id where bucket_id = '" . $bucketId . "' order by questions.id desc";
-			$results = $this->dbm->query($sql);
-
-			$questions = array();
-			while($row = $results->fetch_assoc()){
-				$questionId = $row['id'];
-				$question = $this->GetQuestion($questionId);
-				array_push($questions, $question);
-			}
-
-			return $questions;			
-		}
-
 		function GetAllQuestions($enabled) {
-			$sql = "select questions.id from questions where enabled = " . $enabled;
+			$sql = "select questions.id from questions where enabled = " . $enabled . " ordered by questions.id desc";
 			$results = $this->dbm->query($sql);
 
 			$questions = array();
@@ -98,7 +84,7 @@
 		}
 
 		function GetBucketlessQuestions($enabledToggle) {
-			$sql = "select distinct questions.id from questions where questions.id not in (select distinct question_id from question_bucket_map) and questions.enabled = " . $enabledToggle;
+			$sql = "select distinct questions.id from questions where questions.id not in (select distinct question_id from question_bucket_map) and questions.enabled = " . $enabledToggle . " ordered by questions.id desc";
 			$results = $this->dbm->query($sql);
 
 			$questions = array();
@@ -112,7 +98,7 @@
 		}
 
 		function GetFlaggedQuestions() {
-			$sql = "select distinct question_id as id from flagged_questions where resolved = '0'";
+			$sql = "select distinct question_id as id from flagged_questions where resolved = '0' ordered by id desc";
 			$results = $this->dbm->query($sql);
 
 			$questions = array();

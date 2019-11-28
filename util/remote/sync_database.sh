@@ -1,14 +1,19 @@
 #create backup
-db_filename=`ssh -i ~/.ssh/cosmos_hq.pem ubuntu@www.knowyourcosmos.com './server/cosmos_ios/util/backup_db.sh'`
+echo "creating backup on Cosmos HQ"
+db_filename=`ssh -i ~/.ssh/cosmos_hq.pem ubuntu@www.knowyourcosmos.com './server/cosmos_ios/util/hq/backup_db.sh'`
 
 #get backup
+echo "pulling down backup from Cosmos HQ"
 scp -i ~/.ssh/cosmos_hq.pem ubuntu@www.knowyourcosmos.com:~/db_backup/${db_filename} .
 
 #apply backup
-mysql -u root -pRyczak13! -e "drop database cosmos"
-mysql -u root -pRyczak13! -e "create database cosmos"
-mysql -u root -pRyczak13! cosmos < $db_filename
+echo "applying backup"
+mysql --login-path=local -e "drop database cosmos"
+mysql --login-path=local -e "create database cosmos"
+mysql --login-path=local cosmos < $db_filename
 
 #remove backup
+echo "removing backup"
 rm $db_filename
 
+echo "backup complete."

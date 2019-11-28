@@ -260,3 +260,4 @@ ALTER TABLE `cosmos`.`question_reviews`
   ON UPDATE NO ACTION
 , ADD INDEX `q_r_q_id_idx` (`question_id` ASC) 
 , ADD INDEX `q_r_u_id_idx` (`user_id` ASC) ;
+

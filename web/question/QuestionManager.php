@@ -37,7 +37,7 @@
 		}
 
 		function GetAllQuestions($enabled) {
-			$sql = "select questions.id from questions where enabled = " . $enabled . " ordered by questions.id desc";
+			$sql = "select questions.id from questions where enabled = " . $enabled . " order by questions.id desc";
 			$results = $this->dbm->query($sql);
 
 			$questions = array();
@@ -84,7 +84,7 @@
 		}
 
 		function GetBucketlessQuestions($enabledToggle) {
-			$sql = "select distinct questions.id from questions where questions.id not in (select distinct question_id from question_bucket_map) and questions.enabled = " . $enabledToggle . " ordered by questions.id desc";
+			$sql = "select distinct questions.id from questions where questions.id not in (select distinct question_id from question_bucket_map) and questions.enabled = " . $enabledToggle . " order by questions.id desc";
 			$results = $this->dbm->query($sql);
 
 			$questions = array();
@@ -98,7 +98,7 @@
 		}
 
 		function GetFlaggedQuestions() {
-			$sql = "select distinct question_id as id from flagged_questions where resolved = '0' ordered by id desc";
+			$sql = "select distinct question_id as id from flagged_questions where resolved = '0' order by id desc";
 			$results = $this->dbm->query($sql);
 
 			$questions = array();

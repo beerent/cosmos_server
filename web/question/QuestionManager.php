@@ -35,7 +35,6 @@
 			$sql = "update questions set enabled = 0 where id = '". $questionId ."';";
 			$this->dbm->insert($sql);
 		}
-
 		function GetAllQuestions($enabled) {
 			$sql = "select questions.id from questions where enabled = " . $enabled . " order by questions.id desc";
 			$results = $this->dbm->query($sql);
@@ -98,7 +97,7 @@
 		}
 
 		function GetFlaggedQuestions() {
-			$sql = "select distinct question_id as id from flagged_questions where resolved = '0' order by id desc";
+			$sql = "select distinct question_id as id from flagged_questions where resolved = '0' order by added desc";
 			$results = $this->dbm->query($sql);
 
 			$questions = array();

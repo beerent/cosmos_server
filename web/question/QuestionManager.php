@@ -97,7 +97,7 @@
 		}
 
 		function GetFlaggedQuestions() {
-			$sql = "select distinct question_id as id from flagged_questions where resolved = '0' order by added desc";
+			$sql = "select distinct question_id as id, added from flagged_questions where resolved = '0' order by added desc";
 			$results = $this->dbm->query($sql);
 
 			$questions = array();

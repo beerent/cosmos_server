@@ -32,7 +32,7 @@ class UserManager {
 				responseBuilder.SetError(errors.INVALID_CREDENTIALS);
 			}
 
-			if (userObject.access_level != "ADMIN" && userObject.access_level != "MEMBER") {
+			else if (userObject.access_level != "ADMIN" && userObject.access_level != "MEMBER") {
 				responseBuilder.SetError(self.errors.INSUFFICIENT_PRIVILEGE);
 			} 
 
@@ -67,7 +67,7 @@ class UserManager {
 				if (userObject.access_level != "GUEST") {
 					responseBuilder.SetError(self.errors.INSUFFICIENT_PRIVILEGE);
 				} 
-				
+
 				callback(responseBuilder.Response());
 			}
 		});

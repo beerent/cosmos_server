@@ -61,6 +61,13 @@ class UserManager {
 		this.GetUserFromCredentials(query.username, query.password, function (userObject) {
 			if (userObject == undefined) {
 				this.CreateGuestUser(query.username, function(userObject) {
+					if (userObject == undefined) {
+						console.log("created user was found undefined!");
+						responseBuilder.SetError(errors.GUEST_ACCOUNT_CREATION_FAILURE);
+					} else {
+						console.log("created user with id: " + userObject.id);
+					}
+
 					callback(responseBuilder.Response());
 				});
 			} else {
@@ -73,12 +80,22 @@ class UserManager {
 		});
 	}
 
-	CredentialFieldsAreValid(query) {
-		return query.username != undefined && query.password != undefined;
+	CreateGuestUser(username, callback) {
+		var params = [username, "guest", "guest"];
+		var sql = "insert into users (username, email, password_salt, access_level) values (?, ?, ?, (select privileges_enum.id from privileges_enum where privileges_enum.privilege = 'GUEST'));";
+		this.dbm.ParameterizedInsert(sql, params, function (insertId, err) {
+			if (insertId == undefined) {
+				callback(undefined);
+			} else {
+				this.GetUserFromCredentials(username, "guest", function(user) {
+					callback(user);
+				});
+			}
+		});
 	}
 
-	GetGuestUser(username, callback) {
-
+	CredentialFieldsAreValid(query) {
+		return query.username != undefined && query.password != undefined;
 	}
 
 	GetUserFromCredentials(username, password, callback) {

@@ -147,22 +147,20 @@ class QuestionManager {
 				res.end();
 				self.dbm.Close();				
 			} else {
-				userManager.UserHasPrivilege(user, self.privileges.ADMIN, function(hasPrivilege) {
-					if (hasPrivilege) {
-						var params = [req.query.question_id, user.id];
-						var sql = "insert into question_reviews (question_id, user_id) values (?, ?)";
-						self.dbm.ParameterizedQuery	(sql, params, function (results) {
-							res.json(responseBuilder.Response());
-							res.end();
-							self.dbm.Close();
-						});
-					} else {
-						responseBuilder.SetError(self.errors.INSUFFICIENT_PRIVILEGE);
+				if (user.access_level == "ADMIN") {
+					var params = [req.query.question_id, user.id];
+					var sql = "insert into question_reviews (question_id, user_id) values (?, ?)";
+					self.dbm.ParameterizedQuery	(sql, params, function (results) {
 						res.json(responseBuilder.Response());
 						res.end();
 						self.dbm.Close();
-					}
-				});
+					});
+				} else {
+					responseBuilder.SetError(self.errors.INSUFFICIENT_PRIVILEGE);
+					res.json(responseBuilder.Response());
+					res.end();
+					self.dbm.Close();
+				}
 			}
 		});
 	}

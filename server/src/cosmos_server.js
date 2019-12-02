@@ -84,6 +84,14 @@ app.get('/authenticate', function (req, res) {
 	user_manager.HandleAuthenticationRequest(req, res, responseBuilder);
 });
 
+app.get('/guestAuthenticate', function (req, res) {
+	var dbm = new DBM();
+	var user_manager = new UserManager(dbm, errors);
+
+	var responseBuilder = new ResponseBuilder("guestAuthenticate");
+	user_manager.HandleGuestAuthenticationRequest(req, res, responseBuilder);
+});
+
 app.get('/getUserProfile', function (req, res) {
 	var dbm = new DBM();
 	var user_profile_manager = new UserProfileManager(dbm, errors, privileges);

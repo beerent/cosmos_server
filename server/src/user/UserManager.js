@@ -1,6 +1,6 @@
 var ResponseBuilder = require("../response/ResponseBuilder.js");
 
-var BASE_USER_QUERY = "select id, username, email from users";
+var BASE_USER_QUERY = "select users.id, username, email, privilege as access_level from users join privileges_enum on users.access_level = privileges_enum.id ";
 
 class UserManager {
 
@@ -32,12 +32,53 @@ class UserManager {
 				responseBuilder.SetError(errors.INVALID_CREDENTIALS);
 			}
 
+			if (userObject.access_level != "ADMIN" && userObject.access_level != "MEMBER") {
+				responseBuilder.SetError(self.errors.INSUFFICIENT_PRIVILEGE);
+			} 
+
 			callback(responseBuilder.Response());
+		});
+	}
+
+	HandleGuestAuthenticationRequest(req, res, responseBuilder) {
+		var self = this;
+		this.GuestAuthenticationRequest(req.query, responseBuilder, function(response) {
+			res.json(response);
+			res.end();
+			self.dbm.Close();
+		});
+	}
+
+	GuestAuthenticationRequest(query, responseBuilder, callback) {
+		var errors = this.errors;
+
+		if (this.CredentialFieldsAreValid(query) == false) {
+			responseBuilder.SetError(errors.INVALID_CREDENTIALS);
+			callback(responseBuilder.Response());
+			return;
+		}
+
+		this.GetUserFromCredentials(query.username, query.password, function (userObject) {
+			if (userObject == undefined) {
+				this.CreateGuestUser(query.username, function(userObject) {
+					callback(responseBuilder.Response());
+				});
+			} else {
+				if (userObject.access_level != "GUEST") {
+					responseBuilder.SetError(self.errors.INSUFFICIENT_PRIVILEGE);
+				} 
+				
+				callback(responseBuilder.Response());
+			}
 		});
 	}
 
 	CredentialFieldsAreValid(query) {
 		return query.username != undefined && query.password != undefined;
+	}
+
+	GetGuestUser(username, callback) {
+
 	}
 
 	GetUserFromCredentials(username, password, callback) {
@@ -54,6 +95,7 @@ class UserManager {
 			user.id = queryResults[0].id;
 			user.username = queryResults[0].username;
 			user.email = queryResults[0].email;
+			user.access_level = queryResults[0].access_level;
 
 			callback(user);
 		});
@@ -77,25 +119,6 @@ class UserManager {
 
 			callback(user);
 		});		
-	}
-
-	UserHasPrivilege(user, privilege, callback) {
-		if (user == undefined) {
-			callback(false);
-			return;
-		}
-
-		var params = [user.id, privilege.id];
-		var sql = "select id from user_privilege_map where user_id = ? and privilege_id = ?";
-
-		this.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
-			if (err || queryResults.length == 0) {
-				callback(false);
-				return;
-			}
-
-			callback(true);
-		});
 	}
 };
 

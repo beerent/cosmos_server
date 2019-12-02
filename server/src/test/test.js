@@ -278,6 +278,200 @@ function TestAuthenticateValidUser() {
 	}
 }
 
+function TestAuthenticateValidGuestUser() {
+	var functionName = "TestAuthenticateValidGuestUser\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/authenticate";
+	url += "?username=beerent&password=guest";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (true == response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 111) {
+		failures += "  - op was " + response.op + ", expected 111\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}	
+}
+
+/***********************************************/
+/************* GUEST AUTHENTICATE **************/
+/***********************************************/
+function TestGuestAuthenticateReturnsRequest() {
+	var functionName = "TestGuestAuthenticateReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "guestAuthenticate";
+
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestGuestAuthenticateNoParameters() {
+	var functionName = "TestGuestAuthenticateNoParameters\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/guestAuthenticate";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 101) {
+		failures += "  - op was " + response.op + ", expected 101\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestGuestAuthenticateMissingUsername() {
+	var functionName = "TestGuestAuthenticateMissingUsername\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/guestAuthenticate";
+	url += "?password=turtle12";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 101) {
+		failures += "  - op was " + response.op + ", expected 101\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestGuestAuthenticateEmptyUsername() {
+	var functionName = "TestGuestAuthenticateEmptyUsername\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/guestAuthenticate";
+	url += "?username=&password=turtle12";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 101) {
+		failures += "  - op was " + response.op + ", expected 101\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestGuestAuthenticateValidUser() {
+	var functionName = "TestAuthenticateValidUser\n";
+	var failures = "";
+	testsRanCount++;
+
+	var url = server + "/guestAuthenticate";
+	url += "?username=beerent&password=guest";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestGuestAuthenticateValidGuestUser() {
+	var functionName = "TestAuthenticateValidGuestUser\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/guestAuthenticate";
+	url += "?username=beerent&password=turtle12";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (true == response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 111) {
+		failures += "  - op was " + response.op + ", expected 111\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+
 /***********************************************/
 /**************** NEW CHALLENGE ****************/
 /***********************************************/
@@ -1683,6 +1877,14 @@ TestAuthenticateEmptyPassword();
 TestAuthenticateIncorrectUsername();
 TestAuthenticateIncorrectPassword();
 TestAuthenticateValidUser();
+TestAuthenticateValidGuestUser();
+
+/* AUTHENTICATE GUEST */
+TestGuestAuthenticateReturnsRequest();
+TestGuestAuthenticateNoParameters();
+TestGuestAuthenticateMissingUsername();
+TestGuestAuthenticateEmptyUsername();
+TestGuestAuthenticateValidUser();
 
 /* NEW CHALLENGE */
 TestNewChallengeReturnsRequest();

@@ -33,7 +33,7 @@ class UserManager {
 			}
 
 			else if (userObject.access_level != "ADMIN" && userObject.access_level != "MEMBER") {
-				responseBuilder.SetError(self.errors.INSUFFICIENT_PRIVILEGE);
+				responseBuilder.SetError(errors.INSUFFICIENT_PRIVILEGE);
 			} 
 
 			callback(responseBuilder.Response());
@@ -51,16 +51,18 @@ class UserManager {
 
 	GuestAuthenticationRequest(query, responseBuilder, callback) {
 		var errors = this.errors;
+		var self = this;
 
-		if (this.CredentialFieldsAreValid(query) == false) {
+		if (this.CredentialFieldsAreValid(query) == false || query.username == "") {
 			responseBuilder.SetError(errors.INVALID_CREDENTIALS);
 			callback(responseBuilder.Response());
 			return;
 		}
 
 		this.GetUserFromCredentials(query.username, query.password, function (userObject) {
+
 			if (userObject == undefined) {
-				this.CreateGuestUser(query.username, function(userObject) {
+				self.CreateGuestUser(query.username, function(userObject) {
 					if (userObject == undefined) {
 						console.log("created user was found undefined!");
 						responseBuilder.SetError(errors.GUEST_ACCOUNT_CREATION_FAILURE);

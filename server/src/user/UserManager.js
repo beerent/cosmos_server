@@ -83,7 +83,7 @@ class UserManager {
 	}
 
 	CreateGuestUser(username, callback) {
-		var params = [username, "guest", "guest"];
+		var params = [username, username + "_guest_email", "guest"];
 		var sql = "insert into users (username, email, password_salt, access_level) values (?, ?, ?, (select privileges_enum.id from privileges_enum where privileges_enum.privilege = 'GUEST'));";
 		console.log(sql);
 		this.dbm.ParameterizedInsert(sql, params, function (insertId, err) {

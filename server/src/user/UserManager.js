@@ -83,6 +83,8 @@ class UserManager {
 	}
 
 	CreateGuestUser(username, callback) {
+		var self = this;
+
 		var params = [username, username + "_guest_email", "guest"];
 		var sql = "insert into users (username, email, password_salt, access_level) values (?, ?, ?, (select privileges_enum.id from privileges_enum where privileges_enum.privilege = 'GUEST'));";
 		console.log(sql);
@@ -91,7 +93,7 @@ class UserManager {
 			if (insertId == undefined) {
 				callback(undefined);
 			} else {
-				this.GetUserFromCredentials(username, "guest", function(user) {
+				self.GetUserFromCredentials(username, "guest", function(user) {
 					callback(user);
 				});
 			}

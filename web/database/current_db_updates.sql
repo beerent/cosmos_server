@@ -1,1 +1,0 @@
-INSERT INTO `cosmos`.`users` (`username`, `email`, `password_salt`, `access_level`) VALUES ('beerent', 'guest', 'guest', '3');

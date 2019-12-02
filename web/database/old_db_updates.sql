@@ -291,3 +291,5 @@ ALTER TABLE `cosmos`.`users`
 ADD UNIQUE INDEX `user_access_unique` (`username` ASC, `access_level` ASC),
 DROP INDEX `username_UNIQUE` ;
 ;
+
+INSERT INTO `cosmos`.`users` (`username`, `email`, `password_salt`, `access_level`) VALUES ('beerent', 'guest', 'guest', '3');

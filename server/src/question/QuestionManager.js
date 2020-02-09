@@ -39,7 +39,7 @@ class QuestionManager {
 			skip_question_id_string = "-1";
 		}
 
-		var sql = "SELECT distinct questions.id as qid FROM questions join answers on questions.id = answers.question_id where questions.enabled = 1 and question_id not in ("+ skip_question_id_string +") order by rand() limit 10;";
+		var sql = "SELECT distinct questions.id as qid FROM questions join answers on questions.id = answers.question_id join question_bucket_map on questions.id = question_bucket_map.question_id join buckets on buckets.id = question_bucket_map.bucket_id where buckets.name = 'initial_release' and questions.enabled = 1 and question_id not in ("+ skip_question_id_string +") order by rand() limit 10;";
 		var self = this;
 
 		this.dbm.Query(sql, function (results) {

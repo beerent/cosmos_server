@@ -9,6 +9,30 @@ class ChallengeLeaderboardManager {
 		this.POINTS_MULTIPLIER = 10;
 		this.dbm = dbm;
 		this.errors = errors;
+
+		this.filter = require('leo-profanity');
+		this.filter.loadDictionary();
+	}
+
+	UsernameIsClean(username) {
+
+		var currentUsername = username;
+		while (currentUsername.length > 0) {
+			if (this.filter.clean(currentUsername) != currentUsername) {
+				return false;
+			}
+			currentUsername = currentUsername.substring(0, currentUsername.length-1);
+		}
+
+		currentUsername = username;
+		while (currentUsername.length > 0) {
+			if (this.filter.clean(currentUsername) != currentUsername) {
+				return false;
+			}
+			currentUsername = currentUsername.substring(1);
+		}
+
+		return true;
 	}
 
 	GetLeaderboard(responseBuilder, callback) {
@@ -29,6 +53,10 @@ class ChallengeLeaderboardManager {
 			var challengeLeaderboard = new ChallengeLeaderboard();
 			results.forEach(function(entry) {
 				username = entry.username;
+				//if (self.UsernameIsClean(username) == false) {
+				//	username = "*****";
+				//}
+
 				attempt_id = entry.attempt_id;
 				points = entry.points * self.POINTS_MULTIPLIER;
 				var challengeLeaderboardEntry = new ChallengeLeaderboardEntry(username, attempt_id, points);

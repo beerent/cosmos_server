@@ -1,4 +1,4 @@
-COSMOS="/home/ubuntu/server/cosmos_ios/server/src/"
+COSMOS="/home/ubuntu/server/cosmos_server/server/src/"
 
 pushd "$COSMOS"
 git pull

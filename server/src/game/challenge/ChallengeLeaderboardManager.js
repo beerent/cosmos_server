@@ -53,9 +53,9 @@ class ChallengeLeaderboardManager {
 			var challengeLeaderboard = new ChallengeLeaderboard();
 			results.forEach(function(entry) {
 				username = entry.username;
-				//if (self.UsernameIsClean(username) == false) {
-				//	username = "*****";
-				//}
+				if (self.UsernameIsClean(username) == false) {
+					username = "*****";
+				}
 
 				attempt_id = entry.attempt_id;
 				points = entry.points * self.POINTS_MULTIPLIER;

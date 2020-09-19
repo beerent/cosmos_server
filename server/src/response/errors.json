@@ -57,5 +57,10 @@
     "GUEST_ACCOUNT_CREATION_FAILURE": {
         "id": 112,
         "note": "unable to create guest account."
+    },
+
+    "UNHEALTHY_SERVER": {
+        "id": 113,
+        "note": "the server is unhealthy."
     }
 } 

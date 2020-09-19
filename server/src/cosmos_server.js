@@ -10,6 +10,7 @@ var ChallengeManager = require("./game/challenge/ChallengeManager.js");
 var ResponseBuilder = require("./response/ResponseBuilder.js");
 var UserManager = require("./user/UserManager.js");
 var UserProfileManager = require("./user/UserProfileManager.js");
+var HealthCheckManager = require("./health/HealthCheckManager.js");
 
 function GetRunMode() {
 	var runMode = "debug";
@@ -149,6 +150,14 @@ app.get('/reviewQuestion', function (req, res) {
 
 	var responseBuilder = new ResponseBuilder("reviewQuestion");
 	questionManagerInstance.HandleReviewQuestionRequest(req, res, responseBuilder);
+});
+
+app.get('/health', function (req, res) {
+	var dbm = new DBM();
+	var healthCheckManagerInstance = new HealthCheckManager(dbm, errors);
+
+	var responseBuilder = new ResponseBuilder("health");
+	healthCheckManagerInstance.checkHealth(req, res, responseBuilder);
 });
 
 app.get('*', function(req, res){

@@ -44,6 +44,7 @@ function RunLiveServer() {
 
 	const credentials = {
 		key: privateKey,
+		passphrase: process.env.SSL_PASSWORD
 		cert: certificate,
 		ca: ca
 	};

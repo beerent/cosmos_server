@@ -1,4 +1,4 @@
-COSMOS="/home/ubuntu/server/cosmos_ios"
+COSMOS="/home/ubuntu/server/cosmos_server"
 WWW="/var/www/html"
 
 pushd "$COSMOS"

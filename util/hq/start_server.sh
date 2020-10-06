@@ -1,7 +1,4 @@
-COSMOS="/home/ubuntu/server/cosmos_server/server/src/"
+cmd="sudo SSL_PASSWORD=dixiedix13 node /home/ubuntu/server/cosmos_server/server/src/cosmos_server.js live & disown"
+eval $cmd
 
-pushd "$COSMOS"
-git pull
-sudo SSL_PASSWORD=$SSL_PASSWORD node cosmos_server.js live & disown
 sudo kill -9 $(ps aux | grep 'sudo node cosmos_server.js' | awk '{print $2}')
-popd

@@ -12,6 +12,8 @@ var UserManager = require("./user/UserManager.js");
 var UserProfileManager = require("./user/UserProfileManager.js");
 var HealthCheckManager = require("./health/HealthCheckManager.js");
 
+var cosmosRoot = "/home/ubuntu/server/cosmos_server/server/src";
+
 function GetRunMode() {
 	var runMode = "debug";
 	if (process.argv.length > 2) {
@@ -58,13 +60,13 @@ function RunLiveServer() {
 
 function LoadErrors() {
 	var fs = require('fs');
-	var obj = JSON.parse(fs.readFileSync('./response/errors.json', 'utf8'));
+	var obj = JSON.parse(fs.readFileSync(cosmosRoot + '/response/errors.json', 'utf8'));
 	return obj;
 }
 
 function LoadPrivileges() {
 	var fs = require('fs');
-	var obj = JSON.parse(fs.readFileSync('./user/privileges.json', 'utf8'));
+	var obj = JSON.parse(fs.readFileSync(cosmosRoot + '/user/privileges.json', 'utf8'));
 	return obj;	
 }
 

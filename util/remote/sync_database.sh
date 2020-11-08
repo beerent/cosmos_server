@@ -1,10 +1,10 @@
 #create backup
 echo "creating backup on Cosmos HQ"
-db_filename=`ssh -i ~/.ssh/cosmos_revived_2020.pem ubuntu@www.knowyourcosmos.com './server/cosmos_server/util/hq/backup_db.sh'`
+db_filename=`ssh -i ~/.ssh/cosmos_final_key.pem ubuntu@www.knowyourcosmos.com './server/cosmos_server/util/hq/backup_db.sh'`
 
 #get backup
 echo "pulling down backup from Cosmos HQ"
-scp -i ~/.ssh/cosmos_revived_2020.pem ubuntu@www.knowyourcosmos.com:~/db_backup/${db_filename} .
+scp -i ~/.ssh/cosmos_final_key.pem ubuntu@www.knowyourcosmos.com:~/db_backup/${db_filename} .
 
 #apply backup
 echo "applying backup"

@@ -1,7 +1,6 @@
 <?php
 
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/top.php"; include_once($include);
-  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/live/live_data_top.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/live/challenge/ChallengeManager.php"; include_once($include);
   
   $challenge_manager = new ChallengeManager();

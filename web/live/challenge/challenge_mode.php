@@ -20,16 +20,27 @@
   	echo "</center>";
   }
 
-    function DisplayQuickStats() {
+  function DisplayQuickStats() {
     global $challenge_manager;
 
-    $todaysPlays = $challenge_manager->GetTodaysPlayCount();
-    #$thisWeeksPlays = $challenge_manager->GetThisWeeksPlayCount();
-    #$thisMonthsPlays = $challenge_manager->GetThisMonthsPlayCount();
+    $todaysPlays = $challenge_manager->GetPlayCount(0);
+    $playsLast3Days = $challenge_manager->GetPlayCount(3);
+    $playsLast7Days = $challenge_manager->GetPlayCount(7);
+    $playsLast30Days = $challenge_manager->GetPlayCount(30);
+    $playsLast60Days = $challenge_manager->GetPlayCount(60);
+    $playsLast90Days = $challenge_manager->GetPlayCount(90);
+    $totalPlays = $challenge_manager->GetPlayCount(10000);
+    
 
     echo "<center>";
     echo "<table border='1'>";
     echo "<tr><td>Today's Plays</td><td>" . $todaysPlays . "</td></tr>";
+    echo "<tr><td>Plays in last 3 Days</td><td>" . $playsLast3Days . "</td></tr>";
+    echo "<tr><td>Plays in last 7 Days</td><td>" . $playsLast7Days . "</td></tr>";
+    echo "<tr><td>Plays in last 30 Days</td><td>" . $playsLast30Days . "</td></tr>";
+    echo "<tr><td>Plays in last 60 Days</td><td>" . $playsLast60Days . "</td></tr>";
+    echo "<tr><td>Plays in last 90 Days</td><td>" . $playsLast90Days . "</td></tr>";
+    echo "<tr><td>Total Plays</td><td>" . $totalPlays . "</td></tr>";
     echo "</table>";
     echo "</center>";
   }
@@ -94,6 +105,21 @@
   	echo "</center>";
   }
 
+  function DisplayNewUsers() {
+    global $challenge_manager;
+
+    $attempts = $challenge_manager->GetNewUsers();
+
+    echo "<center>";
+    echo "<table border='1'>";
+    echo "<tr><td><b>Username</b></td><td><b>Days Old</b></td></tr>";
+    foreach ($attempts as $entry) {
+      echo "<tr><td>". $entry->GetUsername() . "</td><td>". $entry->GetDaysOld() . "</td></tr>";
+    }
+    echo "</table>";
+    echo "</center>";
+  }
+
   function DisplayMostUserAttempts() {
   	global $challenge_manager;
 
@@ -147,6 +173,11 @@
   echo "<center><b>MOST CORRECT ANSWERS</b></center>";
   echo "<hr>";
   DisplayMostCorrectAnswers();
+  echo "<hr><br><br>";
+
+  echo "<center><b>NEW USERS</b></center>";
+  echo "<hr>";
+  DisplayNewUsers();
   echo "<hr><br><br>";
 
   echo "<center><b>MOST USER ATTEMPTS</b></center>";

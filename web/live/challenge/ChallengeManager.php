@@ -4,6 +4,7 @@
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/live/challenge/SelectedAnswer.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/live/challenge/ChallengeUserAttempts.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/live/challenge/QuestionCount.php"; include_once($include);
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/live/challenge/NewUser.php"; include_once($include);
 
 	class ChallengeManager {
 		function __construct(){
@@ -30,8 +31,8 @@
 			return $leaderboard;
 		}
 
-		function GetTodaysPlayCount() {
-			$sql = "select count(*) as count from challenge_attempts where added > CURDATE();"
+		function GetPlayCount($daysBack) {
+			$sql = "select count(*) as count from challenge_attempts where added > CURDATE() - $daysBack;";
 			$results = $this->dbm->query($sql);
 
 			if ($row = $results->fetch_assoc()) {
@@ -94,7 +95,7 @@
 		}
 
 		function GetMostUserAttempts() {
-			$sql = "select username, count(user_id) as attempts from challenge_attempts join users on users.id = challenge_attempts.user_id group by user_id;";
+			$sql = "select distinct username, count(*) as attempts from challenge_attempts join users u on challenge_attempts.user_id = u.id group by username order by attempts desc;";
 			$results = $this->dbm->query($sql);
 			
 			$attempts = array();
@@ -104,7 +105,19 @@
 			}
 
 			return $attempts;
+		}
 
+		function GetNewUsers() {
+			$sql = "select distinct username, datediff(CURDATE(), added) + 1 as daysOld from users where added > CURDATE() - 6;";
+			$results = $this->dbm->query($sql);
+			
+			$newUsers = array();
+			while($row = $results->fetch_assoc()){
+				$entry = new NewUser($row['username'], $row['daysOld']);
+				array_push($newUsers, $entry);
+			}
+
+			return $newUsers;
 		}
 	}
 ?>

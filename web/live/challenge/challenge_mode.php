@@ -21,6 +21,20 @@
   	echo "</center>";
   }
 
+    function DisplayQuickStats() {
+    global $challenge_manager;
+
+    $todaysPlays = $challenge_manager->GetTodaysPlayCount();
+    #$thisWeeksPlays = $challenge_manager->GetThisWeeksPlayCount();
+    #$thisMonthsPlays = $challenge_manager->GetThisMonthsPlayCount();
+
+    echo "<center>";
+    echo "<table border='1'>";
+    echo "<tr><td>Today's Plays</td><td>" . $todaysPlays . "</td></tr>";
+    echo "</table>";
+    echo "</center>";
+  }
+
   function DisplayMostWrongQuestions() {
   	global $challenge_manager;
 
@@ -109,6 +123,11 @@
   echo "<center><b>LEADERBOARD</b></center>";
   echo "<hr>";
   DisplayLeaderboard();
+  echo "<hr><br><br>";
+
+  echo "<center><b>QUICK STATS</b></center>";
+  echo "<hr>";
+  DisplayQuickStats();
   echo "<hr><br><br>";
 
   echo "<center><b>MOST WRONG QUESTIONS</b></center>";

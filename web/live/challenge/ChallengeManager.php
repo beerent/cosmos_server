@@ -37,6 +37,8 @@
 			if ($row = $results->fetch_assoc()) {
 				return $row['count'];
 			}
+
+			return "0";
 		}
 
 		function GetMostWrongQuestions() {

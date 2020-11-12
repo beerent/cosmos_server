@@ -12,12 +12,27 @@
 
   	echo "<center>";
   	echo "<table border='1'>";
-  	echo "<tr><td><b>Username</b></td><td><b>Points</b></td></tr>";
+  	echo "<tr><td><b>Username</b></td><td><b>Points</b></td><td><b>Date</b></td></tr>";
   	foreach ($leaderboard as $entry) {
-  		echo "<tr><td>". $entry->GetUsername() . "</td><td>" . $entry->GetPoints() . "</td></tr>";
+  		echo "<tr><td>". $entry->GetUsername() . "</td><td>" . $entry->GetPoints() . "</td><td>" . $entry->GetDate() . "</td></tr>";
   	}
   	echo "</table>";
   	echo "</center>";
+  }
+
+  function DisplayRecentAttempts() {
+    global $challenge_manager;
+
+    $leaderboard = $challenge_manager->GetRecentAttempts();
+
+    echo "<center>";
+    echo "<table border='1'>";
+    echo "<tr><td><b>Username</b></td><td><b>Points</b></td><td><b>Date</b></td></tr>";
+    foreach ($leaderboard as $entry) {
+      echo "<tr><td>". $entry->GetUsername() . "</td><td>" . $entry->GetPoints() . "</td><td>" . $entry->GetDate() . "</td></tr>";
+    }
+    echo "</table>";
+    echo "</center>";
   }
 
   function DisplayQuickStats() {
@@ -148,6 +163,11 @@
   echo "<center><b>LEADERBOARD</b></center>";
   echo "<hr>";
   DisplayLeaderboard();
+  echo "<hr><br><br>";
+
+  echo "<center><b>RECENT ATTEMPTS</b></center>";
+  echo "<hr>";
+  DisplayRecentAttempts();
   echo "<hr><br><br>";
 
   echo "<center><b>QUICK STATS</b></center>";

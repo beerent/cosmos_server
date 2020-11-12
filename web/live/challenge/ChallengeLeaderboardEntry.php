@@ -1,9 +1,10 @@
 <?php
 	class ChallengeLeaderboardEntry {
 
-		function __construct($username, $points){
+		function __construct($username, $points, $date){
 			$this->username = $username;
 			$this->points = $points;
+			$this->date = $date;
 		}
 
 		function GetUsername() {
@@ -12,6 +13,10 @@
 
 		function GetPoints() {
 			return $this->points;
+		}
+
+		function GetDate() {
+			return $this->date;
 		}
 	}
 ?>

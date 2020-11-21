@@ -31,6 +31,18 @@
 			return $leaderboard;
 		}
 
+		function GetTotalAttempts() {
+			$sql = "select count(*) as count from challenge_attempts;";
+
+			$results = $this->dbm->query($sql);
+
+			if($row = $results->fetch_assoc()){
+				return $row['count'];
+			}
+
+			return "0";
+		}
+
 		function GetRecentAttempts() {
 			$sql = "select users.username, challenge_answers.attempt_id, count(challenge_answers.id) - 1 as points, date(challenge_attempts.added) as date from challenge_answers";
 			$sql .= " join answers on challenge_answers.answer_id = answers.id";

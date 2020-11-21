@@ -20,6 +20,18 @@
   	echo "</center>";
   }
 
+  function DisplayTotalAttempts() {
+    global $challenge_manager;
+
+    $totalAttempts = $challenge_manager->GetTotalAttempts();
+
+    echo "<center>";
+    echo "<table border='1'>";
+    echo "<tr><td>" . $totalAttempts . "</td></tr>";
+    echo "</table>";
+    echo "</center>";
+  }
+
   function DisplayRecentAttempts() {
     global $challenge_manager;
 
@@ -163,6 +175,11 @@
   echo "<center><b>LEADERBOARD</b></center>";
   echo "<hr>";
   DisplayLeaderboard();
+  echo "<hr><br><br>";
+
+  echo "<center><b>TOTAL ATTEMPTS</b></center>";
+  echo "<hr>";
+  DisplayTotalAttempts();
   echo "<hr><br><br>";
 
   echo "<center><b>RECENT ATTEMPTS</b></center>";

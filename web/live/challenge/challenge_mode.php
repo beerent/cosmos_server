@@ -12,9 +12,9 @@
 
   	echo "<center>";
   	echo "<table border='1'>";
-  	echo "<tr><td><b>Username</b></td><td><b>Points</b></td><td><b>Date</b></td></tr>";
+  	echo "<tr><td><b>Username</b></td><td><b>Points</b></td><td><b>Seconds Per Question</b></td><td><b>Date</b></td></tr>";
   	foreach ($leaderboard as $entry) {
-  		echo "<tr><td>". $entry->GetUsername() . "</td><td>" . $entry->GetPoints() . "</td><td>" . $entry->GetDate() . "</td></tr>";
+  		echo "<tr><td>". $entry->GetUsername() . "</td><td>" . $entry->GetPoints() . "</td><td>" . $entry->GetSecondsPerQuestion() . "</td><td>" . $entry->GetDate() . "</td></tr>";
   	}
   	echo "</table>";
   	echo "</center>";

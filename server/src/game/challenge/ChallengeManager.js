@@ -136,7 +136,7 @@ class ChallengeManager {
 			var newGameData = {}; 
 			newGameData["attempt_id"] = newChallengeId;
 			configManager.GetConfigValue(CHALLENGE_MODE_TIMER_LENGTH, function(value) {
-				newGameData["challenge_mode_timer_length"] = value;
+				newGameData["challenge_mode_timer_length"] = parseInt(value);
 				responseBuilder.SetPayload(newGameData);
 				callback(responseBuilder.Response());
 			});

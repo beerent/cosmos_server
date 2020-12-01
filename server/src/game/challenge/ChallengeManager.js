@@ -1,7 +1,10 @@
 var QuestionManager = require("../../question/QuestionManager.js");
 var UserManager = require("../../user/UserManager.js");
+var ConfigManager = require("../../config/ConfigManager.js");
 
 var ChallengeLeaderboardManager = require("./ChallengeLeaderboardManager.js");
+
+var CHALLENGE_MODE_TIMER_LENGTH = "challenge_mode_timer_length";
 
 class ChallengeManager {
 
@@ -125,14 +128,18 @@ class ChallengeManager {
 	}
 
 	CreateNewChallenge(user_id, responseBuilder, callback) {
+		var configManager = new ConfigManager(this.dbm);
+
 		var sql = "insert into challenge_attempts (user_id) values (?)";
 		var params = [user_id];
 		this.dbm.ParameterizedInsert(sql, params, function(newChallengeId, err) {
 			var newGameData = {}; 
 			newGameData["attempt_id"] = newChallengeId;
-
-			responseBuilder.SetPayload(newGameData);
-			callback(responseBuilder.Response());
+			configManager.GetConfigValue(CHALLENGE_MODE_TIMER_LENGTH, function(value) {
+				newGameData["challenge_mode_timer_length"] = value;
+				responseBuilder.SetPayload(newGameData);
+				callback(responseBuilder.Response());
+			});
 		});
 	}
 

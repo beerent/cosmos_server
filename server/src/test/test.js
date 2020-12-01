@@ -759,6 +759,11 @@ function TestNewChallengeValidUser() {
 			failures += "  - response is missing attempt_id in payload\n";
 			success = false;
 		}
+
+		if (response.payload.challenge_mode_timer_length == undefined) {
+			failures += "  - response is missing challenge_timer_length in payload\n";
+			success = false;
+		}
 	}
 
 	if (false == success) {

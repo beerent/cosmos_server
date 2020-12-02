@@ -61,7 +61,7 @@
 			$sql .= " join answers on challenge_answers.answer_id = answers.id";
 			$sql .= " join challenge_attempts on challenge_answers.attempt_id = challenge_attempts.id";
 			$sql .= " join users on challenge_attempts.user_id = users.id";
-			$sql .= " where challenge_attempts.added > CURDATE() - 6";
+			$sql .= " where date(challenge_attempts.added) > CURDATE() - 6";
 			$sql .= " group by challenge_attempts.id order by challenge_attempts.id desc;";
 
 			$results = $this->dbm->query($sql);

@@ -8,7 +8,8 @@
         background-size: 60%;
         background-repeat: no-repeat;
         background-attachment: fixed;
-        background-position: center; 
+        background-position: center;
+        height: 100%;
       }
       
       .footer {

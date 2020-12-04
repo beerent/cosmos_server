@@ -89,7 +89,7 @@
       $questionText = $question->GetQuestion();
       $singleQuoteEscapedQuestionText = $stringUtils->EscapeSingleQuotes($questionText);
 
-      echo '<input type="text" size="60" id="'.$elementId.'" value="'.htmlspecialchars($questionText).'" maxlength="150" onchange="AddToQuestionUpdateQueue(\''.$questionId.'\', \''.$elementId.'\', \''.htmlspecialchars($singleQuoteEscapedQuestionText).'\'); AddToQuestionUnflagQueue(\''. $questionId .'\');">';
+      echo '<input type="text" size="60" id="'.$elementId.'" value="'.htmlspecialchars($questionText).'" maxlength="150" onchange="AddToQuestionUpdateQueue(\''.$questionId.'\', \''.$elementId.'\', \''.htmlspecialchars($singleQuoteEscapedQuestionText).'\');">';
 
       echo "    </td>";
       echo "  </tr>";
@@ -115,7 +115,7 @@
       }
 
       echo "<input type='text' readonly size='60' id='". $elementId ."' value='". $originalState ."' maxlength='150'>";
-      echo "<button onclick='AddToQuestionEnableUpdateQueue(\"". $questionId ."\", \"". $elementId ."\", \"". $originalState ."\"); AddToQuestionUnflagQueue(\''. $questionId .'\');'>toggle</button>";
+      echo "<button onclick='AddToQuestionEnableUpdateQueue(\"". $questionId ."\", \"". $elementId ."\", \"". $originalState ."\");'>toggle</button>";
 
       echo "    </td>";
       echo "  </tr>";

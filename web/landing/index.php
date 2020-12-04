@@ -78,7 +78,7 @@
 
     <div class="footer">
       <hr>
-      <p>Brent Ryczak · https://www.brentryczak.com · Nick Barletta</p>
+      <p>Brent Ryczak · https://www.brentryczak.com</p>
     </div>
 
   </body>

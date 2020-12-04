@@ -40,7 +40,7 @@ class ChallengeLeaderboardManager {
 
 		var sql = "select users.username, challenge_answers.attempt_id, count(challenge_answers.id) as points from challenge_answers";
 		sql += " join answers on challenge_answers.answer_id = answers.id";
-		sql += " join challenge_attempts on challenge_answers.attempt_id = challenge_attempts.id";
+		sql += " join challenge_attempts on challenge_answers.attempt_id = challenge_attempts.id and date(challenge_attempts.added) > date((select value from config where `key` = 'challenge_mode_leaderboard_cutoff_date'))";
 		sql += " join users on challenge_attempts.user_id = users.id";
 		sql += " where answers.correct = 1";
 		sql += " group by challenge_attempts.id order by points desc, challenge_attempts.id asc limit 10;";

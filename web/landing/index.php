@@ -80,7 +80,7 @@
 
     <div class="footer">
       <hr>
-      <p>Brent Ryczak · https://www.brentryczak.com</p>
+      <p>Brent Ryczak · brentryczak@gmail.com · https://www.brentryczak.com</p>
     </div>
 
   </body>

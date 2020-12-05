@@ -22,6 +22,10 @@
       .jumbotron {
           background: none
       }
+      
+      .text-nowrap {
+          white-space: nowrap;
+      }
 
     </style>
   </head>
@@ -29,7 +33,7 @@
   <body>
 <div class="jumbotron">
   <center>
-  <h2 class="display-4">Know Your Cosmos</h2>
+  <h1 class="display-4 text-nowrap">Know Your Cosmos</h1>
   <hr class="my-4">
   <p class="lead"><a href="https://apps.apple.com/us/app/know-your-cosmos/id1451492400"><img style="size: 40%" src="./resources/download.png" alt="Download Know Your Cosmos"/></a></p>
   </center>

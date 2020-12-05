@@ -113,7 +113,7 @@
     </div>
 
     <div class="fixed-bottom bg-light text-dark footer">
-      <center><h6><small>Brent Ryczak · brentryczak@gmail.com · https://www.brentryczak.com</small></h6></center>
+      <center><h6><small>Brent Ryczak · brentryczak@gmail.com · www.brentryczak.com</small></h6></center>
     </div>
   </body>
 </html>

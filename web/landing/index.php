@@ -2,6 +2,7 @@
   <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="shortcut icon" href="https://www.knowyourcosmos.com/resources/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
       body { 
@@ -20,16 +21,22 @@
          width: 100%;
          text-align: center;
       }
+      
+      .jumbotron {
+          background: none
+      }
 
     </style>
   </head>
 
   <body>
-
-    <div class="p-5 text-center">
-      <h1 class="mb-3">Know Your Cosmos</h1>
-      <a href="https://apps.apple.com/us/app/know-your-cosmos/id1451492400"><img style="size: 40%" src="./resources/download.png" alt="Download Know Your Cosmos"/></a>
-    </div>
+<div class="jumbotron">
+  <center>
+  <h2 class="display-4">Know Your Cosmos</h2>
+  <hr class="my-4">
+  <p class="lead"><a href="https://apps.apple.com/us/app/know-your-cosmos/id1451492400"><img style="size: 40%" src="./resources/download.png" alt="Download Know Your Cosmos"/></a></p>
+  </center>
+</div>
 
     <?php
       $include = $_SERVER['DOCUMENT_ROOT']; $include .="/live/challenge/ChallengeManager.php"; include_once($include);
@@ -42,9 +49,8 @@
         $leaderboard = $challenge_manager->GetLeaderboard();
 
         echo "<center>";
-        echo "  <b>Know Your Cosmos Live Leaderboard</b>";
-        echo "  <div style='width: 25%'>";
-        echo "  <table class='table table-bordered table-sm'>";
+        echo "  <div>";
+        echo "  <table style=\"width: auto;\" class=\"table table-bordered table-condensed\">";
         echo "    <thead>";
         echo "      <tr>";
         echo "        <th scope='col'>Place</th>";
@@ -67,7 +73,39 @@
         echo "</center>";
       }
 
+      function ServerIsHealthy() {
+        $url = "https://knowyourcosmos.com:13213/health";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,  2);
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        return strpos($result, "gaga X ari") !== false;        
+      }
+
+      function DisplayServerBadges() {
+        echo "<div>";
+        echo "  <center>";
+
+        $serverIsHealthy = ServerIsHealthy();
+        if ($serverIsHealthy) {
+          echo "<span class=\"badge badge-dark\">Server Status</span><span class=\"badge badge-success\">Healthy</span>";
+        } else {
+          echo "<span class=\"badge badge-dark\">Server Status</span><span class=\"badge badge-danger\">Unhealthy</span>";
+        }
+        echo " <span class=\"badge badge-dark\">iOS Version</span><span class=\"badge badge-info\">1.1.1</span>";
+        echo " <span class=\"badge badge-dark\">Server Version</span><span class=\"badge badge-info\">1.1.1</span>";
+
+        echo "  </center>";
+        echo "  <br>";
+        echo "</div>";
+      }
+
       DisplayLeaderboard();
+      DisplayServerBadges();
     ?>
 
     <div>

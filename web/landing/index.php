@@ -11,15 +11,12 @@
         background-repeat: no-repeat;
         background-attachment: fixed;
         background-position: center;
-        height: 100%;
+        padding-bottom: 70px;
       }
-      
+
       .footer {
-         position: fixed;
-         left: 0;
-         bottom: 0;
-         width: 100%;
-         text-align: center;
+        padding-top: 13px;
+        padding-bottom: 5px;
       }
       
       .jumbotron {
@@ -50,7 +47,7 @@
 
         echo "<center>";
         echo "  <div>";
-        echo "  <table style=\"width: auto;\" class=\"table table-bordered table-condensed\">";
+        echo "  <table style=\"width: auto;\" class=\"table table-bordered table-sm\">";
         echo "    <thead>";
         echo "      <tr>";
         echo "        <th scope='col'>Place</th>";
@@ -92,12 +89,11 @@
 
         $serverIsHealthy = ServerIsHealthy();
         if ($serverIsHealthy) {
-          echo "<span class=\"badge badge-dark\">Server Status</span><span class=\"badge badge-success\">Healthy</span>";
+          echo "<span class=\"badge badge-dark\">server status</span><span class=\"badge badge-success\">live</span>";
         } else {
-          echo "<span class=\"badge badge-dark\">Server Status</span><span class=\"badge badge-danger\">Unhealthy</span>";
+          echo "<span class=\"badge badge-dark\">server status</span><span class=\"badge badge-danger\">down</span>";
         }
-        echo " <span class=\"badge badge-dark\">iOS Version</span><span class=\"badge badge-info\">1.1.1</span>";
-        echo " <span class=\"badge badge-dark\">Server Version</span><span class=\"badge badge-info\">1.1.1</span>";
+        echo " <span class=\"badge badge-dark\">version</span><span class=\"badge badge-info\">1.1.1</span>";
 
         echo "  </center>";
         echo "  <br>";
@@ -116,10 +112,8 @@
       </center>
     </div>
 
-    <div class="footer">
-      <hr>
-      <p>Brent Ryczak · brentryczak@gmail.com · https://www.brentryczak.com</p>
+    <div class="fixed-bottom bg-light text-dark footer">
+      <center><h6><small>Brent Ryczak · brentryczak@gmail.com · https://www.brentryczak.com</small></h6></center>
     </div>
-
   </body>
 </html>

@@ -2,7 +2,6 @@
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/database/DatabaseManager.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/config/ConfigEntry.php"; include_once($include);
 
-
 	class ConfigDataManager {
 		function __construct(){
 			$this->dbm = new DatabaseManager();
@@ -29,6 +28,17 @@
 			$escapedValue = $this->dbm->GetEscapedString($value);
 			$sql = "update config set value = '$escapedValue' where `key` = '$key'";
 			$this->dbm->insert($sql);
+		}
+
+		function GetConfigValue($key) {
+			$sql = "select value as v from config where `key` = '$key'";
+			$results = $this->dbm->query($sql);
+
+			if($row = $results->fetch_assoc()) {
+				return $row['v'];
+			}
+
+			return "[config not found]";
 		}
 	}
 ?>

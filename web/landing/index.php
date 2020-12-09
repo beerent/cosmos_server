@@ -28,8 +28,10 @@
             <hr class="my-4">
             <?php
                $include = $_SERVER['DOCUMENT_ROOT']; $include .="/live/challenge/ChallengeManager.php"; include_once($include);
+               $include = $_SERVER['DOCUMENT_ROOT']; $include .="/config/ConfigDataManager.php"; include_once($include);
                
                $challenge_manager = new ChallengeManager();
+               $config_data_manager = new ConfigDataManager();
                
                
                function ServerIsHealthy() {
@@ -46,6 +48,8 @@
                }
                
                function DisplayServerBadges() {
+                global $config_data_manager;
+
                  echo "<div>";
                  echo "  <center>";
                
@@ -55,7 +59,9 @@
                  } else {
                    echo "<span class=\"badge badge-dark\">server status</span><span class=\"badge badge-danger\">down</span>";
                  }
-                 echo " <span class=\"badge badge-dark\">version</span><span class=\"badge badge-info\">1.1.1</span>";
+
+                 $app_version = $config_data_manager->GetConfigValue('ios_app_version');
+                 echo " <span class=\"badge badge-dark\">version</span><span class=\"badge badge-info\">$app_version</span>";
                
                  echo "  </center>";
                  echo "  <br>";
@@ -109,7 +115,7 @@
             <center>
                <a href="https://github.com/beerent/cosmos_server">Server Github</a><br>
                <a href="https://github.com/beerent/cosmos_client">Client Github</a><br>
-               <a href="https://trello.com/b/fpAUlCsp/know-your-cosmos">Trello</a>
+               <a href="https://view.monday.com/881326551-b9ad11ee494417fc500faa9b032c975d">Monday.com</a>
             </center>
          </div>
       </div>

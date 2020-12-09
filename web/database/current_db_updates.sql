@@ -1,0 +1,1 @@
+insert into config (`key`, value) values ("ios_app_version", "1.1.1");

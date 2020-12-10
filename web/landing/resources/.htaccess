@@ -1,0 +1,9 @@
+Order allow,deny
+Deny from All
+
+Order allow,deny
+Deny from All
+
+<FilesMatch "^(download.png|logo_10.png)?$">
+        Allow from All
+</FilesMatch>

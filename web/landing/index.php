@@ -113,9 +113,9 @@
          ?>
          <div>
             <center>
-               <a href="https://trello.com/b/fpAUlCsp/know-your-cosmos">Trello</a>
+               <a href="https://trello.com/b/fpAUlCsp/know-your-cosmos">Trello</a><br>
                <a href="https://github.com/beerent/cosmos_server">Server Github</a><br>
-               <a href="https://github.com/beerent/cosmos_client">Client Github</a><br>
+               <a href="https://github.com/beerent/cosmos_client">Client Github</a>
             </center>
          </div>
       </div>

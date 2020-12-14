@@ -11,8 +11,10 @@ var ResponseBuilder = require("./response/ResponseBuilder.js");
 var UserManager = require("./user/UserManager.js");
 var UserProfileManager = require("./user/UserProfileManager.js");
 var HealthCheckManager = require("./health/HealthCheckManager.js");
+var ConfigManager = require("./config/ConfigManager.js");
+var MessagesManager = require("./messages/MessagesManager.js");
 
-var cosmosRoot = "/home/ubuntu/server/cosmos_server/server/src";
+var cosmosRoot = "/Users/beerent/Documents/cosmos_server/server/src";
 
 function GetRunMode() {
 	var runMode = "debug";
@@ -136,6 +138,14 @@ app.get('/getChallengeLeaderboard', function (req, res) {
 
 	var responseBuilder = new ResponseBuilder("getChallengeLeaderboard");
 	challengeManagerInstance.HandleGetChallengeLeaderboardRequest(req, res, responseBuilder);
+});
+
+app.get('/getMessages', function (req, res) {
+	var dbm = new DBM();
+	var messagesManagerInstance = new MessagesManager(dbm, errors);
+
+	var responseBuilder = new ResponseBuilder("getMessages");
+	messagesManagerInstance.HandleGetMessagesRequest(req, res, responseBuilder);
 });
 
 app.get('/flagQuestion', function (req, res) {

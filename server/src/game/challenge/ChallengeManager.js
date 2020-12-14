@@ -124,7 +124,6 @@ class ChallengeManager {
 			res.end();
 			self.dbm.Close();
 		});
-
 	}
 
 	CreateNewChallenge(user_id, responseBuilder, callback) {

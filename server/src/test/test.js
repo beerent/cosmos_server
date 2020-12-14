@@ -1872,6 +1872,7 @@ function TestReviewQuestionValidUserAndValidQuestionValidPrivileges() {
 	}
 }
 
+/* HEALTH */
 function TestHealthCheck() {
 	var functionName = "TestHealthCheck\n";
 	var failures = "";
@@ -1902,6 +1903,65 @@ function TestHealthCheck() {
 		testsFailedCount++;
 	}
 }
+
+/* MESSAGES */
+function TestGetMessagesReturnsRequest() {
+	var functionName = "TestGetMessagesReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "getMessages";
+
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestGetMessagesNoParameters() {
+	var functionName = "TestGetMessagesNoParameters\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/getMessages";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success == false) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	console.log(response.payload);
+	if (response.payload.messages == undefined) {
+		failures += "  - messages was " + response.payload.messages + ", expected data\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
 
 /* AUTHENTICATE */
 TestAuthenticateReturnsRequest();
@@ -1984,7 +2044,12 @@ TestReviewQuestionValidUser();
 TestReviewQuestionValidUserAndValidQuestionInvalidPrivileges();
 TestReviewQuestionValidUserAndValidQuestionValidPrivileges();
 
+/* HEALTH */
 TestHealthCheck();
+
+/* MESSAGES */
+TestGetMessagesReturnsRequest();
+TestGetMessagesNoParameters();
 
 PrintResults();
 

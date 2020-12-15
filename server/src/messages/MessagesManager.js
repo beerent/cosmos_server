@@ -43,10 +43,6 @@ class MessagesManager {
 		return new Date();
 	}
 
-	CreateDateFromMessage = function(mysql_string) { 
-		let date4 = new Date("2018-01-12 02:30:32");
-	}
-
 	GetMessages(callback) {
 		var self = this;
 

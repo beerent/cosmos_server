@@ -14,7 +14,7 @@ var HealthCheckManager = require("./health/HealthCheckManager.js");
 var ConfigManager = require("./config/ConfigManager.js");
 var MessagesManager = require("./messages/MessagesManager.js");
 
-var cosmosRoot = "/Users/beerent/Documents/cosmos_server/server/src";
+var cosmosRoot = "/home/ubuntu/server/cosmos_server/server/src";
 
 function GetRunMode() {
 	var runMode = "debug";

@@ -318,3 +318,13 @@ insert into config (`key`, `value`) values ("challenge_mode_timer_length", "10")
 
 insert into config(`key`, value) values ("challenge_mode_leaderboard_cutoff_date", "2020-12-02");
 insert into config (`key`, value) values ("ios_app_version", "1.1.1");
+create table messages
+(
+	id int auto_increment,
+	message varchar(300) not null,
+	start datetime not null,
+	expire datetime not null,
+	constraint messages_pk
+		primary key (id)
+);
+

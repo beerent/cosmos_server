@@ -45,7 +45,7 @@ class MessagesManager {
 	    var utc = new Date();
 	    var cdt = new Date(utc.getTime()-((1 * 60 * 60 * 1000) * timelagging));
 
-	    rerturn cdt;
+	    return cdt;
 	}
 
 	GetMessages(callback) {

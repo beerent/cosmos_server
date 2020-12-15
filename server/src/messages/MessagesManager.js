@@ -40,7 +40,12 @@ class MessagesManager {
 	}
 
 	GetCurrentDate() {
-		return new Date();
+		var timelagging = 6;  //six hour difference
+
+	    var utc = new Date();
+	    var cdt = new Date(utc.getTime()-((1 * 60 * 60 * 1000) * timelagging));
+
+	    rerturn cdt;
 	}
 
 	GetMessages(callback) {

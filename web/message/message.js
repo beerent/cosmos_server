@@ -55,7 +55,7 @@ function CommitMessagesUpdates() {
 
   Object.keys(map).forEach(function(id) {
     var message = map[id];
-    execute("/config/message/MessageHelper.php?option=updateMessage&id=" + id + "&message=" + message, 'fakediv');
+    execute("/message/MessageHelper.php?option=updateMessage&id=" + id + "&message=" + message, 'fakediv');
   });
 
   return true;
@@ -73,7 +73,7 @@ function CommitStartUpdates() {
 
   Object.keys(map).forEach(function(id) {
     var start = map[id];
-    execute("/config/message/MessageHelper.php?option=updateStart&id=" + id + "&start=" + start, 'fakediv');
+    execute("/message/MessageHelper.php?option=updateStart&id=" + id + "&start=" + start, 'fakediv');
   });
 
   return true;
@@ -91,7 +91,7 @@ function CommitExpireUpdates() {
 
   Object.keys(map).forEach(function(id) {
     var expire = map[id];
-    execute("/config/message/MessageHelper.php?option=updateExpire&id=" + id + "&expire=" + expire, 'fakediv');
+    execute("/message/MessageHelper.php?option=updateExpire&id=" + id + "&expire=" + expire, 'fakediv');
   });
 
   return true;
@@ -102,7 +102,7 @@ function AddMessage() {
   var start = GetObject("add_message_start").value;
   var expire = GetObject("add_message_expire").value;
 
-  execute("/config/message/MessageHelper.php?option=add&message=" + message + "&start=" + start + "&expire=" + expire, 'fakediv');
+  execute("/message/MessageHelper.php?option=add&message=" + message + "&start=" + start + "&expire=" + expire, 'fakediv');
 
   return true;
 }

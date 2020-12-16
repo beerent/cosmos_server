@@ -12,7 +12,8 @@
 	<a href="/mission/add_mission.php">Add Mission</a> |
 	<a href="/mission/manage_missions.php">Manage Missions</a> |
 	<a href="/live/challenge/challenge_mode.php">Live Data</a> |
-	<a href="/config/config.php">Config</a>
+	<a href="/config/config.php">Config</a> |
+	<a href="/message/manage_messages.php">Messages</a>
 	|
 
 </center><br>

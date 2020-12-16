@@ -1,6 +1,6 @@
 <?php
     $include = $_SERVER['DOCUMENT_ROOT']; $include .= "/database/DatabaseManager.php"; include_once($include);
-      $include = $_SERVER['DOCUMENT_ROOT']; $include .="/config/message/Message.php"; include_once($include);
+      $include = $_SERVER['DOCUMENT_ROOT']; $include .="/message/Message.php"; include_once($include);
 
 	class MessageManager {
 		function __construct(){
@@ -8,8 +8,32 @@
 			$this->dbm->connect();
 		}
 
-		function GetMessages() {
-			$sql = "select id, message, start, expire from messages;";
+		function GetAllMessages() {
+			$whereCondition = "";
+			return $this->GetMessages($whereCondition);
+		}
+
+		function GetActiveMessages() {
+			$whereCondition = "start <= now() and expire >= now()";
+			return $this->GetMessages($whereCondition);
+		}
+
+		function GetExpiredMessages() {
+			$whereCondition = "expire < now()";
+			return $this->GetMessages($whereCondition);
+		}
+
+		function GetFutureMessages() {
+			$whereCondition = "start > now()";
+			return $this->GetMessages($whereCondition);
+		}
+
+		function GetMessages($whereCondition) {
+			$sql = "select id, message, start, expire from messages";
+			if ($whereCondition != "") {
+				$sql .= " where ";
+				$sql .= $whereCondition;
+			}
 
 			$results = $this->dbm->query($sql);
 

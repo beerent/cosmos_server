@@ -106,3 +106,8 @@ function AddMessage() {
 
   return true;
 }
+
+function RefreshManageMessagesPage() {
+  var date_category = GetValue("date_category_select");
+  window.location.replace("/message/manage_messages.php?date_category=" + date_category);
+}

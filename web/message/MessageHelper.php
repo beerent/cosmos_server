@@ -1,5 +1,5 @@
 <?php
-  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/config/message/MessageManager.php"; include_once($include);
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/message/MessageManager.php"; include_once($include);
   
   $message_manager = new MessageManager();
   

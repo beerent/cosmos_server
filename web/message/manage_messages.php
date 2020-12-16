@@ -9,6 +9,7 @@
 
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/top.php"; include_once($include);
   $include = $_SERVER['DOCUMENT_ROOT']; $include .="/message/MessageManager.php"; include_once($include);
+  $include = $_SERVER['DOCUMENT_ROOT']; $include .="/util/StringUtils.php"; include_once($include);
 
   $message_manager = new MessageManager();
 
@@ -52,6 +53,7 @@
 
   function DisplayMessages() {
     global $message_manager;
+    $stringUtils = new StringUtils();
 
     $date_category = "all";
     if (isset($_GET['date_category'])) {
@@ -74,9 +76,10 @@
     echo "<tr><td><b>Message</b></td><td><b>Start</b></td><td><b>Expire</b></td></tr>";
     foreach ($messages as $message) {
       $messageElementId = "message_". $message->getId();
+      $singleQuoteEscapedMessageText = $stringUtils->EscapeSingleQuotes($singleQuoteEscapedMessageText);
 
       echo "<tr?>";
-      echo '<td><input type="text" size="60" id="'.$messageElementId.'" value="'.htmlspecialchars($message->GetMessage()).'" maxlength="500" onchange="AddToMessageUpdateQueue(\''.$messageElementId.'\', \''.$message->getId().'\', \''.$message->GetMessage().'\');"></td>';
+      echo '<td><input type="text" size="60" id="'.$messageElementId.'" value="'.htmlspecialchars($message->GetMessage()).'" maxlength="500" onchange="AddToMessageUpdateQueue(\''.$messageElementId.'\', \''.$message->getId().'\', \''.htmlspecialchars($singleQuoteEscapedMessageText).'\');"></td>';
 
       $startElementId = "start_". $message->getId();
       echo '<td><input type="text" size="20" id="'.$startElementId.'" value="'.htmlspecialchars($message->GetStart()).'" maxlength="500" onchange="AddToStartUpdateQueue(\''.$startElementId.'\', \''.$message->getId().'\', \''.$message->GetStart().'\');"></td>';

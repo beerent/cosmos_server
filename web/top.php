@@ -2,9 +2,7 @@
 	<h1>Know Your Cosmos HQ<hr><br></h1> 
 	| 
 	<a href="/index.php">Home</a> | 
-	<a href="/blog/add_blog.php">Add Blog</a> | 
-	<a href="https://trello.com/b/GYwNpHfP/cosmo" target="_blank">Trello</a> |
-	<a href="https://drive.google.com/drive/folders/1dR1Icfz2uQIuG6HAsif-_6_8PnRZdMtk?ths=true" target="_blank">Google Docs</a> |
+	<a href="/release_notes/add_release_notes.php">Add Release Notes</a> | 
 	<a href="/bucket/add_bucket.php">Add Bucket</a> |
 	<a href="/bucket/manage_buckets.php">Manange Buckets</a> |
 	<a href="/question/add_question.php">Add Question</a> | 

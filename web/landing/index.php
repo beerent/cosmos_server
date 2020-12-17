@@ -4,20 +4,13 @@
     <link rel="shortcut icon" href="https://www.knowyourcosmos.com/resources/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-      body:before {
-        content: "";
-        display: block;
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -10;
-        background: url(p'./resources/logo_10.png') no-repeat center center;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
-        background-size: cover;
+      body { 
+        background-image: url('./resources/logo_10.png');
+        background-size: 60%;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+        padding-bottom: 70px;
       }
       .footer {
         padding-top: 13px;

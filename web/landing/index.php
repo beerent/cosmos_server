@@ -4,13 +4,20 @@
     <link rel="shortcut icon" href="https://www.knowyourcosmos.com/resources/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-      body { 
-        background-image: url('./resources/logo_10.png');
-        background-size: 60%;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        background-position: center;
-        padding-bottom: 70px;
+      body:before {
+        content: "";
+        display: block;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -10;
+        background: url(p'./resources/logo_10.png') no-repeat center center;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
       }
       .footer {
         padding-top: 13px;
@@ -179,7 +186,7 @@
 
     <div class="fixed-bottom bg-light text-dark footer">
     <center>
-      <h6><small>Brent Ryczak · brentryczak@gmail.com · www.brentryczak.com</small></h6>
+      <h6><small><a href="https://www.brentryczak.com" target="_top">Brent Ryczak</a> · <a href="https://www.linkedin.com/in/nabarletta/" target="_top">Nick Barletta</a></small></h6>
     </center>
     </div>
   </body>

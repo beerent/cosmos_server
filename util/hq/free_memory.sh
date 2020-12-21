@@ -1,0 +1,1 @@
+awk '/MemFree/ { printf "%.0f \n", $2/1024 }' /proc/meminfo

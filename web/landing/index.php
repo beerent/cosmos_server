@@ -6,6 +6,17 @@
     <link rel='shortcut icon' type='image/x-icon' href='https://www.knowyourcosmos.com/favicon.ico'/>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E9RX775H6Y"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-E9RX775H6Y');
+    </script>
+    
     <style>
       body { 
         background-image: url('./resources/logo_10.png');

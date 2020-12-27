@@ -1,6 +1,7 @@
 #!/bin/sh
-# you might want to add some user authentication here
-mysql -u root -pRyczak13! -e "show variables; show status" | awk '  
+
+mysql --login-path=local -e "show variables; show status" | awk '  
+
 {
 VAR[$1]=$2  
 }

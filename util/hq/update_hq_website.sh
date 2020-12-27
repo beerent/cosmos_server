@@ -1,5 +1,5 @@
 COSMOS="/home/ubuntu/server/cosmos_server"
-WWW="/var/www/html"
+WWW="/var/www/admin/html"
 
 pushd "$COSMOS"
 git pull

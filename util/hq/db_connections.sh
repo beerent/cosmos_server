@@ -1,1 +1,1 @@
-mysql -u root -pRyczak13! -e "show status like '%onn%'"
+mysql --login-path=local -e "show status like '%onn%'"

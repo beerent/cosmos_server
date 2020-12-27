@@ -22,7 +22,7 @@ class ChallengeManager {
 		return query.answer_id != undefined && query.attempt_id != undefined;
 	}
 
-	DoChallengeRequest(req, res, responseBuilder, callback) {
+	HandleRequestWithAuth(req, res, responseBuilder, callback) {
 		var userManager = new UserManager(this.dbm);
 
 		var self = this;
@@ -49,7 +49,7 @@ class ChallengeManager {
 	HandleNewChallengeRequest(req, res, responseBuilder) {
 		var self = this;
 
-		this.DoChallengeRequest(req, res, responseBuilder, function(user){
+		this.HandleRequestWithAuth(req, res, responseBuilder, function(user){
 			self.CreateNewChallenge(user.id, responseBuilder, function(response){
 				res.json(response);
 				res.end();
@@ -61,7 +61,7 @@ class ChallengeManager {
 	HandleGetChallengeQuestionsRequest(req, res, responseBuilder) {
 		var self = this;
 
-		this.DoChallengeRequest(req, res, responseBuilder, function(user){
+		this.HandleRequestWithAuth(req, res, responseBuilder, function(user){
 
 			if (self.GetChallengeQuestionsFieldsAreValid(req.query) == false) {
 				responseBuilder.SetError(self.errors.GET_CHALLENGE_QUESTIONS_ERROR);
@@ -98,7 +98,7 @@ class ChallengeManager {
 	HandleRegisterChallengeAnswerRequest(req, res, responseBuilder) {
 		var self = this;
 
-		this.DoChallengeRequest(req, res, responseBuilder, function(user){
+		this.HandleRequestWithAuth(req, res, responseBuilder, function(user){
 			if (self.RegisterChallengeAnswerFieldsAreValid(req.query) == false) {
 				responseBuilder.SetError(self.errors.REGISTER_CHALLENGE_ANSWER_MISSING_ERROR);
 				var response = responseBuilder.Response();

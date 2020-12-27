@@ -1,3 +1,5 @@
+var DBM = require("../database/DBM.js");
+
 const https = require('http');
 
 var server = "http://127.0.0.1:8081";
@@ -89,7 +91,7 @@ function TestAuthenticateMissingUsername() {
 
 
 	var url = server + "/authenticate";
-	url += "?password=turtle12";
+	url += "?password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -117,7 +119,7 @@ function TestAuthenticateMissingPassword() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=beerent";
+	url += "?username=testadmin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -145,7 +147,7 @@ function TestAuthenticateEmptyUsername() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=&password=turtle12";
+	url += "?username=&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -173,7 +175,7 @@ function TestAuthenticateEmptyPassword() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=beerent&password=";
+	url += "?username=testadmin&password=";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -201,7 +203,7 @@ function TestAuthenticateIncorrectUsername() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=beerent1&password=turtle12";
+	url += "?username=testadmin1&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -229,7 +231,7 @@ function TestAuthenticateIncorrectPassword() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=beerent&password=turtle123";
+	url += "?username=testadmin&password=admin3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -257,7 +259,7 @@ function TestAuthenticateValidUser() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=beerent&password=turtle12";
+	url += "?username=testadmin&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -285,7 +287,7 @@ function TestAuthenticateValidGuestUser() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=beerent&password=guest";
+	url += "?username=testguest&password=guest";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -367,7 +369,7 @@ function TestGuestAuthenticateMissingUsername() {
 
 
 	var url = server + "/guestAuthenticate";
-	url += "?password=turtle12";
+	url += "?password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -395,7 +397,7 @@ function TestGuestAuthenticateEmptyUsername() {
 
 
 	var url = server + "/guestAuthenticate";
-	url += "?username=&password=turtle12";
+	url += "?username=&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -416,13 +418,13 @@ function TestGuestAuthenticateEmptyUsername() {
 	}
 }
 
-function TestGuestAuthenticateValidUser() {
-	var functionName = "TestAuthenticateValidUser\n";
+function TestGuestAuthenticateValidCreatesUser() {
+	var functionName = "TestGuestAuthenticateValidCreatesUser\n";
 	var failures = "";
 	testsRanCount++;
 
 	var url = server + "/guestAuthenticate";
-	url += "?username=beerent&password=guest";
+	url += "?username=testadmin&password=guest";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -450,7 +452,7 @@ function TestGuestAuthenticateValidGuestUser() {
 
 
 	var url = server + "/guestAuthenticate";
-	url += "?username=beerent&password=turtle12";
+	url += "?username=testadmin&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -539,7 +541,7 @@ function TestNewChallengeMissingUsername() {
 
 
 	var url = server + "/newChallenge";
-	url += "?password=turtle12";
+	url += "?password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -572,7 +574,7 @@ function TestNewChallengeMissingPassword() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username=beerent";
+	url += "?username=testadmin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -605,7 +607,7 @@ function TestNewChallengeEmptyUsername() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username=&password=turtle12";
+	url += "?username=&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -638,7 +640,7 @@ function TestNewChallengeEmptyPassword() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username=beerent&password=";
+	url += "?username=testadmin&password=";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -671,7 +673,7 @@ function TestNewChallengeIncorrectUsername() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username=beerent1&password=turtle12";
+	url += "?username=testadmin1&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -704,7 +706,7 @@ function TestNewChallengeIncorrectPassword() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username=beerent&password=turtle123";
+	url += "?username=testadmin&password=admin3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -737,7 +739,7 @@ function TestNewChallengeValidUser() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username=beerent&password=turtle12";
+	url += "?username=testadmin&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -835,7 +837,7 @@ function TestGetChallengeQuestionsMissingUsername() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?password=turtle12";
+	url += "?password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -863,7 +865,7 @@ function TestGetChallengeQuestionsMissingPassword() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=beerent";
+	url += "?username=testadmin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -891,7 +893,7 @@ function TestGetChallengeQuestionsEmptyUsername() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=&password=turtle12";
+	url += "?username=&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -919,7 +921,7 @@ function TestGetChallengeQuestionsEmptyPassword() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=beerent&password=";
+	url += "?username=testadmin&password=";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -947,7 +949,7 @@ function TestGetChallengeQuestionsIncorrectUsername() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=beerent1&password=turtle12";
+	url += "?username=testadmin1&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -975,7 +977,7 @@ function TestGetChallengeQuestionsIncorrectPassword() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=beerent&password=turtle123";
+	url += "?username=testadmin&password=admin3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1003,7 +1005,7 @@ function TestGetChallengeQuestionsValidUserMissingAttemptId() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=beerent&password=turtle12";
+	url += "?username=testadmin&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1031,7 +1033,7 @@ function TestGetChallengeQuestionsValidUserInvalidAttemptId() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=beerent&password=turtle12&attempt_id=0";
+	url += "?username=testadmin&password=admin&attempt_id=0";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1059,7 +1061,7 @@ function TestGetChallengeQuestionsValidUserValidAttemptId() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=beerent&password=turtle12&attempt_id=1";
+	url += "?username=testguest&password=guest&attempt_id=" + test_attempt_id.toString();
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1141,7 +1143,7 @@ function TestRegisterChallengeAnswerMissingUsername() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?password=turtle12";
+	url += "?password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1168,7 +1170,7 @@ function TestRegisterChallengeAnswerMissingPassword() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=beerent";
+	url += "?username=testadmin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1195,7 +1197,7 @@ function TestRegisterChallengeAnswerEmptyUsername() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=&password=turtle12";
+	url += "?username=&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1222,7 +1224,7 @@ function TestRegisterChallengeAnswerEmptyPassword() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=beerent&password=";
+	url += "?username=testadmin&password=";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1249,7 +1251,7 @@ function TestRegisterChallengeAnswerIncorrectUsername() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=beerent1&password=turtle12";
+	url += "?username=testadmin1&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1276,7 +1278,7 @@ function TestRegisterChallengeAnswerIncorrectPassword() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=beerent&password=turtle123";
+	url += "?username=testadmin&password=admin3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1303,7 +1305,7 @@ function TestRegisterChallengeAnswerValidUserMissingAttemptId() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=beerent&password=turtle12&answer_id=100";
+	url += "?username=testadmin&password=admin&answer_id=100";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1330,7 +1332,7 @@ function TestRegisterChallengeAnswerValidUserMissingAnswerId() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=beerent&password=turtle12&attempt_id=1";
+	url += "?username=testadmin&password=admin&attempt_id=1";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1357,7 +1359,7 @@ function TestRegisterChallengeAnswerValidUserInvalidAttemptId() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=beerent&password=turtle12&attempt_id=0&answer_id=100";
+	url += "?username=testadmin&password=admin&attempt_id=0&answer_id=100";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1384,7 +1386,7 @@ function TestRegisterChallengeAnswerValidUserInvalidAnswerId() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=beerent&password=turtle12&attempt_id=1&answer_id=0";
+	url += "?username=testadmin&password=admin&attempt_id=1&answer_id=0";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1411,7 +1413,7 @@ function TestRegisterChallengeAnswerValidUserValid() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=beerent&password=turtle12&attempt_id=1&answer_id=1000";
+	url += "?username=testguest&password=guest&attempt_id=" + test_attempt_id.toString() + "&answer_id=" + test_answer_id.toString();
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1553,7 +1555,7 @@ function TestGetUserProfileInvalidSpecifier() {
 
 
 	var url = server + "/getUserProfile";
-	url += "?username=beerentStinks";
+	url += "?username=testadminStinks";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1581,7 +1583,7 @@ function TestGetUserProfileValidUserContainsChallengeStats() {
 
 
 	var url = server + "/getUserProfile";
-	url += "?username=beerent";
+	url += "?username=testadmin";
 
 	var response = GetHTTPResponse(url);
 
@@ -1685,7 +1687,7 @@ function TestFlagQuestionValidUser() {
 
 
 	var url = server + "/flagQuestion";
-	url += "?username=beerent&password=turtle12";
+	url += "?username=testadmin&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1713,7 +1715,7 @@ function TestFlagQuestionValidUserAndValidQuestion() {
 
 
 	var url = server + "/flagQuestion";
-	url += "?username=beerent&password=turtle12&question_id=28";
+	url += "?username=testadmin&password=admin&question_id=28";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1795,7 +1797,7 @@ function TestReviewQuestionValidUser() {
 
 
 	var url = server + "/reviewQuestion";
-	url += "?username=beerent&password=turtle12";
+	url += "?username=testadmin&password=admin";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1823,7 +1825,7 @@ function TestReviewQuestionValidUserAndValidQuestionInvalidPrivileges() {
 
 
 	var url = server + "/reviewQuestion";
-	url += "?username=meatbadnoeat&password=wheatbread&question_id=28";
+	url += "?username=testguest&password=guest&question_id=" + test_question_id.toString();
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1851,7 +1853,7 @@ function TestReviewQuestionValidUserAndValidQuestionValidPrivileges() {
 
 
 	var url = server + "/reviewQuestion";
-	url += "?username=beerent&password=turtle12&question_id=28";
+	url += "?username=testadmin&password=admin&question_id=28";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1949,7 +1951,6 @@ function TestGetMessagesNoParameters() {
 		success = false;
 	}
 
-	console.log(response.payload);
 	if (response.payload.messages == undefined) {
 		failures += "  - messages was " + response.payload.messages + ", expected data\n";
 		success = false;
@@ -1962,97 +1963,296 @@ function TestGetMessagesNoParameters() {
 	}
 }
 
+/* COSMOS LIVE */
+function TestCosmosLiveReturnsRequest() {
+	var functionName = "TestCosmosLiveReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
 
-/* AUTHENTICATE */
-TestAuthenticateReturnsRequest();
-TestAuthenticateNoParameters();
-TestAuthenticateMissingUsername();
-TestAuthenticateMissingPassword();
-TestAuthenticateEmptyUsername();
-TestAuthenticateEmptyPassword();
-TestAuthenticateIncorrectUsername();
-TestAuthenticateIncorrectPassword();
-TestAuthenticateValidUser();
-TestAuthenticateValidGuestUser();
+	var requestString = "live";
 
-/* AUTHENTICATE GUEST */
-TestGuestAuthenticateReturnsRequest();
-TestGuestAuthenticateNoParameters();
-TestGuestAuthenticateMissingUsername();
-TestGuestAuthenticateEmptyUsername();
-TestGuestAuthenticateValidUser();
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
 
-/* NEW CHALLENGE */
-TestNewChallengeReturnsRequest();
-TestNewChallengeNoParameters();
-TestNewChallengeMissingUsername();
-TestNewChallengeMissingPassword();
-TestNewChallengeEmptyUsername();
-TestNewChallengeEmptyPassword();
-TestNewChallengeIncorrectUsername();
-TestNewChallengeIncorrectPassword();
-TestNewChallengeValidUser();
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
 
-/* GET CHALLENGE QUESTIONS */
-TestGetChallengeQuestionsReturnsRequest();
-TestGetChallengeQuestionsNoParameters();
-TestGetChallengeQuestionsMissingUsername();
-TestGetChallengeQuestionsMissingPassword();
-TestGetChallengeQuestionsEmptyUsername();
-TestGetChallengeQuestionsEmptyPassword();
-TestGetChallengeQuestionsIncorrectUsername();
-TestGetChallengeQuestionsIncorrectPassword();
-TestGetChallengeQuestionsValidUserMissingAttemptId();
-TestGetChallengeQuestionsValidUserInvalidAttemptId();
-//TestGetChallengeQuestionsValidUserValidAttemptId(); ---> crap test - requires specific attempt id
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
 
-/* REGISTER CHALLENGE ANSWER */
-TestRegisterChallengeAnswerReturnsRequest();
-TestRegisterChallengeAnswerNoParameters();
-TestRegisterChallengeAnswerMissingUsername();
-TestRegisterChallengeAnswerMissingPassword();
-TestRegisterChallengeAnswerEmptyUsername();
-TestRegisterChallengeAnswerEmptyPassword();
-TestRegisterChallengeAnswerIncorrectUsername();
-TestRegisterChallengeAnswerIncorrectPassword();
-TestRegisterChallengeAnswerValidUserMissingAttemptId();
-TestRegisterChallengeAnswerValidUserMissingAnswerId();
-TestRegisterChallengeAnswerValidUserInvalidAttemptId();
-TestRegisterChallengeAnswerValidUserInvalidAnswerId();
-//TestRegisterChallengeAnswerValidUserValid(); ---> crap test - requires specific attempt id
+function TestCosmosLiveInvalidUser() {
+	var functionName = "TestCosmosLiveInvalidUser\n";
+	var failures = "";
+	testsRanCount++;
 
-/* GET CHALLENGE LEADERBOARD */
-TestGetChallengeLearderboardReturnsRequest();
-TestGetChallengeLearderboardNoParameters();
 
-/* GET USER PROFILE */
-TestGetUserProfileReturnsRequest();
-TestGetUserProfileNoParameters();
-TestGetUserProfileInvalidSpecifier();
-//TestGetUserProfileValidUserContainsChallengeStats(); ---> crap test - requires user is on the leaderboard
+	var url = server + "/live";
+	url += "?username=testadmin&password=admin3";
+	var response = GetHTTPResponse(url);
 
-/* FLAG QUESTION */
-TestFlagQuestionReturnsRequest();
-TestFlagQuestionNoParameters();
-TestFlagQuestionValidUser();
-TestFlagQuestionValidUserAndValidQuestion();
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
 
-/* REVIEW QUESTION */
-TestReviewQuestionReturnsRequest();
-TestReviewQuestionNoParameters();
-TestReviewQuestionValidUser();
-TestReviewQuestionValidUserAndValidQuestionInvalidPrivileges();
-TestReviewQuestionValidUserAndValidQuestionValidPrivileges();
+	if (response.op != 101) {
+		failures += "  - op was " + response.op + ", expected 101\n";
+		success = false;
+	}
 
-/* HEALTH */
-TestHealthCheck();
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
 
-/* MESSAGES */
-TestGetMessagesReturnsRequest();
-TestGetMessagesNoParameters();
+function TestCosmosLiveReturnsClosedState() {
+	var functionName = "TestCosmosLiveReturnsClosedState\n";
+	var failures = "";
+	testsRanCount++;
 
-PrintResults();
+	var requestString = "live";
 
+	var url = server + "/" + requestString;
+	url += "?username=testadmin&password=admin";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (response.payload == undefined) {
+		failures += "  - response had no payload\n";
+		success = false;		
+	} 
+
+	else if (response.payload.state == undefined) {
+		failures += "  - state was " + response.payload.state + ", expected 'CLOSED'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function CreateAdminPrivilege(dbm, callback) {
+	var sql = "insert into privileges_enum (privilege) values (?)";
+	var params = ["ADMIN"];
+	dbm.ParameterizedInsert(sql, params, function (response, err) {
+		callback();
+	});
+}
+
+function CreateGuestPrivilege(dbm, callback) {
+	var sql = "insert into privileges_enum (privilege) values (?)";
+	var params = ["GUEST"];
+	dbm.ParameterizedInsert(sql, params, function (response, err) {
+		callback();
+	});
+}
+
+function CreateAdminUser(dbm, callback) {
+	var sql = "insert into users (username, email, password_salt, access_level, added) values (?, ?, ?, ?, now())";
+	var params = ["testadmin", "testadmin@email.com", "admin", 4];
+	dbm.ParameterizedInsert(sql, params, function (user_id, err) {
+		callback();
+	});
+}
+
+function CreateGuestUser(dbm, callback) {
+	var sql = "insert into users (username, email, password_salt, access_level, added) values (?, ?, ?, ?, now())";
+	var params = ["testguest", "testguest@email.com", "guest", 5];
+	dbm.ParameterizedInsert(sql, params, function (user_id, err) {
+		test_guest_user_id = user_id;
+		callback();
+	});
+}
+
+function CreateQuestion(dbm, callback) {
+	var sql = "insert into questions (question, citation, enabled, added) values (?, ?, ?, now())";
+	var params = ["How many moons does planet Earth have?", "citation", 1];
+	dbm.ParameterizedInsert(sql, params, function (question_id, err) {
+		test_question_id = question_id;
+
+		var sql = "insert into answers (answer, correct, question_id, added) values (?, ?, ?, now())";
+		var params = ["answer 1", 0, question_id];
+		dbm.ParameterizedInsert(sql, params, function (answer_id, err) {
+			test_answer_id = answer_id;
+			callback();
+		});
+	});
+}
+
+function CreateChallengeAttempt(dbm, callback) {
+	var sql = "insert into challenge_attempts (user_id, added) values (?, now())";
+	var params = [test_guest_user_id];
+	dbm.ParameterizedInsert(sql, params, function (attempt_id, err) {
+		test_attempt_id = attempt_id;
+		callback();
+	});
+}
+
+function CreateChallengeModeConfigTimer(dbm, callback) {
+	var sql = "insert into config (`key`, value) values (?, ?)";
+	var params = ["challenge_mode_timer_length", "15"];
+	dbm.ParameterizedInsert(sql, params, function (response, err) {
+		callback();
+	});
+}
+
+function CreateHealthCheckKey(dbm, callback) {
+	var sql = "insert into health (health_string) values (?)";
+	var params = ["gaga X ari"];
+	dbm.ParameterizedInsert(sql, params, function (response, err) {
+		callback();
+	});
+}
+
+var test_guest_user_id = -1;
+var test_attempt_id = -1;
+var test_question_id = -1;
+var test_answer_id = -1;
+
+function Setup(callback) {
+	var dbm = new DBM("test");
+
+	CreateAdminPrivilege(dbm, function() {
+		CreateGuestPrivilege(dbm, function() {
+			CreateAdminUser(dbm, function() {
+				CreateGuestUser(dbm, function() {
+					CreateQuestion(dbm, function(){
+						CreateChallengeAttempt(dbm, function(){
+							CreateChallengeModeConfigTimer(dbm, function() {
+								CreateHealthCheckKey(dbm, function() {
+									dbm.Close();
+									callback();
+								});
+							});
+						});
+					});
+				});
+			});
+		});
+	});
+}
+
+function runTests() {
+	/* AUTHENTICATE */
+	TestAuthenticateReturnsRequest();
+	TestAuthenticateNoParameters();
+	TestAuthenticateMissingUsername();
+	TestAuthenticateMissingPassword();
+	TestAuthenticateEmptyUsername();
+	TestAuthenticateEmptyPassword();
+	TestAuthenticateIncorrectUsername();
+	TestAuthenticateIncorrectPassword();
+	TestAuthenticateValidUser();
+	TestAuthenticateValidGuestUser();
+
+	/* AUTHENTICATE GUEST */
+	TestGuestAuthenticateReturnsRequest();
+	TestGuestAuthenticateNoParameters();
+	TestGuestAuthenticateMissingUsername();
+	TestGuestAuthenticateEmptyUsername();
+	TestGuestAuthenticateValidCreatesUser();
+
+	/* NEW CHALLENGE */
+	TestNewChallengeReturnsRequest();
+	TestNewChallengeNoParameters();
+	TestNewChallengeMissingUsername();
+	TestNewChallengeMissingPassword();
+	TestNewChallengeEmptyUsername();
+	TestNewChallengeEmptyPassword();
+	TestNewChallengeIncorrectUsername();
+	TestNewChallengeIncorrectPassword();
+	TestNewChallengeValidUser();
+
+	/* GET CHALLENGE QUESTIONS */
+	TestGetChallengeQuestionsReturnsRequest();
+	TestGetChallengeQuestionsNoParameters();
+	TestGetChallengeQuestionsMissingUsername();
+	TestGetChallengeQuestionsMissingPassword();
+	TestGetChallengeQuestionsEmptyUsername();
+	TestGetChallengeQuestionsEmptyPassword();
+	TestGetChallengeQuestionsIncorrectUsername();
+	TestGetChallengeQuestionsIncorrectPassword();
+	TestGetChallengeQuestionsValidUserMissingAttemptId();
+	TestGetChallengeQuestionsValidUserInvalidAttemptId();
+	TestGetChallengeQuestionsValidUserValidAttemptId();
+
+	/* REGISTER CHALLENGE ANSWER */
+	TestRegisterChallengeAnswerReturnsRequest();
+	TestRegisterChallengeAnswerNoParameters();
+	TestRegisterChallengeAnswerMissingUsername();
+	TestRegisterChallengeAnswerMissingPassword();
+	TestRegisterChallengeAnswerEmptyUsername();
+	TestRegisterChallengeAnswerEmptyPassword();
+	TestRegisterChallengeAnswerIncorrectUsername();
+	TestRegisterChallengeAnswerIncorrectPassword();
+	TestRegisterChallengeAnswerValidUserMissingAttemptId();
+	TestRegisterChallengeAnswerValidUserMissingAnswerId();
+	TestRegisterChallengeAnswerValidUserInvalidAttemptId();
+	TestRegisterChallengeAnswerValidUserInvalidAnswerId();
+	TestRegisterChallengeAnswerValidUserValid();
+
+	/* GET CHALLENGE LEADERBOARD */
+	TestGetChallengeLearderboardReturnsRequest();
+	TestGetChallengeLearderboardNoParameters();
+
+	/* GET USER PROFILE */
+	TestGetUserProfileReturnsRequest();
+	TestGetUserProfileNoParameters();
+	TestGetUserProfileInvalidSpecifier();
+	//TestGetUserProfileValidUserContainsChallengeStats(); ---> crap test - requires user is on the leaderboard
+
+	/* FLAG QUESTION */
+	TestFlagQuestionReturnsRequest();
+	TestFlagQuestionNoParameters();
+	TestFlagQuestionValidUser();
+	TestFlagQuestionValidUserAndValidQuestion();
+
+	/* REVIEW QUESTION */
+	TestReviewQuestionReturnsRequest();
+	TestReviewQuestionNoParameters();
+	TestReviewQuestionValidUser();
+	TestReviewQuestionValidUserAndValidQuestionInvalidPrivileges();
+	TestReviewQuestionValidUserAndValidQuestionValidPrivileges();
+
+	/* HEALTH */
+	TestHealthCheck();
+
+	/* MESSAGES */
+	TestGetMessagesReturnsRequest();
+	TestGetMessagesNoParameters();
+
+	/* COSMOS LIVE */
+	//TestCosmosLiveReturnsRequest();
+	//TestCosmosLiveInvalidUser();
+	//TestCosmosLiveReturnsClosedState();
+
+	PrintResults();
+}
+
+Setup(runTests);
 
 
 

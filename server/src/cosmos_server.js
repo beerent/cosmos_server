@@ -14,21 +14,23 @@ var HealthCheckManager = require("./health/HealthCheckManager.js");
 var ConfigManager = require("./config/ConfigManager.js");
 var MessagesManager = require("./messages/MessagesManager.js");
 
-var cosmosRoot = "/home/ubuntu/server/cosmos_server/server/src";
+//var cosmosRoot = "/Users/beerent/Documents/cosmos_server/server/src"; //macbook
+var cosmosRoot = "/home/ubuntu/server/cosmos_server/server/src"; //server
+
+var runMode = GetRunMode();
 
 function GetRunMode() {
 	var runMode = "debug";
+
 	if (process.argv.length > 2) {
-		if (process.argv[2] == "live") {
-			runMode = "live";
-		}
+		runMode = process.argv[2];
 	}
 
 	return runMode;
 }
 
 function RunServer() {
-	if (GetRunMode() == "live") {
+	if (runMode == "live") {
 		RunLiveServer();
 	} else {
 		RunDebugServer();
@@ -83,7 +85,7 @@ var privileges = LoadPrivileges();
 
 //USER MANAGER
 app.get('/authenticate', function (req, res) {
-	var dbm = new DBM();
+	var dbm = new DBM(runMode);
 	var user_manager = new UserManager(dbm, errors);
 
 	var responseBuilder = new ResponseBuilder("authenticate");
@@ -91,7 +93,7 @@ app.get('/authenticate', function (req, res) {
 });
 
 app.get('/guestAuthenticate', function (req, res) {
-	var dbm = new DBM();
+	var dbm = new DBM(runMode);
 	var user_manager = new UserManager(dbm, errors);
 
 	var responseBuilder = new ResponseBuilder("guestAuthenticate");
@@ -99,7 +101,7 @@ app.get('/guestAuthenticate', function (req, res) {
 });
 
 app.get('/getUserProfile', function (req, res) {
-	var dbm = new DBM();
+	var dbm = new DBM(runMode);
 	var user_profile_manager = new UserProfileManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("getUserProfile");
@@ -107,9 +109,10 @@ app.get('/getUserProfile', function (req, res) {
 });
 
 
-//CHALLENGE MANAGER
+
+// CHALLENGE
 app.get('/newChallenge', function (req, res) {
-	var dbm = new DBM();
+	var dbm = new DBM(runMode);
 	var challengeManagerInstance = new ChallengeManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("newChallenge");
@@ -117,7 +120,7 @@ app.get('/newChallenge', function (req, res) {
 });
 
 app.get('/getChallengeQuestions', function (req, res) {
-	var dbm = new DBM();
+	var dbm = new DBM(runMode);
 	var challengeManagerInstance = new ChallengeManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("getChallengeQuestions");
@@ -125,7 +128,7 @@ app.get('/getChallengeQuestions', function (req, res) {
 });
 
 app.get('/registerChallengeAnswer', function (req, res) {
-	var dbm = new DBM();
+	var dbm = new DBM(runMode);
 	var challengeManagerInstance = new ChallengeManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("registerChallengeAnswer");
@@ -133,7 +136,7 @@ app.get('/registerChallengeAnswer', function (req, res) {
 });
 
 app.get('/getChallengeLeaderboard', function (req, res) {
-	var dbm = new DBM();
+	var dbm = new DBM(runMode);
 	var challengeManagerInstance = new ChallengeManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("getChallengeLeaderboard");
@@ -141,7 +144,7 @@ app.get('/getChallengeLeaderboard', function (req, res) {
 });
 
 app.get('/getMessages', function (req, res) {
-	var dbm = new DBM();
+	var dbm = new DBM(runMode);
 	var messagesManagerInstance = new MessagesManager(dbm, errors);
 
 	var responseBuilder = new ResponseBuilder("getMessages");
@@ -149,7 +152,7 @@ app.get('/getMessages', function (req, res) {
 });
 
 app.get('/flagQuestion', function (req, res) {
-	var dbm = new DBM();
+	var dbm = new DBM(runMode);
 	var questionManagerInstance = new QuestionManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("flagQuestion");
@@ -157,7 +160,7 @@ app.get('/flagQuestion', function (req, res) {
 });
 
 app.get('/reviewQuestion', function (req, res) {
-	var dbm = new DBM();
+	var dbm = new DBM(runMode);
 	var questionManagerInstance = new QuestionManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("reviewQuestion");
@@ -165,7 +168,7 @@ app.get('/reviewQuestion', function (req, res) {
 });
 
 app.get('/health', function (req, res) {
-	var dbm = new DBM();
+	var dbm = new DBM(runMode);
 	var healthCheckManagerInstance = new HealthCheckManager(dbm, errors);
 
 	var responseBuilder = new ResponseBuilder("health");

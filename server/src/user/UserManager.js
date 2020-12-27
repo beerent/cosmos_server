@@ -64,10 +64,7 @@ class UserManager {
 			if (userObject == undefined) {
 				self.CreateGuestUser(query.username, function(userObject) {
 					if (userObject == undefined) {
-						console.log("created user was found undefined!");
 						responseBuilder.SetError(errors.GUEST_ACCOUNT_CREATION_FAILURE);
-					} else {
-						console.log("created user with id: " + userObject.id);
 					}
 
 					callback(responseBuilder.Response());
@@ -87,9 +84,7 @@ class UserManager {
 
 		var params = [username, username + "_guest_email", "guest"];
 		var sql = "insert into users (username, email, password_salt, access_level) values (?, ?, ?, (select privileges_enum.id from privileges_enum where privileges_enum.privilege = 'GUEST'));";
-		console.log(sql);
 		this.dbm.ParameterizedInsert(sql, params, function (insertId, err) {
-			console.log(err);
 			if (insertId == undefined) {
 				callback(undefined);
 			} else {

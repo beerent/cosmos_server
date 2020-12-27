@@ -4,6 +4,9 @@ const https = require('http');
 
 var server = "http://127.0.0.1:8081";
 
+var cosmosRoot = "/Users/beerent/Documents/cosmos_server/server/src"; //macbook
+//var cosmosRoot = "/home/ubuntu/server/cosmos_server/server/src"; //server
+
 var failedTests = "";
 var testsRanCount = 0;
 var testsFailedCount = 0;
@@ -24,6 +27,17 @@ function PrintResults() {
 		console.log("(" + testsFailedCount + "/" + testsRanCount + ") Tests Failed:");
 		console.log(failedTests);
 	}
+}
+
+function LoadDatabaseConnections() {
+	var fs = require('fs');
+	var obj = JSON.parse(fs.readFileSync(cosmosRoot + '/conf/database_connections.json', 'utf8'));
+
+	return obj;	
+}
+
+function GetDatabaseConnection(runMode, db_connections) {
+	return db_connections[runMode];
 }
 
 
@@ -2133,7 +2147,9 @@ var test_question_id = -1;
 var test_answer_id = -1;
 
 function Setup(callback) {
-	var dbm = new DBM("test");
+	var database_connections = LoadDatabaseConnections();
+	var database_connection = GetDatabaseConnection("test", database_connections);
+	var dbm = new DBM(database_connection);
 
 	CreateAdminPrivilege(dbm, function() {
 		CreateGuestPrivilege(dbm, function() {

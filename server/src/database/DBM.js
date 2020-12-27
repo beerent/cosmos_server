@@ -1,26 +1,8 @@
 var mysql = require('mysql');
 
 class DBM {
-	constructor (runMode) {
-		switch(runMode) {
-			case "test":
-				this.con = mysql.createConnection({
-				  host: "127.0.0.1",
-				  database: "cosmos_test",
-				  user: "root",
-				  password: "Ryczak13!"
-				});
-				break;
-
-			default:
-				this.con = mysql.createConnection({
-				  host: "127.0.0.1",
-				  database: "cosmos",
-				  user: "root",
-				  password: "Ryczak13!"
-				});
-				break;
-		}
+	constructor (database_connection) {
+		this.con = mysql.createConnection(database_connection);
 
 		this.con.connect(function(err) {
 		  if (err) throw err;

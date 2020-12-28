@@ -1,7 +1,8 @@
 class LiveRound {
-	constructor (id, state, added) {
+	constructor (id, state, start, added) {
 		this.id = id;
 		this.state = state;
+		this.start = start;
 		this.added = added;
 	}
 
@@ -11,6 +12,10 @@ class LiveRound {
 
 	GetState() {
 		return this.state;
+	}
+
+	GetStart() {
+		return this.start;
 	}
 
 	GetAdded() {

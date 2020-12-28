@@ -20,62 +20,26 @@ class LiveManager {
 				} else {
 					responseBuilder.SetPayload(round);
 				}
-				
+
 				res.json(responseBuilder.Response());
 				res.end();
 				self.dbm.Close();
 			});
 		});
-
-
-
-
-
-		//self.GetActiveMessages(responseBuilder, function (response) {
-		//	res.json(response);
-		//	res.end();
-		//	self.dbm.Close();
-		//});
 	}
 
 	GetCurrentLiveRound(callback) {
-		var sql = "select id, state, added from live_rounds order by id desc limit 1";
+		var sql = "select id, state, start, added from live_rounds order by id desc limit 1";
 		this.dbm.Query(sql, function(results, err){
 			var liveRound = null;
 			if (results.length > 0) {
 				var row = results[0];
-				liveRound = new LiveRound(row.id, row.state, row.added);
+				liveRound = new LiveRound(row.id, row.state, row.start, row.added);
 			}
 
 			callback(liveRound);
 		});
 	}
-
-	HandleLiveDataRequestWithUser(user, responseBuilder, callback) {
-		this.HandleLiveDataRequestWithUserAndRound()
-	}
-
-	HandleRequestBasedOnState(user, responseBuilder, callback) {
-		this.GetLiveState(function(state) {
-			switch (state) {
-				case "CLOSED":
-					responseBuilder.SetPayload("brent");
-					break;
-				default:
-					break;
-			}
-
-			callback(responseBuilder.Response());
-		});
-	}
-
-	GetLiveState(callback) {
-		this.
-		callback("CLOSE");
-	}
-
-
-
 	HandleRequestWithAuth(req, res, responseBuilder, callback) {
 		var userManager = new UserManager(this.dbm);
 

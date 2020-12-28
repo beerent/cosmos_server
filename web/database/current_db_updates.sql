@@ -6,3 +6,6 @@ create table live_rounds
 	constraint live_rounds_pk
 		primary key (id)
 );
+
+alter table live_rounds
+	add start datetime null after state;

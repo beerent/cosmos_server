@@ -2029,8 +2029,8 @@ function TestCosmosLiveInvalidUser() {
 	}
 }
 
-function TestCosmosLiveReturnsClosedState() {
-	var functionName = "TestCosmosLiveReturnsClosedState\n";
+function TestCosmosLiveReturnsCorrectData() {
+	var functionName = "TestCosmosLiveReturnsCorrectData\n";
 	var failures = "";
 	testsRanCount++;
 
@@ -2056,8 +2056,47 @@ function TestCosmosLiveReturnsClosedState() {
 		success = false;		
 	} 
 
-	else if (response.payload.state == undefined) {
+	else if (response.payload.state != "CLOSED") {
 		failures += "  - state was " + response.payload.state + ", expected 'CLOSED'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestPreGameLobbyReturnsCorrectData() {
+	var functionName = "TestPreGameLobbyReturnsCorrectData\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "live";
+
+	var url = server + "/" + requestString;
+	url += "?username=testadmin&password=admin";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (response.payload == undefined) {
+		failures += "  - response had no payload\n";
+		success = false;		
+	} 
+
+	else if (response.payload.state != "PRE_GAME_LOBBY") {
+		failures += "  - state was " + response.payload.state + ", expected 'PRE_GAME_LOBBY'\n";
 		success = false;
 	}
 
@@ -2141,15 +2180,37 @@ function CreateHealthCheckKey(dbm, callback) {
 	});
 }
 
+function CreateClosedLiveRound(dbm, callback) {
+	var sql = "insert into live_rounds (state) values (?)";
+	var params = ["CLOSED"];
+	dbm.ParameterizedInsert(sql, params, function (response, err) {
+		callback();
+	});
+}
+
+function AdvanceLiveRoundToPreGameLobby(dbm, callback) {
+	var sql = "update live_rounds set state = ?";
+	var params = ["PRE_GAME_LOBBY"];
+	dbm.ParameterizedInsert(sql, params, function (response, err) {
+		callback();
+	});	
+}
+
+function GetDBM() {
+	var database_connections = LoadDatabaseConnections();
+	var database_connection = GetDatabaseConnection("test", database_connections);
+	var dbm = new DBM(database_connection);
+
+	return dbm;
+}
+
 var test_guest_user_id = -1;
 var test_attempt_id = -1;
 var test_question_id = -1;
 var test_answer_id = -1;
 
 function Setup(callback) {
-	var database_connections = LoadDatabaseConnections();
-	var database_connection = GetDatabaseConnection("test", database_connections);
-	var dbm = new DBM(database_connection);
+	var dbm = GetDBM();
 
 	CreateAdminPrivilege(dbm, function() {
 		CreateGuestPrivilege(dbm, function() {
@@ -2261,11 +2322,20 @@ function runTests() {
 	TestGetMessagesNoParameters();
 
 	/* COSMOS LIVE */
-	//TestCosmosLiveReturnsRequest();
-	//TestCosmosLiveInvalidUser();
-	//TestCosmosLiveReturnsClosedState();
+	TestCosmosLiveReturnsRequest();
+	TestCosmosLiveInvalidUser();
+	
+	var dbm = GetDBM();
+	CreateClosedLiveRound(dbm, function() {
+		TestCosmosLiveReturnsCorrectData();
 
-	PrintResults();
+		AdvanceLiveRoundToPreGameLobby(dbm, function() {
+			TestPreGameLobbyReturnsCorrectData();
+
+			dbm.Close();
+			PrintResults();
+		});
+	});
 }
 
 Setup(runTests);

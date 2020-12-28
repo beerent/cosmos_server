@@ -7,6 +7,7 @@ var DBM = require("./database/DBM.js");
 var QuestionManager = require("./question/QuestionManager.js");
 var QuestionManager = require("./question/QuestionManager.js");
 var ChallengeManager = require("./game/challenge/ChallengeManager.js");
+var LiveManager = require("./game/live/LiveManager.js");
 var ResponseBuilder = require("./response/ResponseBuilder.js");
 var UserManager = require("./user/UserManager.js");
 var UserProfileManager = require("./user/UserProfileManager.js");
@@ -14,8 +15,8 @@ var HealthCheckManager = require("./health/HealthCheckManager.js");
 var ConfigManager = require("./config/ConfigManager.js");
 var MessagesManager = require("./messages/MessagesManager.js");
 
-//var cosmosRoot = "/Users/beerent/Documents/cosmos_server/server/src"; //macbook
-var cosmosRoot = "/home/ubuntu/server/cosmos_server/server/src"; //server
+var cosmosRoot = "/Users/beerent/Documents/cosmos_server/server/src"; //macbook
+//var cosmosRoot = "/home/ubuntu/server/cosmos_server/server/src"; //server
 
 var runMode = GetRunMode();
 
@@ -87,11 +88,6 @@ function GetDatabaseConnection(runMode, db_connections) {
 	return db_connections[runMode];
 }
 
-
-
-
-
-
 var app = express();
 var errors = LoadErrors();
 var privileges = LoadPrivileges();
@@ -157,6 +153,19 @@ app.get('/getChallengeLeaderboard', function (req, res) {
 	var responseBuilder = new ResponseBuilder("getChallengeLeaderboard");
 	challengeManagerInstance.HandleGetChallengeLeaderboardRequest(req, res, responseBuilder);
 });
+
+
+
+// COSMOS LIVE
+app.get('/live', function (req, res) {
+	var dbm = new DBM(db_connection);
+	var liveManagerInstance = new LiveManager(dbm, errors);
+
+	var responseBuilder = new ResponseBuilder("live");
+	liveManagerInstance.HandleLiveDataRequest(req, res, responseBuilder);
+});
+
+
 
 app.get('/getMessages', function (req, res) {
 	var dbm = new DBM(db_connection);

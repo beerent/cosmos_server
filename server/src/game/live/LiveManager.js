@@ -17,10 +17,13 @@ class LiveManager {
 			self.GetCurrentLiveRound(function(round) {
 				if (round == null) {
 					responseBuilder.SetError(self.errors.INVALID_LIVE_ROUND);
-					res.json(responseBuilder.Response());
-					res.end();
-					self.dbm.Close();
+				} else {
+					responseBuilder.SetPayload(round);
 				}
+				
+				res.json(responseBuilder.Response());
+				res.end();
+				self.dbm.Close();
 			});
 		});
 

@@ -2171,12 +2171,12 @@ function TestCosmosLiveInGameReturnsCorrectData() {
 			}
 		}
 
-	//	if (response.payload.player == undefined) {
-	//		failures += "  - response had no 'player' in the payload\n";
-	//		success = false;
-	//	} else {
+		if (response.payload.player == undefined) {
+			failures += "  - response had no 'player' in the payload\n";
+			success = false;
+		} else {
 
-	//	}
+		}
 	}
 
 	if (false == success) {

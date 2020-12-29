@@ -12,3 +12,22 @@ alter table cosmos_live_sessions
 
 alter table cosmos_live_sessions
 	add asked_questions_ids varchar(500) default "" null after start;
+
+create table cosmos_live_answers
+(
+	id int auto_increment primary key,
+	session_id int not null,
+	user_id int not null,
+	answer_id int not null,
+	added datetime default CURRENT_TIMESTAMP not null,
+	constraint cosmos_live_answers_answers_id_fk
+		foreign key (answer_id) references answers (id),
+	constraint cosmos_live_answers_cosmos_live_sessions_id_fk
+		foreign key (session_id) references cosmos_live_sessions (id),
+	constraint cosmos_live_answers_users_id_fk
+		foreign key (user_id) references users (id)
+);
+
+create unique index cosmos_live_answers_id_uindex
+	on cosmos_live_answers (id);
+

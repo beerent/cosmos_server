@@ -1,7 +1,9 @@
 var ResponseBuilder = require("../../response/ResponseBuilder.js");
 var UserManager = require("../../user/UserManager.js");
-
 var LiveRound = require("./CosmosLiveSession.js");
+
+const SPECTATOR = "SPECTATOR";
+const PLAYER = "PLAYER";
 
 class CosmosLiveManager {
 
@@ -26,23 +28,27 @@ class CosmosLiveManager {
 				} else {
 					payload.cosmos_live_session = cosmosLiveSession.ToPayload();
 
-					//self.GetPlayerType(round, user, function(playerType)) {
-					//	player.user = user;
-					//	player.type = playerType;
-					//}
-				}
+					self.GetPlayerType(cosmosLiveSession, user, function(playerType) {
+						var player = {
+							user : user,
+							type : playerType
+						};
 
-				responseBuilder.SetPayload(payload);
-				res.json(responseBuilder.Response());
-				res.end();
-				self.dbm.Close();
+						payload.player = player;
+
+						responseBuilder.SetPayload(payload);
+						res.json(responseBuilder.Response());
+						res.end();
+						self.dbm.Close();
+					});
+				}
 			});
 		});
 	}
 
 	GetCurrentLiveRound(callback) {
 		var sql = "select id, state, start, asked_questions_ids, added from cosmos_live_sessions order by id desc limit 1";
-		this.dbm.Query(sql, function(results, err){
+		this.dbm.Query(sql, function(results, err) {
 			var liveRound = null;
 			if (results.length > 0) {
 				var row = results[0];
@@ -53,11 +59,23 @@ class CosmosLiveManager {
 		});
 	}
 
-	GetPlayerType(round, user, callback) {
-		IsPlayerActive(round, user, function(isActive) {
-			// select all correct answers for this user in this round.
-			// if the number of correct answers == round # - 1, then they're active.
+	GetPlayerType(cosmos_live_session, user, callback) {
+		this.IsPlayerActive(cosmos_live_session, user, function(isActive) {
+			var playerType = SPECTATOR;
+			if (isActive) {
+				playerType = PLAYER;
+			}
+
+			callback(playerType);
 		});
+	}
+
+	IsPlayerActive(cosmos_live_session, user, callback) {
+			var sql = "select count(*) from cosmos_live_answers cla join answers a on cla.answer_id = a.id join users u on cla.user_id = u.id where user_id = ? and correct = 1;";
+			var params = [user.id];
+			this.dbm.ParameterizedQuery(sql, params, function(results, err) {
+				callback(results.count == (cosmos_live_session.GetRound() - 1));
+			});
 	}
 
 	HandleRequestWithAuth(req, res, responseBuilder, callback) {

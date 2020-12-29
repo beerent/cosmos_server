@@ -27,11 +27,15 @@ class CosmosLiveSession {
 		return this.added;
 	}
 
+	GetRound() {
+		return this.asked_questions_ids.length - 1;
+	}
+
 	ToPayload() {
 		var payload = {
 			state : this.state,
 			start : this.start,
-			round : this.asked_questions_ids.length - 1
+			round : this.GetRound()
 		};
 
 		return payload;

@@ -55,6 +55,29 @@ class QuestionManager {
 		});
 	}
 
+	GetQuestionById(id, callback) {
+		var self = this;
+
+		var sql = "SELECT questions.id as qid, questions.question, answers.id as aid, answers.answer, answers.correct FROM questions join answers on questions.id = answers.question_id where questions.enabled = 1 and questions.id = " + id;
+		this.dbm.Query(sql, function (results) {
+			var questionsBuilder = new QuestionsBuilder();
+
+			results.forEach(function(entry) {
+				var questionId = entry.qid;
+				var questionText = entry.question;	
+				var answerId = entry.aid;
+				var answerText = entry.answer;
+				var answerCorrect = entry.correct == 1;
+				questionsBuilder.AddQueryEntry(questionId, questionText, answerId, answerText, answerCorrect);
+			});
+
+			var questions = questionsBuilder.GetQuestions();
+			self.ShuffleQuestions(questions);
+
+			callback(questions);
+		});
+	}
+
 	GetQuestionsByIds(ids_list, callback) {
 		var self = this;
 

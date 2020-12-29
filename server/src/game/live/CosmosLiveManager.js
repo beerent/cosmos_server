@@ -1,15 +1,17 @@
 var ResponseBuilder = require("../../response/ResponseBuilder.js");
 var UserManager = require("../../user/UserManager.js");
-var LiveRound = require("./CosmosLiveSession.js");
+var QuestionManager = require("../../question/QuestionManager");
+var CosmosLiveSession = require("./CosmosLiveSession.js");
 
 const SPECTATOR = "SPECTATOR";
 const PLAYER = "PLAYER";
 
 class CosmosLiveManager {
 
-	constructor (dbm, errors) {
+	constructor (dbm, errors, privileges) {
 		this.dbm = dbm;
 		this.errors = errors;
+		this.privileges = privileges;
 	}
 
 	HandleLiveDataRequest(req, res, responseBuilder) {
@@ -22,7 +24,7 @@ class CosmosLiveManager {
 		};
 		
 		this.HandleRequestWithAuth(req, res, responseBuilder, function(user) {
-			self.GetCurrentLiveRound(function(cosmosLiveSession) {
+			self.GetCurrentCosmosLiveSession(function(cosmosLiveSession) {
 				if (cosmosLiveSession == null) {
 					responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
 				} else {
@@ -36,26 +38,41 @@ class CosmosLiveManager {
 
 						payload.player = player;
 
-						responseBuilder.SetPayload(payload);
-						res.json(responseBuilder.Response());
-						res.end();
-						self.dbm.Close();
+						var askedQuestions = cosmosLiveSession.GetAskedQuestionsIds();
+						if (askedQuestions == "") {
+							responseBuilder.SetPayload(payload);
+							res.json(responseBuilder.Response());
+							res.end();
+							self.dbm.Close();
+						} else {
+							var currentQuestionId = askedQuestions[askedQuestions.length - 1];
+							var question_manager = new QuestionManager(self.dbm, self.errors, self.privileges);
+							question_manager.GetQuestionById(currentQuestionId, function(questions) {
+								payload.question = questions[0];
+
+								responseBuilder.SetPayload(payload);
+								res.json(responseBuilder.Response());
+								res.end();
+								self.dbm.Close();
+							});
+						}
 					});
 				}
 			});
 		});
 	}
 
-	GetCurrentLiveRound(callback) {
+	GetCurrentCosmosLiveSession(callback) {
 		var sql = "select id, state, start, asked_questions_ids, added from cosmos_live_sessions order by id desc limit 1";
+
 		this.dbm.Query(sql, function(results, err) {
-			var liveRound = null;
+			var cosmosLiveSession = null;
 			if (results.length > 0) {
 				var row = results[0];
-				liveRound = new LiveRound(row.id, row.state, row.start, row.asked_questions_ids, row.added);
+				cosmosLiveSession = new CosmosLiveSession(row.id, row.state, row.start, row.asked_questions_ids, row.added);
 			}
 
-			callback(liveRound);
+			callback(cosmosLiveSession);
 		});
 	}
 
@@ -71,7 +88,7 @@ class CosmosLiveManager {
 	}
 
 	IsPlayerActive(cosmos_live_session, user, callback) {
-			var sql = "select count(*) from cosmos_live_answers cla join answers a on cla.answer_id = a.id join users u on cla.user_id = u.id where user_id = ? and correct = 1;";
+			var sql = "select count(*) from cosmos_live_answers cla join answers a on cla.answer_id = a.id join users u on cla.user_id = u.id where user_id = ? and correct = 1";
 			var params = [user.id];
 			this.dbm.ParameterizedQuery(sql, params, function(results, err) {
 				callback(results.count == (cosmos_live_session.GetRound() - 1));

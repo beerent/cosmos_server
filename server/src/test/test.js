@@ -2155,6 +2155,7 @@ function TestCosmosLiveInGameReturnsCorrectData() {
 		failures += "  - response had no payload\n";
 		success = false;		
 	} else {
+
 		//ROUND
 		if (response.payload.cosmos_live_session == undefined) {
 			failures += "  - response had no 'round' in the payload\n";
@@ -2171,11 +2172,26 @@ function TestCosmosLiveInGameReturnsCorrectData() {
 			}
 		}
 
+		//PLAYER
 		if (response.payload.player == undefined) {
 			failures += "  - response had no 'player' in the payload\n";
 			success = false;
 		} else {
+			if (response.payload.player.user == undefined) {
+				failures += "  - IN_GAME state requires players's user in the payload\n";
+				success = false;
+			}	
 
+			if (response.payload.player.type == undefined) {
+				failures += "  - IN_GAME state requires players's type in the payload\n";
+				success = false;
+			}	
+		}
+
+		//QUESTION
+		if (response.payload.question == undefined) {
+			failures += "  - response had no 'question' in the payload\n";
+			success = false;
 		}
 	}
 
@@ -2268,8 +2284,8 @@ function CreateClosedLiveRound(dbm, callback) {
 }
 
 function AdvanceLiveRoundToPreGameLobby(dbm, callback) {
-	var sql = "update cosmos_live_sessions set state = ?";
-	var params = ["PRE_GAME_LOBBY"];
+	var sql = "update cosmos_live_sessions set state = ?, asked_questions_ids = ?";
+	var params = ["PRE_GAME_LOBBY", test_question_id.toString()];
 	dbm.ParameterizedInsert(sql, params, function (response, err) {
 		callback();
 	});	

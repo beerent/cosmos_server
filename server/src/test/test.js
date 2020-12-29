@@ -1427,7 +1427,7 @@ function TestRegisterChallengeAnswerValidUserValid() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=testguest&password=guest&attempt_id=" + test_attempt_id.toString() + "&answer_id=" + test_answer_id.toString();
+	url += "?username=testguest&password=guest&attempt_id=" + test_attempt_id.toString() + "&answer_id=" + test_incorrect_answer_id.toString();
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2244,8 +2244,14 @@ function CreateQuestion(dbm, callback) {
 		var sql = "insert into answers (answer, correct, question_id, added) values (?, ?, ?, now())";
 		var params = ["answer 1", 0, question_id];
 		dbm.ParameterizedInsert(sql, params, function (answer_id, err) {
-			test_answer_id = answer_id;
-			callback();
+			test_incorrect_answer_id = answer_id;
+
+			var sql = "insert into answers (answer, correct, question_id, added) values (?, ?, ?, now())";
+			var params = ["answer 2", 1, question_id];
+			dbm.ParameterizedInsert(sql, params, function (answer_id, err) {
+				test_correct_answer_id = answer_id;
+				callback();
+			});
 		});
 	});
 }
@@ -2310,7 +2316,8 @@ function GetDBM() {
 var test_guest_user_id = -1;
 var test_attempt_id = -1;
 var test_question_id = -1;
-var test_answer_id = -1;
+var test_incorrect_answer_id = -1;
+var test_correct_answer_id = -1;
 
 function Setup(callback) {
 	var dbm = GetDBM();

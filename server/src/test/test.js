@@ -2029,8 +2029,8 @@ function TestCosmosLiveInvalidUser() {
 	}
 }
 
-function TestCosmosLiveReturnsCorrectData() {
-	var functionName = "TestCosmosLiveReturnsCorrectData\n";
+function TestCosmosLiveClosedReturnsCorrectData() {
+	var functionName = "TestCosmosLiveClosedReturnsCorrectData\n";
 	var failures = "";
 	testsRanCount++;
 
@@ -2054,11 +2054,19 @@ function TestCosmosLiveReturnsCorrectData() {
 	if (response.payload == undefined) {
 		failures += "  - response had no payload\n";
 		success = false;		
-	} 
+	} else if (response.payload.cosmos_live_session == undefined) {
+		failures += "  - response had no 'cosmos_live_session' in the payload\n";
+		success = false;		
+	} else {
+		if (response.payload.cosmos_live_session.state != "CLOSED") {
+			failures += "  - payload's cosmos_live_session's 'state' was " + response.payload.cosmos_live_session.state + ", expected 'CLOSED'\n";
+			success = false;
+		}
 
-	else if (response.payload.state != "CLOSED") {
-		failures += "  - state was " + response.payload.state + ", expected 'CLOSED'\n";
-		success = false;
+		if (response.payload.cosmos_live_session.start == undefined) {
+			failures += "  - CLOSED state requires 'start' in the payload's cosmos_live_session\n";
+			success = false;
+		}
 	}
 
 	if (false == success) {
@@ -2068,8 +2076,8 @@ function TestCosmosLiveReturnsCorrectData() {
 	}
 }
 
-function TestPreGameLobbyReturnsCorrectData() {
-	var functionName = "TestPreGameLobbyReturnsCorrectData\n";
+function TestCosmosLivePreGameLobbyReturnsCorrectData() {
+	var functionName = "TestCosmosLivePreGameLobbyReturnsCorrectData\n";
 	var failures = "";
 	testsRanCount++;
 
@@ -2093,11 +2101,82 @@ function TestPreGameLobbyReturnsCorrectData() {
 	if (response.payload == undefined) {
 		failures += "  - response had no payload\n";
 		success = false;		
-	} 
+	} else if (response.payload.cosmos_live_session == undefined) {
+		failures += "  - response had no 'round' in the payload\n";
+		success = false;		
+	} else { 
+		if (response.payload.cosmos_live_session.state != "PRE_GAME_LOBBY") {
+			failures += "  - payload's 'state' was " + response.payload.cosmos_live_session.state + ", expected 'PRE_GAME_LOBBY'\n";
+			success = false;
+		}
 
-	else if (response.payload.state != "PRE_GAME_LOBBY") {
-		failures += "  - state was " + response.payload.state + ", expected 'PRE_GAME_LOBBY'\n";
+		if (response.payload.cosmos_live_session.start == undefined) {
+			failures += "  - PRE_GAME_LOBBY state requires start in the payload's round\n";
+			success = false;
+		}
+
+		//if (response.payload.chat == undefined) {
+		//	failures += "  - PRE_GAME_LOBBY state requires chat in the payload\n";
+		//	success = false;
+		//}
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestCosmosLiveInGameReturnsCorrectData() {
+	var functionName = "TestCosmosLiveInGameReturnsCorrectData\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "live";
+
+	var url = server + "/" + requestString;
+	url += "?username=testadmin&password=admin";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
 		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	//PAYLOAD
+	if (response.payload == undefined) {
+		failures += "  - response had no payload\n";
+		success = false;		
+	} else {
+		//ROUND
+		if (response.payload.cosmos_live_session == undefined) {
+			failures += "  - response had no 'round' in the payload\n";
+			success = false;
+		} else {
+			if (response.payload.cosmos_live_session.state != "IN_GAME") {
+				failures += "  - payload's 'state' was " + response.payload.state + ", expected 'IN_GAME'\n";
+				success = false;
+			}
+
+			if (response.payload.cosmos_live_session.round == undefined || response.payload.cosmos_live_session.round < 0) {
+				failures += "  - IN_GAME state requires round's round in the payload\n";
+				success = false;
+			}
+		}
+
+	//	if (response.payload.player == undefined) {
+	//		failures += "  - response had no 'player' in the payload\n";
+	//		success = false;
+	//	} else {
+
+	//	}
 	}
 
 	if (false == success) {
@@ -2181,16 +2260,24 @@ function CreateHealthCheckKey(dbm, callback) {
 }
 
 function CreateClosedLiveRound(dbm, callback) {
-	var sql = "insert into live_rounds (state) values (?)";
-	var params = ["CLOSED"];
+	var sql = "insert into cosmos_live_sessions (state, start) values (?, ?)";
+	var params = ["CLOSED", "2021-01-01"];
 	dbm.ParameterizedInsert(sql, params, function (response, err) {
 		callback();
 	});
 }
 
 function AdvanceLiveRoundToPreGameLobby(dbm, callback) {
-	var sql = "update live_rounds set state = ?";
+	var sql = "update cosmos_live_sessions set state = ?";
 	var params = ["PRE_GAME_LOBBY"];
+	dbm.ParameterizedInsert(sql, params, function (response, err) {
+		callback();
+	});	
+}
+
+function AdvanceLiveRoundToInGame(dbm, callback) {
+	var sql = "update cosmos_live_sessions set state = ?";
+	var params = ["IN_GAME"];
 	dbm.ParameterizedInsert(sql, params, function (response, err) {
 		callback();
 	});	
@@ -2327,13 +2414,17 @@ function runTests() {
 	
 	var dbm = GetDBM();
 	CreateClosedLiveRound(dbm, function() {
-		TestCosmosLiveReturnsCorrectData();
+		TestCosmosLiveClosedReturnsCorrectData();
 
 		AdvanceLiveRoundToPreGameLobby(dbm, function() {
-			TestPreGameLobbyReturnsCorrectData();
+			TestCosmosLivePreGameLobbyReturnsCorrectData();
 
-			dbm.Close();
-			PrintResults();
+			AdvanceLiveRoundToInGame(dbm, function(){
+				TestCosmosLiveInGameReturnsCorrectData();
+
+				dbm.Close();
+				PrintResults();
+			});
 		});
 	});
 }

@@ -1,4 +1,4 @@
-create table live_rounds
+create table cosmos_live_sessions
 (
 	id int auto_increment,
 	state varchar(40) default null null,
@@ -7,8 +7,8 @@ create table live_rounds
 		primary key (id)
 );
 
-alter table live_rounds
+alter table cosmos_live_sessions
 	add start datetime null after state;
 
-alter table live_rounds
+alter table cosmos_live_sessions
 	add asked_questions_ids varchar(500) default "" null after start;

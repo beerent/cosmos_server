@@ -1,4 +1,4 @@
-class LiveRound {
+class CosmosLiveSession {
 	constructor (id, state, start, asked_questions_ids, added) {
 		this.id = id;
 		this.state = state;
@@ -38,4 +38,4 @@ class LiveRound {
 	}
 };
 
-module.exports = LiveRound;
+module.exports = CosmosLiveSession;

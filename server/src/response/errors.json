@@ -41,26 +41,31 @@
 
     "FLAG_QUESTION_MISSING_SPECIFIER": {
         "id": 109,
-        "note": "missing question specifier."
+        "note": "missing question specifier"
     },
 
     "REVIEW_QUESTION_MISSING_SPECIFIER": {
         "id": 110,
-        "note": "missing question specifier."
+        "note": "missing question specifier"
     },
 
     "INSUFFICIENT_PRIVILEGE": {
         "id": 111,
-        "note": "account does not have sufficient privileges."
+        "note": "account does not have sufficient privileges"
     },
 
     "GUEST_ACCOUNT_CREATION_FAILURE": {
         "id": 112,
-        "note": "unable to create guest account."
+        "note": "unable to create guest account"
     },
 
     "UNHEALTHY_SERVER": {
         "id": 113,
-        "note": "the server is unhealthy."
+        "note": "the server is unhealthy"
+    },
+
+    "INVALID_COSMOS_LIVE_SESSION": {
+        "id": 114,
+        "note": "invalid cosmos live session found"
     }
 } 

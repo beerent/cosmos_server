@@ -93,7 +93,7 @@ class CosmosLiveManager {
 
 			this.dbm.ParameterizedQuery(sql, params, function(results, err) {
 				var playerCorrectAnswers = parseInt(results[0].count);
-				var playerIsActive = playerCorrectAnswers == (cosmosLiveSession.GetRound() - 1);
+				var playerIsActive = playerCorrectAnswers >= (cosmosLiveSession.GetRound() - 1);
 
 				callback(playerIsActive);
 			});

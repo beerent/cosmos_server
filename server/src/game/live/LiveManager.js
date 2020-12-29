@@ -12,13 +12,20 @@ class LiveManager {
 
 	HandleLiveDataRequest(req, res, responseBuilder) {
 		var self = this;
+
+		var payload = {
+			round : null,
+			playerType : null,
+			question : null
+		};
 		
 		this.HandleRequestWithAuth(req, res, responseBuilder, function(user) {
 			self.GetCurrentLiveRound(function(round) {
 				if (round == null) {
 					responseBuilder.SetError(self.errors.INVALID_LIVE_ROUND);
 				} else {
-					responseBuilder.SetPayload(round);
+					payload.round = round.ToPayload();
+					responseBuilder.SetPayload(payload);
 				}
 
 				res.json(responseBuilder.Response());
@@ -29,17 +36,18 @@ class LiveManager {
 	}
 
 	GetCurrentLiveRound(callback) {
-		var sql = "select id, state, start, added from live_rounds order by id desc limit 1";
+		var sql = "select id, state, start, asked_questions_ids, added from live_rounds order by id desc limit 1";
 		this.dbm.Query(sql, function(results, err){
 			var liveRound = null;
 			if (results.length > 0) {
 				var row = results[0];
-				liveRound = new LiveRound(row.id, row.state, row.start, row.added);
+				liveRound = new LiveRound(row.id, row.state, row.start, row.asked_questions_ids, row.added);
 			}
 
 			callback(liveRound);
 		});
 	}
+
 	HandleRequestWithAuth(req, res, responseBuilder, callback) {
 		var userManager = new UserManager(this.dbm);
 

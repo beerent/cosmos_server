@@ -1,8 +1,9 @@
 class LiveRound {
-	constructor (id, state, start, added) {
+	constructor (id, state, start, asked_questions_ids, added) {
 		this.id = id;
 		this.state = state;
 		this.start = start;
+		this.asked_questions_ids = asked_questions_ids.toString().split(",");
 		this.added = added;
 	}
 
@@ -18,8 +19,22 @@ class LiveRound {
 		return this.start;
 	}
 
+	GetAskedQuestionsIds() {
+		return this.asked_questions_ids;
+	}
+
 	GetAdded() {
 		return this.added;
+	}
+
+	ToPayload() {
+		var payload = {
+			state : this.state,
+			start : this.start,
+			round : this.asked_questions_ids.length - 1
+		};
+
+		return payload;
 	}
 };
 

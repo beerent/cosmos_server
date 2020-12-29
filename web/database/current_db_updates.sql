@@ -9,3 +9,6 @@ create table live_rounds
 
 alter table live_rounds
 	add start datetime null after state;
+
+alter table live_rounds
+	add asked_questions_ids varchar(500) default "" null after start;

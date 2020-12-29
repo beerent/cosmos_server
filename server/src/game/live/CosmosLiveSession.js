@@ -28,7 +28,7 @@ class CosmosLiveSession {
 	}
 
 	GetRound() {
-		return this.asked_questions_ids.length - 1;
+		return this.asked_questions_ids.length;
 	}
 
 	ToPayload() {

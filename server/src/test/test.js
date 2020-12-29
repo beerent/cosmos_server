@@ -2,6 +2,9 @@ var DBM = require("../database/DBM.js");
 
 const https = require('http');
 
+const PLAYER = "PLAYER";
+const SPECTATOR = "SPECTATOR";
+
 var server = "http://127.0.0.1:8081";
 
 var cosmosRoot = "/Users/beerent/Documents/cosmos_server/server/src"; //macbook
@@ -2200,6 +2203,43 @@ function TestCosmosLiveInGameReturnsCorrectData() {
 		failedTests += functionName;
 		testsFailedCount++;
 	}
+
+	return success;
+}
+
+function TestPlayerTypeOnFirstLiveRound() {
+	var functionName = "TestPlayerTypeOnFirstLiveRound\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "live";
+
+	var url = server + "/" + requestString;
+	url += "?username=testadmin&password=admin";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	var playerType = response.payload.player.type;
+	if (PLAYER != playerType) {
+		failures += "  - player type was '"+ playerType +"', expected '"+ PLAYER +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}	
 }
 
 function CreateAdminPrivilege(dbm, callback) {
@@ -2443,7 +2483,11 @@ function runTests() {
 			TestCosmosLivePreGameLobbyReturnsCorrectData();
 
 			AdvanceLiveRoundToInGame(dbm, function(){
-				TestCosmosLiveInGameReturnsCorrectData();
+				var continueLiveRoundTests = TestCosmosLiveInGameReturnsCorrectData();
+
+				if(continueLiveRoundTests) {
+					TestPlayerTypeOnFirstLiveRound();
+				}
 
 				dbm.Close();
 				PrintResults();

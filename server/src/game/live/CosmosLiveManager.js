@@ -76,8 +76,8 @@ class CosmosLiveManager {
 		});
 	}
 
-	GetPlayerType(cosmos_live_session, user, callback) {
-		this.IsPlayerActive(cosmos_live_session, user, function(isActive) {
+	GetPlayerType(cosmosLiveSession, user, callback) {
+		this.IsPlayerActive(cosmosLiveSession, user, function(isActive) {
 			var playerType = SPECTATOR;
 			if (isActive) {
 				playerType = PLAYER;
@@ -87,11 +87,15 @@ class CosmosLiveManager {
 		});
 	}
 
-	IsPlayerActive(cosmos_live_session, user, callback) {
-			var sql = "select count(*) from cosmos_live_answers cla join answers a on cla.answer_id = a.id join users u on cla.user_id = u.id where user_id = ? and correct = 1";
+	IsPlayerActive(cosmosLiveSession, user, callback) {
+			var sql = "select count(*) as count from cosmos_live_answers cla join answers a on cla.answer_id = a.id join users u on cla.user_id = u.id where user_id = ? and correct = 1";
 			var params = [user.id];
+
 			this.dbm.ParameterizedQuery(sql, params, function(results, err) {
-				callback(results.count == (cosmos_live_session.GetRound() - 1));
+				var playerCorrectAnswers = parseInt(results[0].count);
+				var playerIsActive = playerCorrectAnswers == (cosmosLiveSession.GetRound() - 1);
+
+				callback(playerIsActive);
 			});
 	}
 

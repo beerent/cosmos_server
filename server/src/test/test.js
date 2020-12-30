@@ -2603,7 +2603,6 @@ function TestCosmosLive(callback) {
 				TestCosmosLiveInGameReturnsPlayerTypePlayer();
 
 				TestSubmitIncorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[0]);
-				TestSubmitCorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[0]);
 				TestCosmosLiveInGameReturnsPlayerTypeSpectator();
 
 				//advance round

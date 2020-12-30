@@ -2412,7 +2412,7 @@ function TestSubmitCorrectAnswerValidPlayerValidRound(session_id, question) {
 	}
 }
 
-function CreateAdminPrivilege(dbm, callback) {
+function UTIL_CREATE_ADMIN_PRIVILEGE(dbm, callback) {
 	var sql = "insert into privileges_enum (privilege) values (?)";
 	var params = ["ADMIN"];
 	dbm.ParameterizedInsert(sql, params, function (response, err) {
@@ -2420,7 +2420,7 @@ function CreateAdminPrivilege(dbm, callback) {
 	});
 }
 
-function CreateGuestPrivilege(dbm, callback) {
+function UTIL_CREATE_GUEST_PRIVILEGE(dbm, callback) {
 	var sql = "insert into privileges_enum (privilege) values (?)";
 	var params = ["GUEST"];
 	dbm.ParameterizedInsert(sql, params, function (response, err) {
@@ -2428,7 +2428,7 @@ function CreateGuestPrivilege(dbm, callback) {
 	});
 }
 
-function CreateAdminUser(dbm, callback) {
+function UTIL_CREATE_ADMIN_USER(dbm, callback) {
 	var sql = "insert into users (username, email, password_salt, access_level, added) values (?, ?, ?, ?, now())";
 	var params = ["testadmin", "testadmin@email.com", "admin", 4];
 	dbm.ParameterizedInsert(sql, params, function (user_id, err) {
@@ -2436,7 +2436,7 @@ function CreateAdminUser(dbm, callback) {
 	});
 }
 
-function CreateGuestUser(dbm, callback) {
+function UTIL_CREATE_GUEST_USER(dbm, callback) {
 	var sql = "insert into users (username, email, password_salt, access_level, added) values (?, ?, ?, ?, now())";
 	var params = ["testguest", "testguest@email.com", "guest", 5];
 	dbm.ParameterizedInsert(sql, params, function (user_id, err) {
@@ -2445,20 +2445,20 @@ function CreateGuestUser(dbm, callback) {
 	});
 }
 
-function CreateQuestions(dbm, callback) {
+function UTIL_CREATE_QUESTIONS(dbm, callback) {
 	var question = "How many moons does planet Earth have?";
-	CreateQuestion(dbm, question, function() {
+	UTIL_CREATE_QUESTION(dbm, question, function() {
 		var question = "How many moons does planet Mars have?";
-		CreateQuestion(dbm, question, function() {
+		UTIL_CREATE_QUESTION(dbm, question, function() {
 			var question = "How many moons does planet Venus have?";
-			CreateQuestion(dbm, question, function() {
+			UTIL_CREATE_QUESTION(dbm, question, function() {
 				callback();
 			});
 		});
 	});
 }
 
-function CreateQuestion(dbm, questionStr, callback) {
+function UTIL_CREATE_QUESTION(dbm, questionStr, callback) {
 	var question = {};
 
 	var sql = "insert into questions (question, citation, enabled, added) values (?, ?, ?, now())";
@@ -2482,7 +2482,7 @@ function CreateQuestion(dbm, questionStr, callback) {
 	});
 }
 
-function CreateChallengeAttempt(dbm, callback) {
+function UTIL_CREATE_CHALLENGE_ATTEMPT(dbm, callback) {
 	var sql = "insert into challenge_attempts (user_id, added) values (?, now())";
 	var params = [test_guest_user_id];
 	dbm.ParameterizedInsert(sql, params, function (attempt_id, err) {
@@ -2491,7 +2491,7 @@ function CreateChallengeAttempt(dbm, callback) {
 	});
 }
 
-function CreateChallengeModeConfigTimer(dbm, callback) {
+function UTIL_CREATE_CHALLENGE_MODE_CONFIG_TIMER(dbm, callback) {
 	var sql = "insert into config (`key`, value) values (?, ?)";
 	var params = ["challenge_mode_timer_length", "15"];
 	dbm.ParameterizedInsert(sql, params, function (response, err) {
@@ -2499,7 +2499,7 @@ function CreateChallengeModeConfigTimer(dbm, callback) {
 	});
 }
 
-function CreateHealthCheckKey(dbm, callback) {
+function UTIL_CREATE_HEALTH_CHECK_KEY(dbm, callback) {
 	var sql = "insert into health (health_string) values (?)";
 	var params = ["gaga X ari"];
 	dbm.ParameterizedInsert(sql, params, function (response, err) {
@@ -2507,7 +2507,7 @@ function CreateHealthCheckKey(dbm, callback) {
 	});
 }
 
-function CreateClosedCosmosLiveSession(dbm, callback) {
+function UTIL_CREATE_CLOSED_COSMOS_LIVE_SESSION(dbm, callback) {
 	var sql = "insert into cosmos_live_sessions (state, start) values (?, ?)";
 	var params = ["CLOSED", "2021-01-01"];
 	dbm.ParameterizedInsert(sql, params, function (session_id, err) {
@@ -2516,7 +2516,7 @@ function CreateClosedCosmosLiveSession(dbm, callback) {
 	});
 }
 
-function AdvanceCosmosLiveSessionToPreGameLobby(dbm, callback) {
+function UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_PRE_GAME_LOBBY(dbm, callback) {
 	var sql = "update cosmos_live_sessions set state = ?, asked_questions_ids = ?";
 	var params = ["PRE_GAME_LOBBY", test_questions[0].id.toString()];
 	dbm.ParameterizedInsert(sql, params, function (response, err) {
@@ -2524,7 +2524,7 @@ function AdvanceCosmosLiveSessionToPreGameLobby(dbm, callback) {
 	});	
 }
 
-function AdvanceCosmosLiveSessionToInGame(dbm, callback) {
+function UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_IN_GAME(dbm, callback) {
 	var sql = "update cosmos_live_sessions set state = ?";
 	var params = ["IN_GAME"];
 	dbm.ParameterizedInsert(sql, params, function (response, err) {
@@ -2532,7 +2532,7 @@ function AdvanceCosmosLiveSessionToInGame(dbm, callback) {
 	});	
 }
 
-function AdvanceCosmosLiveRound(dbm, rounds, callback) {
+function UTIL_ADVANCE_COSMOS_LIVE_ROUND(dbm, rounds, callback) {
 	var questionIds = test_questions[0].id.toString();
 	for (var i = 1; i < rounds; i++) {
 		questionIds += ", " + test_questions[i].id.toString();
@@ -2561,14 +2561,14 @@ var test_cosmos_live_session_id = -1;
 function Setup(callback) {
 	var dbm = GetDBM();
 
-	CreateAdminPrivilege(dbm, function() {
-		CreateGuestPrivilege(dbm, function() {
-			CreateAdminUser(dbm, function() {
-				CreateGuestUser(dbm, function() {
-					CreateQuestions(dbm, function() {
-						CreateChallengeAttempt(dbm, function() {
-							CreateChallengeModeConfigTimer(dbm, function() {
-								CreateHealthCheckKey(dbm, function() {
+	UTIL_CREATE_ADMIN_PRIVILEGE(dbm, function() {
+		UTIL_CREATE_GUEST_PRIVILEGE(dbm, function() {
+			UTIL_CREATE_ADMIN_USER(dbm, function() {
+				UTIL_CREATE_GUEST_USER(dbm, function() {
+					UTIL_CREATE_QUESTIONS(dbm, function() {
+						UTIL_CREATE_CHALLENGE_ATTEMPT(dbm, function() {
+							UTIL_CREATE_CHALLENGE_MODE_CONFIG_TIMER(dbm, function() {
+								UTIL_CREATE_HEALTH_CHECK_KEY(dbm, function() {
 									dbm.Close();
 									callback();
 								});
@@ -2590,20 +2590,23 @@ function TestCosmosLive(callback) {
 	TestCosmosLiveSubmitAnswerInvalidUser();
 
 	//closed
-	CreateClosedCosmosLiveSession(dbm, function() {
+	UTIL_CREATE_CLOSED_COSMOS_LIVE_SESSION(dbm, function() {
 		TestCosmosLiveClosedReturnsCorrectData();
 
 		//pre game lobby
-		AdvanceCosmosLiveSessionToPreGameLobby(dbm, function() {
+		UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_PRE_GAME_LOBBY(dbm, function() {
 			TestCosmosLivePreGameLobbyReturnsCorrectData();
 
 			//in game
-			AdvanceCosmosLiveSessionToInGame(dbm, function() {
+			UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_IN_GAME(dbm, function() {
 				TestCosmosLiveInGameReturnsCorrectData();
 				TestCosmosLiveInGameReturnsPlayerTypePlayer();
 
 				TestSubmitIncorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[0]);
 				TestCosmosLiveInGameReturnsPlayerTypeSpectator();
+
+
+
 
 				//advance round
 
@@ -2621,10 +2624,10 @@ function TestCosmosLive(callback) {
 				//TestLiveSubmitCorrectAnswerValidPlayerValidRound(test_cosmos_live_session_id, test_questions[0]);
 
 				//AnswerCosmosLiveSessionQuestionCorrectly(dbm, function() {
-//					AdvanceCosmosLiveRound(dbm, 2, function() {
+//					UTIL_ADVANCE_COSMOS_LIVE_ROUND(dbm, 2, function() {
 //						TestPlayerTypeAfterCorrectAnswer();
 
-//						AdvanceCosmosLiveRound(dbm, 3, function() {
+//						UTIL_ADVANCE_COSMOS_LIVE_ROUND(dbm, 3, function() {
 							dbm.Close();
 							callback();
 //						});

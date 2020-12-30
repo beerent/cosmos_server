@@ -2545,6 +2545,23 @@ function UTIL_ADVANCE_COSMOS_LIVE_ROUND(dbm, rounds, callback) {
 	});	
 }
 
+function UTIL_TRUNCATE_SESSION_ANSWERS(dbm, callback) {
+	var sql = "truncate cosmos_live_answers";
+	var params = [];
+	dbm.ParameterizedInsert(sql, params, function (response, err) {
+		callback();
+	});	
+}
+
+function UTIL_INSERT_COSMOS_LIVE_ANSWER(dbm, answer_id, callback) {
+	var sql = "insert into cosmos_live_answers (session_id, user_id, answer_id, added) values (?, ?, ?, now())";
+	var params = [test_cosmos_live_session_id, test_guest_user_id, answer_id];
+	dbm.ParameterizedInsert(sql, params, function (session_id, err) {
+		test_cosmos_live_session_id = session_id;
+		callback();
+	});
+}
+
 function GetDBM() {
 	var database_connections = LoadDatabaseConnections();
 	var database_connection = GetDatabaseConnection("test", database_connections);
@@ -2605,34 +2622,20 @@ function TestCosmosLive(callback) {
 				TestSubmitIncorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[0]);
 				TestCosmosLiveInGameReturnsPlayerTypeSpectator();
 
+				UTIL_TRUNCATE_SESSION_ANSWERS(dbm, function() {
+					UTIL_ADVANCE_COSMOS_LIVE_ROUND(dbm, 2, function() {
+						TestSubmitCorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[0]);
+						TestCosmosLiveInGameReturnsPlayerTypeSpectator();
 
-
-
-				//advance round
-
-				// submit right answer for previous round - prove spectator
-				// database update to correct answer
-
-				//
-
-
-
-
-				//test all variations of below
-				// essentially - server needs to know when user can no longer submit old answers
-				//				 and client needs to know when it is now only a spectator.
-				//TestLiveSubmitCorrectAnswerValidPlayerValidRound(test_cosmos_live_session_id, test_questions[0]);
-
-				//AnswerCosmosLiveSessionQuestionCorrectly(dbm, function() {
-//					UTIL_ADVANCE_COSMOS_LIVE_ROUND(dbm, 2, function() {
-//						TestPlayerTypeAfterCorrectAnswer();
-
-//						UTIL_ADVANCE_COSMOS_LIVE_ROUND(dbm, 3, function() {
+						UTIL_INSERT_COSMOS_LIVE_ANSWER(dbm, test_questions[0].correct_answer_id, function() {
+							TestCosmosLiveInGameReturnsPlayerTypePlayer();
+							TestSubmitCorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[1]);
+							TestCosmosLiveInGameReturnsPlayerTypePlayer();
 							dbm.Close();
 							callback();
-//						});
-//					});
-				//});
+						});
+					});
+				});
 			});
 		});
 	});

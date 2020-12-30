@@ -2628,7 +2628,6 @@ function TestCosmosLive(callback) {
 						TestCosmosLiveInGameReturnsPlayerTypeSpectator();
 
 						UTIL_INSERT_COSMOS_LIVE_ANSWER(dbm, test_questions[0].correct_answer_id, function() {
-							TestCosmosLiveInGameReturnsPlayerTypePlayer();
 							TestSubmitCorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[1]);
 							TestCosmosLiveInGameReturnsPlayerTypePlayer();
 							dbm.Close();

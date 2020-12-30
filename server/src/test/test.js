@@ -2223,6 +2223,11 @@ function TestCosmosLiveInGameReturnsCorrectData() {
 				failures += "  - IN_GAME state requires round's round in the payload\n";
 				success = false;
 			}
+			
+			if (response.payload.cosmos_live_session.round_seconds_remaining == undefined) {
+				failures += "  - IN_GAME state requires round's round_seconds_remaining in the payload\n";
+				success = false;
+			}
 		}
 
 		//PLAYER
@@ -2499,6 +2504,22 @@ function UTIL_CREATE_CHALLENGE_MODE_CONFIG_TIMER(dbm, callback) {
 	});
 }
 
+function UTIL_CREATE_COSMOS_LIVE_CONFIG_QUESTION_TIMER(dbm, callback) {
+	var sql = "insert into config (`key`, value) values (?, ?)";
+	var params = ["live_mode_question_timer_length", "15"];
+	dbm.ParameterizedInsert(sql, params, function (response, err) {
+		callback();
+	});
+}
+
+function UTIL_CREATE_COSMOS_LIVE_CONFIG_ROUND_TIMER(dbm, callback) {
+	var sql = "insert into config (`key`, value) values (?, ?)";
+	var params = ["live_mode_round_timer_length", "30"];
+	dbm.ParameterizedInsert(sql, params, function (response, err) {
+		callback();
+	});
+}
+
 function UTIL_CREATE_HEALTH_CHECK_KEY(dbm, callback) {
 	var sql = "insert into health (health_string) values (?)";
 	var params = ["gaga X ari"];
@@ -2525,7 +2546,7 @@ function UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_PRE_GAME_LOBBY(dbm, callback) {
 }
 
 function UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_IN_GAME(dbm, callback) {
-	var sql = "update cosmos_live_sessions set state = ?";
+	var sql = "update cosmos_live_sessions set state = ?, start = now()";
 	var params = ["IN_GAME"];
 	dbm.ParameterizedInsert(sql, params, function (response, err) {
 		callback();
@@ -2585,9 +2606,13 @@ function Setup(callback) {
 					UTIL_CREATE_QUESTIONS(dbm, function() {
 						UTIL_CREATE_CHALLENGE_ATTEMPT(dbm, function() {
 							UTIL_CREATE_CHALLENGE_MODE_CONFIG_TIMER(dbm, function() {
-								UTIL_CREATE_HEALTH_CHECK_KEY(dbm, function() {
-									dbm.Close();
-									callback();
+								UTIL_CREATE_COSMOS_LIVE_CONFIG_QUESTION_TIMER(dbm, function() {
+									UTIL_CREATE_COSMOS_LIVE_CONFIG_ROUND_TIMER(dbm, function() {
+										UTIL_CREATE_HEALTH_CHECK_KEY(dbm, function() {
+											dbm.Close();
+											callback();
+										});
+									});
 								});
 							});
 						});

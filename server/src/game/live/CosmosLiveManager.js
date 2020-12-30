@@ -2,6 +2,7 @@ var ResponseBuilder = require("../../response/ResponseBuilder.js");
 var UserManager = require("../../user/UserManager.js");
 var QuestionManager = require("../../question/QuestionManager");
 var CosmosLiveSession = require("./CosmosLiveSession.js");
+var ConfigManager = require("../../config/ConfigManager.js");
 
 const SPECTATOR = "SPECTATOR";
 const PLAYER = "PLAYER";
@@ -29,17 +30,24 @@ class CosmosLiveManager {
 			self.GetCurrentCosmosLiveSession(function(cosmosLiveSession) {
 				if (cosmosLiveSession == null) {
 					responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
-				} else {
+					res.json(responseBuilder.Response());
+					res.end();
+					self.dbm.Close();
+					return;
+				}
+
+				if (cosmosLiveSession.GetState() != IN_GAME) {
 					payload.cosmos_live_session = cosmosLiveSession.ToPayload();
+					responseBuilder.SetPayload(payload);
+					res.json(responseBuilder.Response());
+					res.end();
+					self.dbm.Close();
+					return;
+				}
 
-					if (cosmosLiveSession.GetState() != IN_GAME) {
-						responseBuilder.SetPayload(payload);
-						res.json(responseBuilder.Response());
-						res.end();
-						self.dbm.Close();
-						return;
-					}
-
+				self.GetRoundSecondsRemainingInRound(cosmosLiveSession, function(secondsRemaining) {
+					cosmosLiveSession.SetRoundSecondsRemaining(secondsRemaining);
+					payload.cosmos_live_session = cosmosLiveSession.ToPayload();
 					self.GetPlayerType(cosmosLiveSession, user, function(playerType) {
 						var player = {
 							user : user,
@@ -67,9 +75,67 @@ class CosmosLiveManager {
 							self.dbm.Close();
 						});
 					});
-				}
+				});
 			});
 		});
+	}
+
+	GetRoundSecondsRemainingInRound(cosmosLiveSession, callback) {
+		var self = this;
+
+		var configManager = new ConfigManager(this.dbm);
+
+		var start_time = cosmosLiveSession.GetStart();
+		var current_round = cosmosLiveSession.GetRound();
+
+		configManager.GetConfigValue("live_mode_question_timer_length", function(question_timer_length) {
+			configManager.GetConfigValue("live_mode_round_timer_length", function(round_timer_length) {
+				self.GetCurrentDateTime(function(now_time) {
+					self.GetSecondsDifference(now_time, start_time, function(seconds_difference) {
+						var total_seconds = current_round * round_timer_length - seconds_difference;
+
+						var seconds_remaining = question_timer_length;
+						if (total_seconds <  seconds_remaining) {
+							seconds_remaining = total_seconds;
+						}
+						if (seconds_remaining < 0) {
+							seconds_remaining = 0;
+						}
+
+						callback(seconds_remaining);
+					});
+				});
+			});
+		});
+	}
+
+	GetSecondsDifference(time_a, time_b, callback) {
+		var sql = "select time_to_sec(timediff(?, ?)) as difference";
+		var params = [time_a, time_b];
+
+		this.dbm.ParameterizedQuery(sql, params, function(results, err) {
+			var difference = null;
+			if (results.length > 0) {
+				var row = results[0];
+				difference = row.difference;
+			}
+
+			callback(difference);
+		});			
+	}
+
+	GetCurrentDateTime(callback) {
+		var sql = "select now() as now";
+
+		this.dbm.Query(sql, function(results, err) {
+			var date_time = null;
+			if (results.length > 0) {
+				var row = results[0];
+				date_time = row.now;
+			}
+
+			callback(date_time);
+		});		
 	}
 
 	GetCurrentCosmosLiveSession(callback) {
@@ -115,7 +181,7 @@ class CosmosLiveManager {
 			}
 
 			var isPlayerActive = false;
-			
+
 			if (incorrectAnswers > 0) {
 				isPlayerActive = false;
 			} else {

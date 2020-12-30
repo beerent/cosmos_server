@@ -98,15 +98,32 @@ class CosmosLiveManager {
 	}
 
 	IsPlayerActive(cosmosLiveSession, user, callback) {
-			var sql = "select count(*) as count from cosmos_live_answers cla join answers a on cla.answer_id = a.id join users u on cla.user_id = u.id where user_id = ? and correct = 1";
-			var params = [user.id];
+		var sql = "select correct, count(*) as count from cosmos_live_answers cla join answers a on cla.answer_id = a.id join users u on cla.user_id = u.id where user_id = ? group by correct";
+		var params = [user.id];
 
-			this.dbm.ParameterizedQuery(sql, params, function(results, err) {
-				var playerCorrectAnswers = parseInt(results[0].count);
-				var playerIsActive = playerCorrectAnswers >= (cosmosLiveSession.GetRound() - 1);
+		this.dbm.ParameterizedQuery(sql, params, function(results, err) {
+			var correctAnswers = 0;
+			var incorrectAnswers = 0;
+			for (var i = 0; i < results.length; i++) {
+				var entry = results[i];
 
-				callback(playerIsActive);
-			});
+				if (entry.correct == 0) {
+					incorrectAnswers = entry.count;
+				} else {
+					correctAnswers = entry.count;
+				}
+			}
+
+			var isPlayerActive = false;
+			
+			if (incorrectAnswers > 0) {
+				isPlayerActive = false;
+			} else {
+				isPlayerActive = correctAnswers >= (cosmosLiveSession.GetRound() - 1);
+			}
+
+			callback(isPlayerActive);
+		});
 	}
 
 	HandleLiveSubmitAnswer(req, res, responseBuilder) {
@@ -163,7 +180,7 @@ class CosmosLiveManager {
 			}
 		}
 
-		return answer_id == currentQuestion.correcAnswer.id;
+		return answer_id == currentQuestion.correctAnswer.id;
 	}
 
 	RegisterLiveAnswerFieldsAreValid(query) {

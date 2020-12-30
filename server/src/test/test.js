@@ -2255,76 +2255,6 @@ function TestCosmosLiveInGameReturnsCorrectData() {
 	}
 }
 
-function TestPlayerTypeIsPlayerOnFirstCosmosLiveRound() {
-	var functionName = "TestPlayerTypeIsPlayerOnFirstCosmosLiveRound\n";
-	var failures = "";
-	testsRanCount++;
-
-	var requestString = "live";
-
-	var url = server + "/" + requestString;
-	url += "?username=testguest&password=guest";
-	var response = GetHTTPResponse(url);
-
-	var success = true;
-	if (response.request != requestString) {
-		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
-		success = false;
-	}
-
-	if (response.op != 0) {
-		failures += "  - op was " + response.op + ", expected 0\n";
-		success = false;
-	}
-
-	var playerType = response.payload.player.type;
-	if (PLAYER != playerType) {
-		failures += "  - player type was '"+ playerType +"', expected '"+ PLAYER +"'\n";
-		success = false;
-	}
-
-	if (false == success) {
-		functionName += failures;
-		failedTests += functionName;
-		testsFailedCount++;
-	}
-}
-
-function TestPlayerTypeAfterCorrectAnswer() {
-	var functionName = "TestPlayerTypeAfterCorrectAnswer\n";
-	var failures = "";
-	testsRanCount++;
-
-	var requestString = "live";
-
-	var url = server + "/" + requestString;
-	url += "?username=testguest&password=guest";
-	var response = GetHTTPResponse(url);
-
-	var success = true;
-	if (response.request != requestString) {
-		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
-		success = false;
-	}
-
-	if (response.op != 0) {
-		failures += "  - op was " + response.op + ", expected 0\n";
-		success = false;
-	}
-
-	var playerType = response.payload.player.type;
-	if (PLAYER != playerType) {
-		failures += "  - player type was '"+ playerType +"', expected '"+ PLAYER +"'\n";
-		success = false;
-	}
-
-	if (false == success) {
-		functionName += failures;
-		failedTests += functionName;
-		testsFailedCount++;
-	}
-}
-
 function TestSubmitIncorrectCosmosLiveAnswer(session_id, question) {
 	var functionName = "TestSubmitIncorrectCosmosLiveAnswer\n";
 	var failures = "";
@@ -2344,6 +2274,105 @@ function TestSubmitIncorrectCosmosLiveAnswer(session_id, question) {
 
 	if (response.op != 0) {
 		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestSubmitCorrectCosmosLiveAnswer(session_id, question) {
+	var functionName = "TestSubmitCorrectCosmosLiveAnswer\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "registerLiveAnswer";
+
+	var url = server + "/" + requestString;
+	url += "?username=testguest&password=guest&session_id=" + session_id + "&answer_id=" + question.correct_answer_id;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestCosmosLiveInGameReturnsPlayerTypePlayer() {
+	var functionName = "TestCosmosLiveInGameReturnsPlayerTypePlayer\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "live";
+
+	var url = server + "/" + requestString;
+	url += "?username=testguest&password=guest";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	var playerType = response.payload.player.type;
+	if (PLAYER != playerType) {
+		failures += "  - player type was '"+ playerType +"', expected '"+ PLAYER +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestCosmosLiveInGameReturnsPlayerTypeSpectator() {
+	var functionName = "TestCosmosLiveInGameReturnsPlayerTypeSpectator\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "live";
+
+	var url = server + "/" + requestString;
+	url += "?username=testguest&password=guest";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	var playerType = response.payload.player.type;
+	if (SPECTATOR != playerType) {
+		failures += "  - player type was '"+ playerType +"', expected '"+ SPECTATOR +"'\n";
 		success = false;
 	}
 
@@ -2571,12 +2600,11 @@ function TestCosmosLive(callback) {
 			//in game
 			AdvanceCosmosLiveSessionToInGame(dbm, function() {
 				TestCosmosLiveInGameReturnsCorrectData();
-				TestPlayerTypeIsPlayerOnFirstCosmosLiveRound();
+				TestCosmosLiveInGameReturnsPlayerTypePlayer();
 
 				TestSubmitIncorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[0]);
-
-				// submit wrong answer - prove spectator
-				// database drop answer
+				TestSubmitCorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[0]);
+				TestCosmosLiveInGameReturnsPlayerTypeSpectator();
 
 				//advance round
 

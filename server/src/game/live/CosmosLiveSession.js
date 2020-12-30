@@ -31,6 +31,14 @@ class CosmosLiveSession {
 		return this.asked_questions_ids.length;
 	}
 
+	GetLatestQuestionId() {
+		if (this.asked_questions_ids.length < 1) {
+			return null;
+		}
+
+		return this.asked_questions_ids[this.asked_questions_ids.length - 1];
+	}
+
 	ToPayload() {
 		var payload = {
 			state : this.state,

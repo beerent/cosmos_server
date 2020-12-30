@@ -165,6 +165,14 @@ app.get('/live', function (req, res) {
 	cosmosLiveManagerInstance.HandleLiveDataRequest(req, res, responseBuilder);
 });
 
+app.get('/registerLiveAnswer', function (req, res) {
+	var dbm = new DBM(db_connection);
+	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors);
+
+	var responseBuilder = new ResponseBuilder("registerLiveAnswer");
+	cosmosLiveManagerInstance.HandleLiveSubmitAnswer(req, res, responseBuilder);
+});
+
 
 
 app.get('/getMessages', function (req, res) {

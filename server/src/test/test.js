@@ -2032,6 +2032,56 @@ function TestCosmosLiveInvalidUser() {
 	}
 }
 
+function TestCosmosLiveSubmitAnswerReturnsRequest() {
+	var functionName = "TestCosmosLiveSubmitReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "registerLiveAnswer";
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestCosmosLiveSubmitAnswerInvalidUser() {
+	var functionName = "TestCosmosLiveSubmitAnswerInvalidUser\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "registerLiveAnswer";
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 101) {
+		failures += "  - op was " + response.op + ", expected 101\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+	}
+}
+
 function TestCosmosLiveClosedReturnsCorrectData() {
 	var functionName = "TestCosmosLiveClosedReturnsCorrectData\n";
 	var failures = "";
@@ -2203,12 +2253,10 @@ function TestCosmosLiveInGameReturnsCorrectData() {
 		failedTests += functionName;
 		testsFailedCount++;
 	}
-
-	return success;
 }
 
-function TestPlayerTypeOnFirstCosmosLiveSession() {
-	var functionName = "TestPlayerTypeOnFirstCosmosLiveSession\n";
+function TestPlayerTypeIsPlayerOnFirstCosmosLiveRound() {
+	var functionName = "TestPlayerTypeIsPlayerOnFirstCosmosLiveRound\n";
 	var failures = "";
 	testsRanCount++;
 
@@ -2240,8 +2288,6 @@ function TestPlayerTypeOnFirstCosmosLiveSession() {
 		failedTests += functionName;
 		testsFailedCount++;
 	}
-
-	return success;
 }
 
 function TestPlayerTypeAfterCorrectAnswer() {
@@ -2277,8 +2323,64 @@ function TestPlayerTypeAfterCorrectAnswer() {
 		failedTests += functionName;
 		testsFailedCount++;
 	}
+}
 
-	return success;
+function TestSubmitIncorrectCosmosLiveAnswer(session_id, question) {
+	var functionName = "TestSubmitIncorrectCosmosLiveAnswer\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "registerLiveAnswer";
+
+	var url = server + "/" + requestString;
+	url += "?username=testguest&password=guest&session_id=" + session_id + "&answer_id=" + question.incorrect_answer_id;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestSubmitCorrectAnswerValidPlayerValidRound(session_id, question) {
+	var functionName = "TestSubmitCorrectAnswerValidPlayerValidRound\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "registerLiveAnswer";
+
+	var url = server + "/" + requestString;
+	url += "?username=testguest&password=guest&session_id=" + session_id + "&answer_id=" + question.correct_answer_id;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
 }
 
 function CreateAdminPrivilege(dbm, callback) {
@@ -2311,6 +2413,19 @@ function CreateGuestUser(dbm, callback) {
 	dbm.ParameterizedInsert(sql, params, function (user_id, err) {
 		test_guest_user_id = user_id;
 		callback();
+	});
+}
+
+function CreateQuestions(dbm, callback) {
+	var question = "How many moons does planet Earth have?";
+	CreateQuestion(dbm, question, function() {
+		var question = "How many moons does planet Mars have?";
+		CreateQuestion(dbm, question, function() {
+			var question = "How many moons does planet Venus have?";
+			CreateQuestion(dbm, question, function() {
+				callback();
+			});
+		});
 	});
 }
 
@@ -2388,24 +2503,11 @@ function AdvanceCosmosLiveSessionToInGame(dbm, callback) {
 	});	
 }
 
-function AnswerCosmosLiveSessionQuestionCorrectly(dbm, callback) {
-	var sql = "insert into cosmos_live_answers (session_id, user_id, answer_id, added) values (?, ?, ?, now())";
-	var params = [test_cosmos_live_session_id, test_guest_user_id, test_questions[0].correct_answer_id];
-	dbm.ParameterizedInsert(sql, params, function (response, err) {
-		callback();
-	});
-}
-
-function AnswerCosmosLiveSessionQuestionIncorrectly(dbm, callback) {
-	var sql = "insert into cosmos_live_answers (session_id, user_id, answer_id, added) values (?, ?, ?, now())";
-	var params = [test_cosmos_live_session_id, test_guest_user_id, test_questions[0].incorrect_answer_id];
-	dbm.ParameterizedInsert(sql, params, function (response, err) {
-		callback();
-	});
-}
-
-function AdvanceCosmosLiveRound(dbm, callback) {
-	var questionIds = test_questions[0].id.toString() + ", " + test_questions[1].id.toString();
+function AdvanceCosmosLiveRound(dbm, rounds, callback) {
+	var questionIds = test_questions[0].id.toString();
+	for (var i = 1; i < rounds; i++) {
+		questionIds += ", " + test_questions[i].id.toString();
+	}
 
 	var sql = "update cosmos_live_sessions set asked_questions_ids = ?";
 	var params = [questionIds];
@@ -2434,16 +2536,12 @@ function Setup(callback) {
 		CreateGuestPrivilege(dbm, function() {
 			CreateAdminUser(dbm, function() {
 				CreateGuestUser(dbm, function() {
-					var question = "How many moons does planet Earth have?";
-					CreateQuestion(dbm, question, function() {
-						var question = "How many moons does planet Mars have?";
-						CreateQuestion(dbm, question, function() {
-							CreateChallengeAttempt(dbm, function() {
-								CreateChallengeModeConfigTimer(dbm, function() {
-									CreateHealthCheckKey(dbm, function() {
-										dbm.Close();
-										callback();
-									});
+					CreateQuestions(dbm, function() {
+						CreateChallengeAttempt(dbm, function() {
+							CreateChallengeModeConfigTimer(dbm, function() {
+								CreateHealthCheckKey(dbm, function() {
+									dbm.Close();
+									callback();
 								});
 							});
 						});
@@ -2459,29 +2557,52 @@ function TestCosmosLive(callback) {
 
 	TestCosmosLiveReturnsRequest();
 	TestCosmosLiveInvalidUser();
+	TestCosmosLiveSubmitAnswerReturnsRequest();
+	TestCosmosLiveSubmitAnswerInvalidUser();
 
+	//closed
 	CreateClosedCosmosLiveSession(dbm, function() {
 		TestCosmosLiveClosedReturnsCorrectData();
 
+		//pre game lobby
 		AdvanceCosmosLiveSessionToPreGameLobby(dbm, function() {
 			TestCosmosLivePreGameLobbyReturnsCorrectData();
 
-			AdvanceCosmosLiveSessionToInGame(dbm, function(){
-				if (TestCosmosLiveInGameReturnsCorrectData()) {
-					if (TestPlayerTypeOnFirstCosmosLiveSession()) {
-						AnswerCosmosLiveSessionQuestionCorrectly(dbm, function() {
-							AdvanceCosmosLiveRound(dbm, function() {
-								TestPlayerTypeAfterCorrectAnswer();
+			//in game
+			AdvanceCosmosLiveSessionToInGame(dbm, function() {
+				TestCosmosLiveInGameReturnsCorrectData();
+				TestPlayerTypeIsPlayerOnFirstCosmosLiveRound();
 
-								dbm.Close();
-								callback();
-							});
-						});
+				TestSubmitIncorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[0]);
 
-						//test player type after wrong answer
-						//test player type late submission
-					}
-				}
+				// submit wrong answer - prove spectator
+				// database drop answer
+
+				//advance round
+
+				// submit right answer for previous round - prove spectator
+				// database update to correct answer
+
+				//
+
+
+
+
+				//test all variations of below
+				// essentially - server needs to know when user can no longer submit old answers
+				//				 and client needs to know when it is now only a spectator.
+				//TestLiveSubmitCorrectAnswerValidPlayerValidRound(test_cosmos_live_session_id, test_questions[0]);
+
+				//AnswerCosmosLiveSessionQuestionCorrectly(dbm, function() {
+//					AdvanceCosmosLiveRound(dbm, 2, function() {
+//						TestPlayerTypeAfterCorrectAnswer();
+
+//						AdvanceCosmosLiveRound(dbm, 3, function() {
+							dbm.Close();
+							callback();
+//						});
+//					});
+				//});
 			});
 		});
 	});

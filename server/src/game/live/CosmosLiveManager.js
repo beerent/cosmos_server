@@ -6,6 +6,8 @@ var CosmosLiveSession = require("./CosmosLiveSession.js");
 const SPECTATOR = "SPECTATOR";
 const PLAYER = "PLAYER";
 
+const IN_GAME = "IN_GAME";
+
 class CosmosLiveManager {
 
 	constructor (dbm, errors, privileges) {
@@ -30,6 +32,14 @@ class CosmosLiveManager {
 				} else {
 					payload.cosmos_live_session = cosmosLiveSession.ToPayload();
 
+					if (cosmosLiveSession.GetState() != IN_GAME) {
+						responseBuilder.SetPayload(payload);
+						res.json(responseBuilder.Response());
+						res.end();
+						self.dbm.Close();
+						return;
+					}
+
 					self.GetPlayerType(cosmosLiveSession, user, function(playerType) {
 						var player = {
 							user : user,
@@ -38,24 +48,24 @@ class CosmosLiveManager {
 
 						payload.player = player;
 
-						var askedQuestions = cosmosLiveSession.GetAskedQuestionsIds();
-						if (askedQuestions == "") {
+						var currentQuestionId = cosmosLiveSession.GetLatestQuestionId();
+						if (currentQuestionId == null) {
+							responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
+							res.json(responseBuilder.Response());
+							res.end();
+							self.dbm.Close();
+							return;
+						}
+
+						var question_manager = new QuestionManager(self.dbm, self.errors, self.privileges);
+						question_manager.GetQuestionById(currentQuestionId, function(questions) {
+							payload.question = questions[0];
+
 							responseBuilder.SetPayload(payload);
 							res.json(responseBuilder.Response());
 							res.end();
 							self.dbm.Close();
-						} else {
-							var currentQuestionId = askedQuestions[askedQuestions.length - 1];
-							var question_manager = new QuestionManager(self.dbm, self.errors, self.privileges);
-							question_manager.GetQuestionById(currentQuestionId, function(questions) {
-								payload.question = questions[0];
-
-								responseBuilder.SetPayload(payload);
-								res.json(responseBuilder.Response());
-								res.end();
-								self.dbm.Close();
-							});
-						}
+						});
 					});
 				}
 			});
@@ -97,6 +107,81 @@ class CosmosLiveManager {
 
 				callback(playerIsActive);
 			});
+	}
+
+	HandleLiveSubmitAnswer(req, res, responseBuilder) {
+		var self = this;
+
+		this.HandleRequestWithAuth(req, res, responseBuilder, function(user) {
+			if (self.RegisterLiveAnswerFieldsAreValid(req.query) == false) {
+				responseBuilder.SetError(self.errors.REGISTER_LIVE_ANSWER_MISSING_ERROR);
+				var response = responseBuilder.Response();
+				res.json(response);
+				res.end();
+				self.dbm.Close();
+				return;
+			}
+
+			self.GetCurrentCosmosLiveSession(function(cosmosLiveSession) {
+				if (cosmosLiveSession == null || cosmosLiveSession.GetLatestQuestionId() == null) {
+					responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
+					var response = responseBuilder.Response();
+					res.json(response);
+					res.end();
+					self.dbm.Close();
+					return;
+				}
+
+				var currentQuestionId = cosmosLiveSession.GetLatestQuestionId();
+				var question_manager = new QuestionManager(self.dbm, self.errors, self.privileges);
+				question_manager.GetQuestionById(currentQuestionId, function(questions) {
+					var currentSessionQuestion = questions[0];
+
+					if (!self.SubmissionIsForCurrentRound(req.query.answer_id, currentSessionQuestion)) {
+						var response = responseBuilder.Response();
+						res.json(response);
+						res.end();
+						self.dbm.Close();
+						return;
+					}
+
+					self.RegisterLiveAnswer(cosmosLiveSession.GetId(), user.id, req.query.answer_id, responseBuilder, function(response) {
+						res.json(response);
+						res.end();
+						self.dbm.Close();
+					});
+				});
+			});
+		});
+	}
+
+	SubmissionIsForCurrentRound(answer_id, currentQuestion) {
+		var wrongAnswers = currentQuestion.incorrectAnswers;
+		for (var i = 0; i < wrongAnswers.length; i++) {
+			if (answer_id == wrongAnswers[i].id) {
+				return true;
+			}
+		}
+
+		return answer_id == currentQuestion.correcAnswer.id;
+	}
+
+	RegisterLiveAnswerFieldsAreValid(query) {
+		return query.session_id != undefined && query.answer_id != undefined;
+	}
+
+	RegisterLiveAnswer(session_id, user_id, answer_id, responseBuilder, callback) {
+		var sql = "insert into cosmos_live_answers (session_id, user_id, answer_id, added) values (?, ?, ?, now())";
+		var params = [session_id, user_id, answer_id];
+
+		var errors = this.errors;
+		this.dbm.ParameterizedInsert(sql, params, function(newChallengeAnswerId, err) {
+			if (err) {
+				responseBuilder.SetError(errors.REGISTER_LIVE_ANSWER_INVALID_ERROR);
+			} 
+
+			callback(responseBuilder.Response());
+		});
 	}
 
 	HandleRequestWithAuth(req, res, responseBuilder, callback) {

@@ -67,5 +67,15 @@
     "INVALID_COSMOS_LIVE_SESSION": {
         "id": 114,
         "note": "invalid cosmos live session found"
+    },
+
+    "REGISTER_LIVE_ANSWER_MISSING_ERROR": {
+        "id": 115,
+        "note": "register cosmos live answer missing parameters"
+    },
+
+    "REGISTER_LIVE_ANSWER_INVALID_ERROR": {
+        "id": 116,
+        "note": "register cosmos live answer invalid parameters"
     }
 } 

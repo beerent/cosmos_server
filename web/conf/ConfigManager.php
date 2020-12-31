@@ -1,34 +1,35 @@
 <?php
 	class ConfigManager {
-		function __construct(){
-			
+		function __construct() {
+			$this->environment = $this->loadEnvironment();
+			$this->config = $this->loadConfigFile();
 		}
 
-		function getProperty($config, $key){
-			$file = $this->getConfigFileNameByKey($config);
-			if ($file == NULL)
-				return NULL;
-
-			$handle = fopen($file, "r");
-			if ($handle) {
-				while (($line = fgets($handle)) !== false) {
-					$line = explode("=", $line);
-					if (strcmp($line[0], $key) == 0)
-						return trim($line[1]);
-
-				}
-				fclose($handle);
-			}
-
-			throw new Exception('fatal error! failed to load property: '.$key.' from '. $config);
+		function getDatabaseConnectionInfo() {
+			return $this->config["database"][$this->environment];
 		}
 
-		function getConfigFileNameByKey($key){
-			$path = $_SERVER['DOCUMENT_ROOT'];
-			if(strcmp($key, "database") == 0){
-				return $path . "/conf/db.conf";
+		function loadConfigFile() {
+			$homeDirectory = $this->getHomeDirectory();
+			return json_decode(file_get_contents($homeDirectory . ".cosmos/config"), true);
+		}
+
+		function loadEnvironment() {
+			$environment = "development";
+			if (is_dir("/home/ubuntu/")) {
+				$environment = "production";
 			}
-			return NULL;
+
+			return $environment;
+		}
+
+		function getHomeDirectory() {
+			$homeDirectory = "/Users/beerent/";
+			if ($this->environment == "production") {
+				$homeDirectory = "/home/ubuntu/";
+			}
+
+			return $homeDirectory;
 		}
 	}
 ?>

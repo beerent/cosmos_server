@@ -3,6 +3,8 @@ const http = require('http');
 const https = require('https');
 const express = require('express');
 
+var ConfigLoader = require("./config/ConfigLoader.js");
+
 var DBM = require("./database/DBM.js");
 var QuestionManager = require("./question/QuestionManager.js");
 var QuestionManager = require("./question/QuestionManager.js");
@@ -15,23 +17,21 @@ var HealthCheckManager = require("./health/HealthCheckManager.js");
 var ConfigManager = require("./config/ConfigManager.js");
 var MessagesManager = require("./messages/MessagesManager.js");
 
-var cosmosRoot = "/Users/beerent/Documents/cosmos_server/server/src"; //macbook
-//var cosmosRoot = "/home/ubuntu/server/cosmos_server/server/src"; //server
+var environment = GetEnvironment();
+var config_loader = new ConfigLoader(environment);
 
-var runMode = GetRunMode();
-
-function GetRunMode() {
-	var runMode = "development";
+function GetEnvironment() {
+	var environment = "development";
 
 	if (process.argv.length > 2) {
-		runMode = process.argv[2];
+		environment = process.argv[2];
 	}
 
-	return runMode;
+	return environment;
 }
 
 function RunServer() {
-	if (runMode == "production") {
+	if (environment == "production") {
 		RunProductionServer();
 	} else {
 		RunDevelopmentServer();
@@ -64,35 +64,27 @@ function RunProductionServer() {
 }
 
 function LoadErrors() {
+	var source_root = config_loader.GetSourceRoot();
+
 	var fs = require('fs');
-	var obj = JSON.parse(fs.readFileSync(cosmosRoot + '/response/errors.json', 'utf8'));
+	var obj = JSON.parse(fs.readFileSync(source_root + '/response/errors.json', 'utf8'));
 
 	return obj;
 }
 
 function LoadPrivileges() {
+	var source_root = config_loader.GetSourceRoot();
+
 	var fs = require('fs');
-	var obj = JSON.parse(fs.readFileSync(cosmosRoot + '/user/privileges.json', 'utf8'));
+	var obj = JSON.parse(fs.readFileSync(source_root + '/user/privileges.json', 'utf8'));
 
 	return obj;	
-}
-
-function LoadDatabaseConnections() {
-	var fs = require('fs');
-	var obj = JSON.parse(fs.readFileSync(cosmosRoot + '/conf/database_connections.json', 'utf8'));
-
-	return obj;	
-}
-
-function GetDatabaseConnection(runMode, db_connections) {
-	return db_connections[runMode];
 }
 
 var app = express();
 var errors = LoadErrors();
 var privileges = LoadPrivileges();
-var db_connections = LoadDatabaseConnections();
-var db_connection = GetDatabaseConnection(runMode, db_connections);
+var db_connection = config_loader.GetDatabaseConnectionInfo();
 
 //USER MANAGER
 app.get('/authenticate', function (req, res) {

@@ -8,20 +8,21 @@
 			$this->cm = new ConfigManager();
 		}
 
-		function connect(){
-			$user =     $this->cm->getProperty("database", "user");
-			$password = $this->cm->getProperty("database", "password");
-			$host =     $this->cm->getProperty("database", "host");
-			$port =     $this->cm->getProperty("database", "port");
-			$database = $this->cm->getProperty("database", "db");
+		function connect() {
+			$databaseConnectionInfo = $this->cm->getDatabaseConnectionInfo();
+			$user =     $databaseConnectionInfo["user"];
+			$password = $databaseConnectionInfo["password"];
+			$host =     $databaseConnectionInfo["host"];
+			$port =     $databaseConnectionInfo["port"];
+			$database = $databaseConnectionInfo["database"];
 			$this->conn = mysqli_connect($host, $user, $password, $database);
 		}
 
-		function query($sql){
+		function query($sql) {
 			return $this->conn->query($sql);
 		}
 
-		function insert($sql){
+		function insert($sql) {
 			$this->conn->query($sql);
 			return $this->conn->insert_id;
 		}

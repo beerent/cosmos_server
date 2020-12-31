@@ -1,14 +1,13 @@
+var ConfigLoader = require("../config/ConfigLoader.js");
 var DBM = require("../database/DBM.js");
 
 const https = require('http');
 
+var config_loader = new ConfigLoader("test");
+var server = config_loader.GetApiServer();
+
 const PLAYER = "PLAYER";
 const SPECTATOR = "SPECTATOR";
-
-var server = "http://127.0.0.1:8081";
-
-var cosmosRoot = "/Users/beerent/Documents/cosmos_server/server/src"; //macbook
-//var cosmosRoot = "/home/ubuntu/server/cosmos_server/server/src"; //server
 
 var failedTests = "";
 var testsRanCount = 0;
@@ -20,7 +19,9 @@ function GetHTTPResponse(url) {
 	try {
 	    res = request('GET', url);
 	    return JSON.parse(res.getBody().toString());
-	} catch (e) {}
+	} catch (e) {
+		console.log(e);
+	}
 }
 
 function PrintResults() {
@@ -31,19 +32,6 @@ function PrintResults() {
 		console.log(failedTests);
 	}
 }
-
-function LoadDatabaseConnections() {
-	var fs = require('fs');
-	var obj = JSON.parse(fs.readFileSync(cosmosRoot + '/conf/database_connections.json', 'utf8'));
-
-	return obj;	
-}
-
-function GetDatabaseConnection(runMode, db_connections) {
-	return db_connections[runMode];
-}
-
-
 
 
 
@@ -2584,8 +2572,7 @@ function UTIL_INSERT_COSMOS_LIVE_ANSWER(dbm, answer_id, callback) {
 }
 
 function GetDBM() {
-	var database_connections = LoadDatabaseConnections();
-	var database_connection = GetDatabaseConnection("test", database_connections);
+	var database_connection = config_loader.GetDatabaseConnectionInfo();
 	var dbm = new DBM(database_connection);
 
 	return dbm;

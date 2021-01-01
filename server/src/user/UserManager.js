@@ -96,7 +96,63 @@ class UserManager {
 	}
 
 	CredentialFieldsAreValid(query) {
-		return query.username != undefined && query.password != undefined;
+		return query.admin_auth_key != undefined || (query.username != undefined && query.password != undefined);
+	}
+
+	HandleRequestWithAuth(req, res, responseBuilder, callback) {
+		var self = this;
+		if (this.CredentialFieldsAreValid(req.query) == false) {
+			responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
+			res.json(responseBuilder.Response());
+			res.end();
+			self.dbm.Close();
+			return;
+		}
+
+		if (req.query.admin_auth_key) {
+			self.GetUserByAdminAuthKey(req.query.admin_auth_key, function(user) {
+				if (undefined == user) {
+					responseBuilder.SetError(self.errors.INVALID_ADMIN_AUTH_KEY);
+					res.json(responseBuilder.Response());
+					res.end();
+					self.dbm.Close();				
+				} else {
+					callback(user);
+				}				
+			});
+		} else {
+			self.GetUserFromCredentials(req.query.username, req.query.password, function(user) {
+				if (undefined == user) {
+					responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
+					res.json(responseBuilder.Response());
+					res.end();
+					self.dbm.Close();				
+				} else {
+					callback(user);
+				}
+			});
+		}
+	}
+
+	GetUserByAdminAuthKey(admin_auth_key, callback) {
+		var sql = BASE_USER_QUERY + "join config where privileges_enum.privilege = 'ADMIN' and `key` = 'admin_auth_key' and value = ?";
+		var params = [admin_auth_key];
+
+		this.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
+			if (err || queryResults.length == 0) {
+				var user = undefined;
+				callback(user);
+				return;
+			}
+
+			var user = {};
+			user.id = queryResults[0].id;
+			user.username = queryResults[0].username;
+			user.email = queryResults[0].email;
+			user.access_level = queryResults[0].access_level;
+
+			callback(user);
+		});
 	}
 
 	GetUserFromCredentials(username, password, callback) {

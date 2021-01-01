@@ -31,5 +31,6 @@ create table cosmos_live_answers
 create unique index cosmos_live_answers_id_uindex
 	on cosmos_live_answers (id);
 
-insert into cosmos.config (`key`, value) values ("live_mode_question_timer_length", "15");
-insert into cosmos.config (`key`, value) values ("live_mode_round_timer_length", "30");
+insert into config (`key`, value) values ("live_mode_question_timer_length", "15");
+insert into config (`key`, value) values ("live_mode_round_timer_length", "30");
+insert into config (`key`, value) values ("admin_auth_key", "73nFm0OcvChiyENbq4V96nE6gm5qQMkHZ");

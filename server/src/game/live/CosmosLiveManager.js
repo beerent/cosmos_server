@@ -18,6 +18,7 @@ class CosmosLiveManager {
 	}
 
 	HandleLiveDataRequest(req, res, responseBuilder) {
+		var user_manager = new UserManager(this.dbm, this.errors);
 		var self = this;
 
 		var payload = {
@@ -26,7 +27,7 @@ class CosmosLiveManager {
 			question : null
 		};
 		
-		this.HandleRequestWithAuth(req, res, responseBuilder, function(user) {
+		user_manager.HandleRequestWithAuth(req, res, responseBuilder, function(user) {
 			self.GetCurrentCosmosLiveSession(function(cosmosLiveSession) {
 				if (cosmosLiveSession == null) {
 					responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
@@ -193,9 +194,10 @@ class CosmosLiveManager {
 	}
 
 	HandleLiveSubmitAnswer(req, res, responseBuilder) {
+		var user_manager = new UserManager(this.dbm, this.errors);
 		var self = this;
 
-		this.HandleRequestWithAuth(req, res, responseBuilder, function(user) {
+		user_manager.HandleRequestWithAuth(req, res, responseBuilder, function(user) {
 			if (self.RegisterLiveAnswerFieldsAreValid(req.query) == false) {
 				responseBuilder.SetError(self.errors.REGISTER_LIVE_ANSWER_MISSING_ERROR);
 				var response = responseBuilder.Response();
@@ -264,30 +266,6 @@ class CosmosLiveManager {
 			} 
 
 			callback(responseBuilder.Response());
-		});
-	}
-
-	HandleRequestWithAuth(req, res, responseBuilder, callback) {
-		var userManager = new UserManager(this.dbm);
-
-		var self = this;
-		if (userManager.CredentialFieldsAreValid(req.query) == false) {
-			responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
-			res.json(responseBuilder.Response());
-			res.end();
-			self.dbm.Close();
-			return;
-		}
-
-		userManager.GetUserFromCredentials(req.query.username, req.query.password, function(user) {
-			if (undefined == user) {
-				responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
-				res.json(responseBuilder.Response());
-				res.end();
-				self.dbm.Close();				
-			} else {
-				callback(user);
-			}
 		});
 	}
 }

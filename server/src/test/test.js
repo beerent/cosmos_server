@@ -13,11 +13,11 @@ var failedTests = "";
 var testsRanCount = 0;
 var testsFailedCount = 0;
 
-function GetHTTPResponse(url) {
+function GetHTTPResponse(url, body=null) {
 	var request = require('sync-request');
 
 	try {
-	    res = request('GET', url);
+		res = request('GET', url);
 	    return JSON.parse(res.getBody().toString());
 	} catch (e) {
 		console.log(e);
@@ -2020,6 +2020,62 @@ function TestCosmosLiveInvalidUser() {
 	}
 }
 
+function TestCosmosLiveAdminInvalidAuthKeyBypassesUserAuth() {
+	var functionName = "TestCosmosLiveAdminInvalidAuthKeyBypassesUserAuth\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/live";
+	url += "?admin_auth_key=" + test_invalid_admin_auth_key;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 117) {
+		failures += "  - op was " + response.op + ", expected 117\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestCosmosLiveAdminValidAuthKeyBypassesUserAuth() {
+	var functionName = "TestCosmosLiveAdminValidAuthKeyBypassesUserAuth\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/live";
+	url += "?admin_auth_key=" + test_valid_admin_auth_key;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
 function TestCosmosLiveSubmitAnswerReturnsRequest() {
 	var functionName = "TestCosmosLiveSubmitReturnsRequest\n";
 	var failures = "";
@@ -2571,6 +2627,14 @@ function UTIL_INSERT_COSMOS_LIVE_ANSWER(dbm, answer_id, callback) {
 	});
 }
 
+function UTIL_CREATE_ADMIN_AUTH_KEY(dbm, callback) {
+	var sql = "insert into config (`key`, value) values (?, ?)";
+	var params = ["admin_auth_key", test_valid_admin_auth_key];
+	dbm.ParameterizedInsert(sql, params, function (response, err) {
+		callback();
+	});
+}
+
 function GetDBM() {
 	var database_connection = config_loader.GetDatabaseConnectionInfo();
 	var dbm = new DBM(database_connection);
@@ -2582,6 +2646,8 @@ var test_guest_user_id = -1;
 var test_attempt_id = -1;
 var test_questions = [];
 var test_cosmos_live_session_id = -1;
+var test_valid_admin_auth_key = "mega_auth_key";
+var test_invalid_admin_auth_key = "mega_auth_key_invalid";
 
 function Setup(callback) {
 	var dbm = GetDBM();
@@ -2596,8 +2662,10 @@ function Setup(callback) {
 								UTIL_CREATE_COSMOS_LIVE_CONFIG_QUESTION_TIMER(dbm, function() {
 									UTIL_CREATE_COSMOS_LIVE_CONFIG_ROUND_TIMER(dbm, function() {
 										UTIL_CREATE_HEALTH_CHECK_KEY(dbm, function() {
-											dbm.Close();
-											callback();
+											UTIL_CREATE_ADMIN_AUTH_KEY(dbm, function() {
+												dbm.Close();
+												callback();
+											});
 										});
 									});
 								});
@@ -2621,6 +2689,9 @@ function TestCosmosLive(callback) {
 	//closed
 	UTIL_CREATE_CLOSED_COSMOS_LIVE_SESSION(dbm, function() {
 		TestCosmosLiveClosedReturnsCorrectData();
+
+		TestCosmosLiveAdminInvalidAuthKeyBypassesUserAuth();
+		TestCosmosLiveAdminValidAuthKeyBypassesUserAuth();
 
 		//pre game lobby
 		UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_PRE_GAME_LOBBY(dbm, function() {

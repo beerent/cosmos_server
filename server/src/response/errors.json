@@ -77,5 +77,10 @@
     "REGISTER_LIVE_ANSWER_INVALID_ERROR": {
         "id": 116,
         "note": "register cosmos live answer invalid parameters"
+    },
+
+    "INVALID_ADMIN_AUTH_KEY": {
+        "id": 117,
+        "note": "invalid admin auth key"
     }
 } 

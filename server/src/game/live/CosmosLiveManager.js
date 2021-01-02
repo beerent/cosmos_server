@@ -126,7 +126,7 @@ class CosmosLiveManager {
 	}
 
 	GetCurrentDateTime(callback) {
-		var sql = "select now() as now";
+		var sql = "select utc_timestamp() as now";
 
 		this.dbm.Query(sql, function(results, err) {
 			var date_time = null;
@@ -247,6 +247,10 @@ class CosmosLiveManager {
 			}
 		}
 
+		if (query.request == "advance_round") {
+			return true;
+		}
+
 		return false;
 	}
 
@@ -282,6 +286,21 @@ class CosmosLiveManager {
 		}
 	}
 
+	AdvanceSessionRound(cosmosLiveSession, callback) {
+		var self = this;
+
+		var question_manager = new QuestionManager(this.dbm, this.errors, this.privileges);
+
+		var asked_questions_ids = cosmosLiveSession.GetAskedQuestionsIds();
+		question_manager.GetUnaskedQuestionIds(asked_questions_ids, 1, function(question_id) {
+			var sql = "update cosmos_live_sessions set asked_questions_ids = concat(asked_questions_ids, concat(', ', ?)) WHERE id = ?";
+			var params = [question_id, cosmosLiveSession.GetId()];
+			self.dbm.ParameterizedInsert(sql, params, function(results, err) {
+				callback();
+			});
+		});
+	}
+
 	HandleLiveAdminRequest(req, res, responseBuilder) {
 		var user_manager = new UserManager(this.dbm, this.errors);
 		var self = this;
@@ -306,14 +325,20 @@ class CosmosLiveManager {
 					return;
 				}
 
+				var callback = function() {
+					var response = responseBuilder.Response();
+					res.json(response);
+					res.end();
+					self.dbm.Close();
+				}
+
 				switch(req.query.request) {
 					case "transition_state":
-						self.TransitionSessionState(cosmosLiveSession, req.query.state, function() {
-							var response = responseBuilder.Response();
-							res.json(response);
-							res.end();
-							self.dbm.Close();							
-						});
+						self.TransitionSessionState(cosmosLiveSession, req.query.state, callback);
+						break;
+
+					case ("advance_round"):
+						self.AdvanceSessionRound(cosmosLiveSession, callback);
 						break;
 				}
 			});	

@@ -34,12 +34,12 @@ class QuestionManager {
 		});
 	}
 
-	GetUnaskedQuestionIds(skip_question_id_string, callback) {
+	GetUnaskedQuestionIds(skip_question_id_string, limit, callback) {
 		if (skip_question_id_string == "") {
 			skip_question_id_string = "-1";
 		}
 
-		var sql = "SELECT distinct questions.id as qid FROM questions where questions.enabled = 1 and questions.id not in ("+ skip_question_id_string +") order by rand() limit 10;";
+		var sql = "SELECT distinct questions.id as qid FROM questions where questions.enabled = 1 and questions.id not in ("+ skip_question_id_string +") order by rand() limit " + limit;
 		var self = this;
 
 		this.dbm.Query(sql, function (results) {

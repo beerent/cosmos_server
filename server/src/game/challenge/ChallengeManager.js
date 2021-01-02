@@ -175,7 +175,7 @@ class ChallengeManager {
 				question_skip_list_str += ", " + question_skip_list[i];
 			}
 
-			question_manager.GetUnaskedQuestionIds(question_skip_list_str, function (ids_list){
+			question_manager.GetUnaskedQuestionIds(question_skip_list_str, 10, function (ids_list){
 				var ids_list_str = "" + ids_list[0];
 				for (var i = 1; i < ids_list.length; i++) {
 					ids_list_str += ", " + ids_list[i];

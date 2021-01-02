@@ -2337,6 +2337,11 @@ function TestCosmosLivePostGameLobbyReturnsCorrectData() {
 			success = false;
 		}
 
+		if (response.payload.cosmos_live_session.start == undefined) {
+			failures += "  - PRE_GAME_LOBBY state requires start in the payload's round\n";
+			success = false;
+		}
+
 		//if (response.payload.chat == undefined) {
 		//	failures += "  - PRE_GAME_LOBBY state requires chat in the payload\n";
 		//	success = false;
@@ -2739,6 +2744,58 @@ function TestCosmosLiveAdminTransitionToPostGameLobbyState() {
 	}	
 }
 
+function TestCosmosLiveAdminAdvanceRound() {
+	var functionName = "TestCosmosLiveAdminAdvanceRound\n";
+	var failures = "";
+	testsRanCount++;
+
+	var roundBefore = -1;
+	var roundAfter = -1;
+
+
+	var requestString = "live";
+	var url = server + "/" + requestString;
+	url += "?username=testguest&password=guest";
+	var response = GetHTTPResponse(url);
+	roundBefore = response.payload.cosmos_live_session.round;
+
+
+	requestString = "liveAdmin";
+
+	url = server + "/" + requestString;
+	url += "?request=advance_round&admin_auth_key=" + test_valid_admin_auth_key;
+
+	response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	var requestString = "live";
+	var url = server + "/" + requestString;
+	url += "?username=testguest&password=guest";
+	var response = GetHTTPResponse(url);
+	roundAfter = response.payload.cosmos_live_session.round;
+
+	if (roundBefore == roundAfter) {
+		failures += "  - round failed to advance.\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}	
+}
+
 function UTIL_CREATE_ADMIN_PRIVILEGE(dbm, callback) {
 	var sql = "insert into privileges_enum (privilege) values (?)";
 	var params = ["ADMIN"];
@@ -3006,8 +3063,12 @@ function TestCosmosLive(callback) {
 							TestCosmosLiveAdminTransitionToInGameState();
 							TestCosmosLiveInGameReturnsCorrectData();
 
+							TestCosmosLiveAdminAdvanceRound();
+							TestCosmosLiveInGameReturnsCorrectData();
+
 							TestCosmosLiveAdminTransitionToPostGameLobbyState();
 							TestCosmosLivePostGameLobbyReturnsCorrectData();
+
 
 							dbm.Close();
 							callback();

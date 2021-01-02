@@ -45,7 +45,6 @@ function TestAuthenticateReturnsRequest() {
 
 	var requestString = "authenticate";
 
-
 	var url = server + "/" + requestString;
 	var response = GetHTTPResponse(url);
 
@@ -2081,7 +2080,7 @@ function TestCosmosLiveSubmitAnswerReturnsRequest() {
 	var failures = "";
 	testsRanCount++;
 
-	var requestString = "registerLiveAnswer";
+	var requestString = "liveRegisterAdmin";
 
 	var url = server + "/" + requestString;
 	var response = GetHTTPResponse(url);
@@ -2104,7 +2103,7 @@ function TestCosmosLiveSubmitAnswerInvalidUser() {
 	var failures = "";
 	testsRanCount++;
 
-	var requestString = "registerLiveAnswer";
+	var requestString = "liveRegisterAdmin";
 
 	var url = server + "/" + requestString;
 	var response = GetHTTPResponse(url);
@@ -2304,12 +2303,59 @@ function TestCosmosLiveInGameReturnsCorrectData() {
 	}
 }
 
+function TestCosmosLivePostGameLobbyReturnsCorrectData() {
+	var functionName = "TestCosmosLivePostGameLobbyReturnsCorrectData\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "live";
+
+	var url = server + "/" + requestString;
+	url += "?username=testguest&password=guest";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (response.payload == undefined) {
+		failures += "  - response had no payload\n";
+		success = false;		
+	} else if (response.payload.cosmos_live_session == undefined) {
+		failures += "  - response had no 'round' in the payload\n";
+		success = false;		
+	} else { 
+		if (response.payload.cosmos_live_session.state != "POST_GAME_LOBBY") {
+			failures += "  - payload's 'state' was " + response.payload.cosmos_live_session.state + ", expected 'POST_GAME_LOBBY'\n";
+			success = false;
+		}
+
+		//if (response.payload.chat == undefined) {
+		//	failures += "  - PRE_GAME_LOBBY state requires chat in the payload\n";
+		//	success = false;
+		//}
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
 function TestSubmitIncorrectCosmosLiveAnswer(session_id, question) {
 	var functionName = "TestSubmitIncorrectCosmosLiveAnswer\n";
 	var failures = "";
 	testsRanCount++;
 
-	var requestString = "registerLiveAnswer";
+	var requestString = "liveRegisterAdmin";
 
 	var url = server + "/" + requestString;
 	url += "?username=testguest&password=guest&session_id=" + session_id + "&answer_id=" + question.incorrect_answer_id;
@@ -2338,7 +2384,7 @@ function TestSubmitCorrectCosmosLiveAnswer(session_id, question) {
 	var failures = "";
 	testsRanCount++;
 
-	var requestString = "registerLiveAnswer";
+	var requestString = "liveRegisterAdmin";
 
 	var url = server + "/" + requestString;
 	url += "?username=testguest&password=guest&session_id=" + session_id + "&answer_id=" + question.correct_answer_id;
@@ -2437,7 +2483,7 @@ function TestSubmitCorrectAnswerValidPlayerValidRound(session_id, question) {
 	var failures = "";
 	testsRanCount++;
 
-	var requestString = "registerLiveAnswer";
+	var requestString = "liveRegisterAdmin";
 
 	var url = server + "/" + requestString;
 	url += "?username=testguest&password=guest&session_id=" + session_id + "&answer_id=" + question.correct_answer_id;
@@ -2459,6 +2505,238 @@ function TestSubmitCorrectAnswerValidPlayerValidRound(session_id, question) {
 		failedTests += functionName;
 		testsFailedCount++;
 	}
+}
+
+function TestCosmosLiveAdminReturnsResponse() {
+	var functionName = "TestCosmosLiveAdminReturnsResponse\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "liveAdmin";
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+	}
+}
+
+function TestCosmosLiveAdminInvalidAdminAuthKey() {
+	var functionName = "TestCosmosLiveAdminInvalidAdminAuthKey\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "liveAdmin";
+
+	var url = server + "/" + requestString;
+	url += "?admin_auth_key=" + test_invalid_admin_auth_key;
+
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 117) {
+		failures += "  - op was " + response.op + ", expected 117\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestCosmosLiveAdminInvalidRequest() {
+	var functionName = "TestCosmosLiveAdminInvalidRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "liveAdmin";
+
+	var url = server + "/" + requestString;
+	url += "?request=invalid&admin_auth_key=" + test_valid_admin_auth_key;
+
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 118) {
+		failures += "  - op was " + response.op + ", expected 118\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestCosmosLiveAdminValidAuthKey() {
+	var functionName = "TestCosmosLiveAdminValidAuthKey\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "liveAdmin";
+
+	var url = server + "/" + requestString;
+	url += "?admin_auth_key=" + test_valid_admin_auth_key;
+
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 118) {
+		failures += "  - op was " + response.op + ", expected 118\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestCosmosLiveAdminTransitionToClosedState() {
+	var functionName = "TestCosmosLiveAdminTransitionToClosedState\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "liveAdmin";
+
+	var url = server + "/" + requestString;
+	url += "?request=transition_state&state=closed&admin_auth_key=" + test_valid_admin_auth_key;
+
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}	
+}
+
+function TestCosmosLiveAdminTransitionToPreGameLobbyState() {
+	var functionName = "TestCosmosLiveAdminTransitionToPreGameLobbyState\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "liveAdmin";
+
+	var url = server + "/" + requestString;
+	url += "?request=transition_state&state=pre_game_lobby&admin_auth_key=" + test_valid_admin_auth_key;
+
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}	
+}
+
+function TestCosmosLiveAdminTransitionToInGameState() {
+	var functionName = "TestCosmosLiveAdminTransitionToInGameState\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "liveAdmin";
+
+	var url = server + "/" + requestString;
+	url += "?request=transition_state&state=in_game&admin_auth_key=" + test_valid_admin_auth_key;
+
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}	
+}
+
+function TestCosmosLiveAdminTransitionToPostGameLobbyState() {
+	var functionName = "TestCosmosLiveAdminTransitionToPostGameLobbyState\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "liveAdmin";
+
+	var url = server + "/" + requestString;
+	url += "?request=transition_state&state=post_game_lobby&admin_auth_key=" + test_valid_admin_auth_key;
+
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}	
 }
 
 function UTIL_CREATE_ADMIN_PRIVILEGE(dbm, callback) {
@@ -2713,6 +2991,24 @@ function TestCosmosLive(callback) {
 						UTIL_INSERT_COSMOS_LIVE_ANSWER(dbm, test_questions[0].correct_answer_id, function() {
 							TestSubmitCorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[1]);
 							TestCosmosLiveInGameReturnsPlayerTypePlayer();
+
+							TestCosmosLiveAdminReturnsResponse();
+							TestCosmosLiveAdminInvalidRequest();
+							TestCosmosLiveAdminInvalidAdminAuthKey();
+							TestCosmosLiveAdminValidAuthKey();
+
+							TestCosmosLiveAdminTransitionToClosedState();
+							TestCosmosLiveClosedReturnsCorrectData();
+
+							TestCosmosLiveAdminTransitionToPreGameLobbyState();
+							TestCosmosLivePreGameLobbyReturnsCorrectData();
+
+							TestCosmosLiveAdminTransitionToInGameState();
+							TestCosmosLiveInGameReturnsCorrectData();
+
+							TestCosmosLiveAdminTransitionToPostGameLobbyState();
+							TestCosmosLivePostGameLobbyReturnsCorrectData();
+
 							dbm.Close();
 							callback();
 						});

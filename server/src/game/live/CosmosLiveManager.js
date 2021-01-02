@@ -240,6 +240,86 @@ class CosmosLiveManager {
 		});
 	}
 
+	IsValidLiveAdminRequest(query) {
+		if (query.request == "transition_state") {
+			if (query.state == "closed" || query.state == "pre_game_lobby" || query.state == "in_game" || query.state == "post_game_lobby") {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	TransitionSessionState(cosmosLiveSession, state, callback) {
+		var state_str = null;
+		switch (state) {
+			case "closed":
+				state_str = "CLOSED";
+				break;
+
+			case "pre_game_lobby":
+				state_str = "PRE_GAME_LOBBY";
+				break;
+
+			case "in_game":
+				state_str = "IN_GAME";
+				break;
+
+			case "post_game_lobby":
+				state_str = "POST_GAME_LOBBY";
+				break;
+		}
+
+		if (!state_str) {
+			callback();
+		} else {
+			var sql = "update cosmos_live_sessions set state = ? where id = ?";
+			var params = [state_str, cosmosLiveSession.GetId()];
+
+			this.dbm.ParameterizedInsert(sql, params, function(results, err) {
+				callback();
+			});
+		}
+	}
+
+	HandleLiveAdminRequest(req, res, responseBuilder) {
+		var user_manager = new UserManager(this.dbm, this.errors);
+		var self = this;
+
+		user_manager.HandleRequestWithAuth(req, res, responseBuilder, function(user) {
+			if (!self.IsValidLiveAdminRequest(req.query)) {
+				responseBuilder.SetError(self.errors.INVALID_LIVE_ADMIN_REQUEST);
+				var response = responseBuilder.Response();
+				res.json(response);
+				res.end();
+				self.dbm.Close();
+				return;
+			}
+
+			self.GetCurrentCosmosLiveSession(function(cosmosLiveSession) {
+				if (cosmosLiveSession == null || cosmosLiveSession.GetLatestQuestionId() == null) {
+					responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
+					var response = responseBuilder.Response();
+					res.json(response);
+					res.end();
+					self.dbm.Close();
+					return;
+				}
+
+				switch(req.query.request) {
+					case "transition_state":
+						self.TransitionSessionState(cosmosLiveSession, req.query.state, function() {
+							var response = responseBuilder.Response();
+							res.json(response);
+							res.end();
+							self.dbm.Close();							
+						});
+						break;
+				}
+			});	
+		});
+	}
+
 	SubmissionIsForCurrentRound(answer_id, currentQuestion) {
 		var wrongAnswers = currentQuestion.incorrectAnswers;
 		for (var i = 0; i < wrongAnswers.length; i++) {

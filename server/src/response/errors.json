@@ -82,5 +82,10 @@
     "INVALID_ADMIN_AUTH_KEY": {
         "id": 117,
         "note": "invalid admin auth key"
+    },
+
+    "INVALID_LIVE_ADMIN_REQUEST": {
+        "id": 118,
+        "note": "invalid live admin request"
     }
 } 

@@ -33,4 +33,7 @@ create unique index cosmos_live_answers_id_uindex
 
 insert into config (`key`, value) values ("live_mode_question_timer_length", "15");
 insert into config (`key`, value) values ("live_mode_round_timer_length", "30");
+insert into config (`key`, value) values ("live_mode_pre_game_lobby_length", "3600");
+insert into config (`key`, value) values ("live_mode_post_game_lobby_length", "3600");
+	
 insert into config (`key`, value) values ("admin_auth_key", "73nFm0OcvChiyENbq4V96nE6gm5qQMkHZ");

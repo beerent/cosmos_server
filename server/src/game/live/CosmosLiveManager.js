@@ -37,47 +37,74 @@ class CosmosLiveManager {
 					return;
 				}
 
-				if (cosmosLiveSession.GetState() != IN_GAME) {
-					payload.cosmos_live_session = cosmosLiveSession.ToPayload();
-					responseBuilder.SetPayload(payload);
-					res.json(responseBuilder.Response());
-					res.end();
-					self.dbm.Close();
-					return;
-				}
+				self.AddToPingTable(cosmosLiveSession, user, function(callback) {
+					var getPlayerCountFunction = function(callback) {
+						if (cosmosLiveSession.GetState() != "IN_GAME" || (cosmosLiveSession.GetState() == "IN_GAME" && cosmosLiveSession.GetRound() == 1)) {
+							self.GetPlayerCountFromPingTable(cosmosLiveSession, function(player_count) {
+								cosmosLiveSession.SetPlayerCount(player_count);
+								callback();
+							});
+						} else {
+							self.GetActivePlayersInSession(cosmosLiveSession, function(player_count) {
+								cosmosLiveSession.SetPlayerCount(player_count);
+								callback();
+							});
+						}
+					};
 
-				self.GetRoundSecondsRemainingInRound(cosmosLiveSession, function(secondsRemaining) {
-					cosmosLiveSession.SetRoundSecondsRemaining(secondsRemaining);
-					payload.cosmos_live_session = cosmosLiveSession.ToPayload();
-					self.GetPlayerType(cosmosLiveSession, user, function(playerType) {
-						var player = {
-							user : user,
-							type : playerType
-						};
-
-						payload.player = player;
-
-						var currentQuestionId = cosmosLiveSession.GetLatestQuestionId();
-						if (currentQuestionId == null) {
-							responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
+					getPlayerCountFunction(function() {
+						if (cosmosLiveSession.GetState() != IN_GAME) {
+							payload.cosmos_live_session = cosmosLiveSession.ToPayload();
+							responseBuilder.SetPayload(payload);
 							res.json(responseBuilder.Response());
 							res.end();
 							self.dbm.Close();
 							return;
 						}
 
-						var question_manager = new QuestionManager(self.dbm, self.errors, self.privileges);
-						question_manager.GetQuestionById(currentQuestionId, function(questions) {
-							payload.question = questions[0];
+						self.GetRoundSecondsRemainingInRound(cosmosLiveSession, function(secondsRemaining) {
+							cosmosLiveSession.SetRoundSecondsRemaining(secondsRemaining);
+							payload.cosmos_live_session = cosmosLiveSession.ToPayload();
+							self.GetPlayerType(cosmosLiveSession, user, function(playerType) {
+								var player = {
+									user : user,
+									type : playerType
+								};
 
-							responseBuilder.SetPayload(payload);
-							res.json(responseBuilder.Response());
-							res.end();
-							self.dbm.Close();
+								payload.player = player;
+
+								var currentQuestionId = cosmosLiveSession.GetLatestQuestionId();
+								if (currentQuestionId == null) {
+									responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
+									res.json(responseBuilder.Response());
+									res.end();
+									self.dbm.Close();
+									return;
+								}
+
+								var question_manager = new QuestionManager(self.dbm, self.errors, self.privileges);
+								question_manager.GetQuestionById(currentQuestionId, function(questions) {
+									payload.question = questions[0];
+
+									responseBuilder.SetPayload(payload);
+									res.json(responseBuilder.Response());
+									res.end();
+									self.dbm.Close();
+								});
+							});
 						});
 					});
 				});
 			});
+		});
+	}
+
+	AddToPingTable(session, user, callback) {
+		var sql = "insert into cosmos_live_ping (session_id, user_id, added) values (?, ?, utc_timestamp())";
+		var params = [session.GetId(), user.id];
+
+		this.dbm.ParameterizedInsert(sql, params, function(results, err) {
+			callback();
 		});
 	}
 
@@ -151,17 +178,24 @@ class CosmosLiveManager {
 				cosmosLiveSession = new CosmosLiveSession(row.id, row.state, row.start, row.asked_questions_ids, row.added);
 			}
 
-			self.GetActivePlayersInSession(cosmosLiveSession, callback);
+			callback(cosmosLiveSession);
 		});
 	}
 
 	GetActivePlayersInSession(cosmosLiveSession, callback) {
-			var sql = "select count(*) as player_count from (select count(*) as correct_count from cosmos_live_answers cla join cosmos_live_sessions cls on cla.session_id = cls.id join answers a on cla.answer_id = a.id where cls.id = ? and a.question_id != ? and correct = 1 group by user_id having correct_count = ?) as sub_query;";
-			var params = [cosmosLiveSession.GetId(), cosmosLiveSession.GetLatestQuestionId(), (cosmosLiveSession.GetRound() - 1)];
-			this.dbm.ParameterizedQuery(sql, params, function(results, err) {
-				cosmosLiveSession.SetPlayerCount(results[0].player_count);
-				callback(cosmosLiveSession);
-			});
+		var sql = "select count(*) as player_count from (select count(*) as correct_count from cosmos_live_answers cla join cosmos_live_sessions cls on cla.session_id = cls.id join answers a on cla.answer_id = a.id where cls.id = ? and a.question_id != ? and correct = 1 group by user_id having correct_count = ?) as sub_query;";
+		var params = [cosmosLiveSession.GetId(), cosmosLiveSession.GetLatestQuestionId(), (cosmosLiveSession.GetRound() - 1)];
+		this.dbm.ParameterizedQuery(sql, params, function(results, err) {
+			callback(results[0].player_count);
+		});
+	}
+
+	GetPlayerCountFromPingTable(cosmosLiveSession, callback) {
+		var sql = "select count(distinct cosmos_live_ping.user_id) as player_count from cosmos_live_ping join config on `key` = 'live_mode_ping_threshold' where session_id = ? and added >= date_sub(utc_timestamp(), interval value second)";
+		var params = [cosmosLiveSession.GetId()];
+		this.dbm.ParameterizedQuery(sql, params, function(results, err) {
+			callback(results[0].player_count);
+		});
 	}
 
 	GetPlayerType(cosmosLiveSession, user, callback) {

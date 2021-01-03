@@ -2125,7 +2125,7 @@ function TestCosmosLiveSubmitAnswerInvalidUser() {
 	}
 }
 
-function TestCosmosLiveClosedReturnsCorrectData() {
+function TestCosmosLiveClosedReturnsCorrectData(expected_player_count) {
 	var functionName = "TestCosmosLiveClosedReturnsCorrectData\n";
 	var failures = "";
 	testsRanCount++;
@@ -2163,6 +2163,17 @@ function TestCosmosLiveClosedReturnsCorrectData() {
 			failures += "  - CLOSED state requires 'start' in the payload's cosmos_live_session\n";
 			success = false;
 		}
+
+		var player_count = response.payload.cosmos_live_session.player_count;
+		if (player_count == undefined) {
+			failures += "  - CLOSED state requires 'player_count' in the payload's cosmos_live_session\n";
+			success = false;
+		} else {
+			if (player_count != expected_player_count) {
+				failures += "  - CLOSED state's 'player_count' was "+ player_count +", expected "+ expected_player_count +"\n";
+				success = false;
+			}
+		}
 	}
 
 	if (false == success) {
@@ -2172,7 +2183,7 @@ function TestCosmosLiveClosedReturnsCorrectData() {
 	}
 }
 
-function TestCosmosLivePreGameLobbyReturnsCorrectData() {
+function TestCosmosLivePreGameLobbyReturnsCorrectData(expected_player_count) {
 	var functionName = "TestCosmosLivePreGameLobbyReturnsCorrectData\n";
 	var failures = "";
 	testsRanCount++;
@@ -2209,6 +2220,17 @@ function TestCosmosLivePreGameLobbyReturnsCorrectData() {
 		if (response.payload.cosmos_live_session.start == undefined) {
 			failures += "  - PRE_GAME_LOBBY state requires start in the payload's round\n";
 			success = false;
+		}
+
+		var player_count = response.payload.cosmos_live_session.player_count;
+		if (player_count == undefined) {
+			failures += "  - PRE_GAME_LOBBY state requires 'player_count' in the payload's cosmos_live_session\n";
+			success = false;
+		} else {
+			if (player_count != expected_player_count) {
+				failures += "  - PRE_GAME_LOBBY state's 'player_count' was "+ player_count +", expected "+ expected_player_count +"\n";
+				success = false;
+			}
 		}
 
 		//if (response.payload.chat == undefined) {
@@ -2265,6 +2287,11 @@ function TestCosmosLiveInGameReturnsCorrectData() {
 			if (response.payload.cosmos_live_session.round == undefined || response.payload.cosmos_live_session.round < 0) {
 				failures += "  - IN_GAME state requires round's round in the payload\n";
 				success = false;
+			} else {
+				if (response.payload.cosmos_live_session.round == 1 && response.payload.cosmos_live_session.player_count < 1) {
+					failures += "  - IN_GAME state with round 1 expects player_count greater than 0\n";
+					success = false;
+				}
 			}
 			
 			if (response.payload.cosmos_live_session.round_seconds_remaining == undefined) {
@@ -3013,6 +3040,14 @@ function UTIL_CREATE_ADMIN_AUTH_KEY(dbm, callback) {
 	});
 }
 
+function UTIL_CREATE_PING_THRESHOLD(dbm, callback) {
+	var sql = "insert into config (`key`, value) values (?, ?)";
+	var params = ["live_mode_ping_threshold", "5"];
+	dbm.ParameterizedInsert(sql, params, function (response, err) {
+		callback();
+	});
+}
+
 function GetDBM() {
 	var database_connection = config_loader.GetDatabaseConnectionInfo();
 	var dbm = new DBM(database_connection);
@@ -3046,8 +3081,10 @@ function Setup(callback) {
 									UTIL_CREATE_COSMOS_LIVE_CONFIG_ROUND_TIMER(dbm, function() {
 										UTIL_CREATE_HEALTH_CHECK_KEY(dbm, function() {
 											UTIL_CREATE_ADMIN_AUTH_KEY(dbm, function() {
-												dbm.Close();
-												callback();
+												UTIL_CREATE_PING_THRESHOLD(dbm, function() {
+													dbm.Close();
+													callback();
+												});
 											});
 										});
 									});
@@ -3071,14 +3108,14 @@ function TestCosmosLive(callback) {
 
 	//closed
 	UTIL_CREATE_CLOSED_COSMOS_LIVE_SESSION(dbm, function() {
-		TestCosmosLiveClosedReturnsCorrectData();
+		TestCosmosLiveClosedReturnsCorrectData(1);
 
 		TestCosmosLiveAdminInvalidAuthKeyBypassesUserAuth();
 		TestCosmosLiveAdminValidAuthKeyBypassesUserAuth();
 
 		//pre game lobby
 		UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_PRE_GAME_LOBBY(dbm, function() {
-			TestCosmosLivePreGameLobbyReturnsCorrectData();
+			TestCosmosLivePreGameLobbyReturnsCorrectData(2);
 
 			//in game
 			UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_IN_GAME(dbm, function() {
@@ -3115,10 +3152,10 @@ function TestCosmosLive(callback) {
 									TestCosmosLiveAdminValidAuthKey();
 
 									TestCosmosLiveAdminTransitionToClosedState();
-									TestCosmosLiveClosedReturnsCorrectData();
+									TestCosmosLiveClosedReturnsCorrectData(2);
 
 									TestCosmosLiveAdminTransitionToPreGameLobbyState();
-									TestCosmosLivePreGameLobbyReturnsCorrectData();
+									TestCosmosLivePreGameLobbyReturnsCorrectData(2);
 
 									TestCosmosLiveAdminTransitionToInGameState();
 									TestCosmosLiveInGameReturnsCorrectData();

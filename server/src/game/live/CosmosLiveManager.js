@@ -45,7 +45,7 @@ class CosmosLiveManager {
 								callback();
 							});
 						} else {
-							self.GetActivePlayersInSession(cosmosLiveSession, function(player_count) {
+							self.GetActivePlayersFromAnswersTable(cosmosLiveSession, function(player_count) {
 								cosmosLiveSession.SetPlayerCount(player_count);
 								callback();
 							});
@@ -100,7 +100,7 @@ class CosmosLiveManager {
 	}
 
 	AddToPingTable(session, user, callback) {
-		var sql = "insert into cosmos_live_ping (session_id, user_id, added) values (?, ?, utc_timestamp())";
+		var sql = "insert into cosmos_live_ping (session_id, user_id, ping, added) values (?, ?, utc_timestamp(), utc_timestamp()) on duplicate key update ping = utc_timestamp()";
 		var params = [session.GetId(), user.id];
 
 		this.dbm.ParameterizedInsert(sql, params, function(results, err) {
@@ -182,7 +182,7 @@ class CosmosLiveManager {
 		});
 	}
 
-	GetActivePlayersInSession(cosmosLiveSession, callback) {
+	GetActivePlayersFromAnswersTable(cosmosLiveSession, callback) {
 		var sql = "select count(*) as player_count from (select count(*) as correct_count from cosmos_live_answers cla join cosmos_live_sessions cls on cla.session_id = cls.id join answers a on cla.answer_id = a.id where cls.id = ? and a.question_id != ? and correct = 1 group by user_id having correct_count = ?) as sub_query;";
 		var params = [cosmosLiveSession.GetId(), cosmosLiveSession.GetLatestQuestionId(), (cosmosLiveSession.GetRound() - 1)];
 		this.dbm.ParameterizedQuery(sql, params, function(results, err) {
@@ -191,7 +191,7 @@ class CosmosLiveManager {
 	}
 
 	GetPlayerCountFromPingTable(cosmosLiveSession, callback) {
-		var sql = "select count(distinct cosmos_live_ping.user_id) as player_count from cosmos_live_ping join config on `key` = 'live_mode_ping_threshold' where session_id = ? and added >= date_sub(utc_timestamp(), interval value second)";
+		var sql = "select count(distinct cosmos_live_ping.user_id) as player_count from cosmos_live_ping join config on `key` = 'live_mode_ping_threshold' where session_id = ? and ping >= date_sub(utc_timestamp(), interval value second)";
 		var params = [cosmosLiveSession.GetId()];
 		this.dbm.ParameterizedQuery(sql, params, function(results, err) {
 			callback(results[0].player_count);

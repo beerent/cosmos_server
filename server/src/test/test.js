@@ -2271,6 +2271,11 @@ function TestCosmosLiveInGameReturnsCorrectData() {
 				failures += "  - IN_GAME state requires round's round_seconds_remaining in the payload\n";
 				success = false;
 			}
+
+			if (response.payload.cosmos_live_session.player_count == undefined) {
+				failures += "  - IN_GAME state requires round's 'player_count' in the payload\n";
+				success = false;	
+			}
 		}
 
 		//PLAYER

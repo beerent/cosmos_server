@@ -140,6 +140,8 @@ class CosmosLiveManager {
 	}
 
 	GetCurrentCosmosLiveSession(callback) {
+		var self = this;
+
 		var sql = "select id, state, start, asked_questions_ids, added from cosmos_live_sessions order by id desc limit 1";
 
 		this.dbm.Query(sql, function(results, err) {
@@ -149,8 +151,17 @@ class CosmosLiveManager {
 				cosmosLiveSession = new CosmosLiveSession(row.id, row.state, row.start, row.asked_questions_ids, row.added);
 			}
 
-			callback(cosmosLiveSession);
+			self.GetActivePlayersInSession(cosmosLiveSession, callback);
 		});
+	}
+
+	GetActivePlayersInSession(cosmosLiveSession, callback) {
+			var sql = "select count(*) as player_count from (select count(*) as correct_count from cosmos_live_answers cla join cosmos_live_sessions cls on cla.session_id = cls.id join answers a on cla.answer_id = a.id where cls.id = ? and a.question_id != ? and correct = 1 group by user_id having correct_count = ?) as sub_query;";
+			var params = [cosmosLiveSession.GetId(), cosmosLiveSession.GetLatestQuestionId(), (cosmosLiveSession.GetRound() - 1)];
+			this.dbm.ParameterizedQuery(sql, params, function(results, err) {
+				cosmosLiveSession.SetPlayerCount(results[0].player_count);
+				callback(cosmosLiveSession);
+			});
 	}
 
 	GetPlayerType(cosmosLiveSession, user, callback) {

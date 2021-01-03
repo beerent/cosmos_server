@@ -43,6 +43,7 @@ create table cosmos_live_ping
 	id int auto_increment primary key,
 	session_id int not null,
 	user_id int not null,
+	ping datetime not null,
 	added datetime not null
 );
 
@@ -57,3 +58,6 @@ alter table cosmos_live_ping
 	add constraint cosmos_live_ping_users_id_fk
 		foreign key (user_id) references users (id);
 
+alter table cosmos_live_ping
+	add constraint cosmos_live_ping_pk
+		unique (session_id, user_id);

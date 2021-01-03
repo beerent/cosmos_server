@@ -95,7 +95,7 @@ function TestAuthenticateMissingUsername() {
 
 
 	var url = server + "/authenticate";
-	url += "?password=admin";
+	url += "?password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -123,7 +123,7 @@ function TestAuthenticateMissingPassword() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=testadmin";
+	url += "?username="+ test_admin_username;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -151,7 +151,7 @@ function TestAuthenticateEmptyUsername() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=&password=admin";
+	url += "?username=&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -179,7 +179,7 @@ function TestAuthenticateEmptyPassword() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=testadmin&password=";
+	url += "?username="+ test_admin_username +"&password=";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -207,7 +207,7 @@ function TestAuthenticateIncorrectUsername() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=testadmin1&password=admin";
+	url += "?username="+ test_admin_username +"1&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -235,7 +235,7 @@ function TestAuthenticateIncorrectPassword() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=testadmin&password=admin3";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -263,7 +263,7 @@ function TestAuthenticateValidUser() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=testadmin&password=admin";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -291,7 +291,7 @@ function TestAuthenticateValidGuestUser() {
 
 
 	var url = server + "/authenticate";
-	url += "?username=testguest&password=guest";
+	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -373,7 +373,7 @@ function TestGuestAuthenticateMissingUsername() {
 
 
 	var url = server + "/guestAuthenticate";
-	url += "?password=admin";
+	url += "?password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -401,7 +401,7 @@ function TestGuestAuthenticateEmptyUsername() {
 
 
 	var url = server + "/guestAuthenticate";
-	url += "?username=&password=admin";
+	url += "?username=&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -428,7 +428,7 @@ function TestGuestAuthenticateValidCreatesUser() {
 	testsRanCount++;
 
 	var url = server + "/guestAuthenticate";
-	url += "?username=testadmin&password=guest";
+	url += "?username="+ test_admin_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -456,7 +456,7 @@ function TestGuestAuthenticateValidGuestUser() {
 
 
 	var url = server + "/guestAuthenticate";
-	url += "?username=testadmin&password=admin";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -545,7 +545,7 @@ function TestNewChallengeMissingUsername() {
 
 
 	var url = server + "/newChallenge";
-	url += "?password=admin";
+	url += "?password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -578,7 +578,7 @@ function TestNewChallengeMissingPassword() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username=testadmin";
+	url += "?username="+ test_admin_username;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -611,7 +611,7 @@ function TestNewChallengeEmptyUsername() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username=&password=admin";
+	url += "?username=&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -644,7 +644,7 @@ function TestNewChallengeEmptyPassword() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username=testadmin&password=";
+	url += "?username="+ test_admin_username +"&password=";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -677,7 +677,7 @@ function TestNewChallengeIncorrectUsername() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username=testadmin1&password=admin";
+	url += "?username="+ test_admin_username +"1&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -710,7 +710,7 @@ function TestNewChallengeIncorrectPassword() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username=testadmin&password=admin3";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -743,7 +743,7 @@ function TestNewChallengeValidUser() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username=testadmin&password=admin";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -841,7 +841,7 @@ function TestGetChallengeQuestionsMissingUsername() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?password=admin";
+	url += "?password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -869,7 +869,7 @@ function TestGetChallengeQuestionsMissingPassword() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=testadmin";
+	url += "?username="+ test_admin_username;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -897,7 +897,7 @@ function TestGetChallengeQuestionsEmptyUsername() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=&password=admin";
+	url += "?username=&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -925,7 +925,7 @@ function TestGetChallengeQuestionsEmptyPassword() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=testadmin&password=";
+	url += "?username="+ test_admin_username +"&password=";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -953,7 +953,7 @@ function TestGetChallengeQuestionsIncorrectUsername() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=testadmin1&password=admin";
+	url += "?username="+ test_admin_username +"1&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -981,7 +981,7 @@ function TestGetChallengeQuestionsIncorrectPassword() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=testadmin&password=admin3";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1009,7 +1009,7 @@ function TestGetChallengeQuestionsValidUserMissingAttemptId() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=testadmin&password=admin";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1037,7 +1037,7 @@ function TestGetChallengeQuestionsValidUserInvalidAttemptId() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=testadmin&password=admin&attempt_id=0";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&attempt_id=0";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1065,7 +1065,7 @@ function TestGetChallengeQuestionsValidUserValidAttemptId() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username=testguest&password=guest&attempt_id=" + test_attempt_id.toString();
+	url += "?username="+ test_guest_username +"&password=" + test_guest_password + "&attempt_id=" + test_attempt_id.toString();
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1147,7 +1147,7 @@ function TestRegisterChallengeAnswerMissingUsername() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?password=admin";
+	url += "?password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1174,7 +1174,7 @@ function TestRegisterChallengeAnswerMissingPassword() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=testadmin";
+	url += "?username="+ test_admin_username;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1201,7 +1201,7 @@ function TestRegisterChallengeAnswerEmptyUsername() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=&password=admin";
+	url += "?username=&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1228,7 +1228,7 @@ function TestRegisterChallengeAnswerEmptyPassword() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=testadmin&password=";
+	url += "?username="+ test_admin_username +"&password=";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1255,7 +1255,7 @@ function TestRegisterChallengeAnswerIncorrectUsername() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=testadmin1&password=admin";
+	url += "?username="+ test_admin_username +"1&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1282,7 +1282,7 @@ function TestRegisterChallengeAnswerIncorrectPassword() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=testadmin&password=admin3";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1309,7 +1309,7 @@ function TestRegisterChallengeAnswerValidUserMissingAttemptId() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=testadmin&password=admin&answer_id=100";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&answer_id=100";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1336,7 +1336,7 @@ function TestRegisterChallengeAnswerValidUserMissingAnswerId() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=testadmin&password=admin&attempt_id=1";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&attempt_id=1";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1363,7 +1363,7 @@ function TestRegisterChallengeAnswerValidUserInvalidAttemptId() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=testadmin&password=admin&attempt_id=0&answer_id=100";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&attempt_id=0&answer_id=100";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1390,7 +1390,7 @@ function TestRegisterChallengeAnswerValidUserInvalidAnswerId() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=testadmin&password=admin&attempt_id=1&answer_id=0";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&attempt_id=1&answer_id=0";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1417,7 +1417,7 @@ function TestRegisterChallengeAnswerValidUserValid() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username=testguest&password=guest&attempt_id=" + test_attempt_id.toString() + "&answer_id=" + test_questions[0].incorrect_answer_id.toString();
+	url += "?username="+ test_guest_username +"&password=" + test_guest_password + "&attempt_id=" + test_attempt_id.toString() + "&answer_id=" + test_questions[0].incorrect_answer_id.toString();
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1559,7 +1559,7 @@ function TestGetUserProfileInvalidSpecifier() {
 
 
 	var url = server + "/getUserProfile";
-	url += "?username=testadminStinks";
+	url += "?username="+ test_admin_username +"Stinks";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1587,7 +1587,7 @@ function TestGetUserProfileValidUserContainsChallengeStats() {
 
 
 	var url = server + "/getUserProfile";
-	url += "?username=testadmin";
+	url += "?username="+ test_admin_username;
 
 	var response = GetHTTPResponse(url);
 
@@ -1691,7 +1691,7 @@ function TestFlagQuestionValidUser() {
 
 
 	var url = server + "/flagQuestion";
-	url += "?username=testadmin&password=admin";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1719,7 +1719,7 @@ function TestFlagQuestionValidUserAndValidQuestion() {
 
 
 	var url = server + "/flagQuestion";
-	url += "?username=testadmin&password=admin&question_id=28";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&question_id=28";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1801,7 +1801,7 @@ function TestReviewQuestionValidUser() {
 
 
 	var url = server + "/reviewQuestion";
-	url += "?username=testadmin&password=admin";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1829,7 +1829,7 @@ function TestReviewQuestionValidUserAndValidQuestionInvalidPrivileges() {
 
 
 	var url = server + "/reviewQuestion";
-	url += "?username=testguest&password=guest&question_id=" + test_questions[0].id.toString();
+	url += "?username="+ test_guest_username +"&password=" + test_guest_password + "&question_id=" + test_questions[0].id.toString();
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1857,7 +1857,7 @@ function TestReviewQuestionValidUserAndValidQuestionValidPrivileges() {
 
 
 	var url = server + "/reviewQuestion";
-	url += "?username=testadmin&password=admin&question_id=28";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&question_id=28";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1998,7 +1998,7 @@ function TestCosmosLiveInvalidUser() {
 
 
 	var url = server + "/live";
-	url += "?username=testadmin&password=admin3";
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2133,7 +2133,7 @@ function TestCosmosLiveClosedReturnsCorrectData() {
 	var requestString = "live";
 
 	var url = server + "/" + requestString;
-	url += "?username=testguest&password=guest";
+	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2180,7 +2180,7 @@ function TestCosmosLivePreGameLobbyReturnsCorrectData() {
 	var requestString = "live";
 
 	var url = server + "/" + requestString;
-	url += "?username=testguest&password=guest";
+	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2232,7 +2232,7 @@ function TestCosmosLiveInGameReturnsCorrectData() {
 	var requestString = "live";
 
 	var url = server + "/" + requestString;
-	url += "?username=testguest&password=guest";
+	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2316,7 +2316,7 @@ function TestCosmosLivePostGameLobbyReturnsCorrectData() {
 	var requestString = "live";
 
 	var url = server + "/" + requestString;
-	url += "?username=testguest&password=guest";
+	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2360,7 +2360,7 @@ function TestCosmosLivePostGameLobbyReturnsCorrectData() {
 	}
 }
 
-function TestSubmitIncorrectCosmosLiveAnswer(session_id, question) {
+function TestSubmitIncorrectCosmosLiveAnswer(username, password, session_id, question) {
 	var functionName = "TestSubmitIncorrectCosmosLiveAnswer\n";
 	var failures = "";
 	testsRanCount++;
@@ -2368,7 +2368,7 @@ function TestSubmitIncorrectCosmosLiveAnswer(session_id, question) {
 	var requestString = "liveRegisterAdmin";
 
 	var url = server + "/" + requestString;
-	url += "?username=testguest&password=guest&session_id=" + session_id + "&answer_id=" + question.incorrect_answer_id;
+	url += "?username="+ username +"&password="+ password +"&session_id=" + session_id + "&answer_id=" + question.incorrect_answer_id;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2389,7 +2389,7 @@ function TestSubmitIncorrectCosmosLiveAnswer(session_id, question) {
 	}
 }
 
-function TestSubmitCorrectCosmosLiveAnswer(session_id, question) {
+function TestSubmitCorrectCosmosLiveAnswer(username, password, session_id, question) {
 	var functionName = "TestSubmitCorrectCosmosLiveAnswer\n";
 	var failures = "";
 	testsRanCount++;
@@ -2397,7 +2397,7 @@ function TestSubmitCorrectCosmosLiveAnswer(session_id, question) {
 	var requestString = "liveRegisterAdmin";
 
 	var url = server + "/" + requestString;
-	url += "?username=testguest&password=guest&session_id=" + session_id + "&answer_id=" + question.correct_answer_id;
+	url += "?username="+ username +"&password="+ password +"&session_id=" + session_id + "&answer_id=" + question.correct_answer_id;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2418,7 +2418,42 @@ function TestSubmitCorrectCosmosLiveAnswer(session_id, question) {
 	}
 }
 
-function TestCosmosLiveInGameReturnsPlayerTypePlayer() {
+function TestCosmosLiveInGameReturnsCorrectPlayerCount(expected_player_count) {
+	var functionName = "TestCosmosLiveInGameReturnsCorrectPlayerCount\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "live";
+
+	var url = server + "/" + requestString;
+	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	var player_count = response.payload.cosmos_live_session.player_count;
+	if (player_count != expected_player_count) {
+		failures += "  - player count was "+ player_count +", expected "+ expected_player_count +"\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestCosmosLiveInGameReturnsPlayerTypePlayer(username, password) {
 	var functionName = "TestCosmosLiveInGameReturnsPlayerTypePlayer\n";
 	var failures = "";
 	testsRanCount++;
@@ -2426,7 +2461,7 @@ function TestCosmosLiveInGameReturnsPlayerTypePlayer() {
 	var requestString = "live";
 
 	var url = server + "/" + requestString;
-	url += "?username=testguest&password=guest";
+	url += "?username="+ username +"&password=" + password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2442,7 +2477,7 @@ function TestCosmosLiveInGameReturnsPlayerTypePlayer() {
 
 	var playerType = response.payload.player.type;
 	if (PLAYER != playerType) {
-		failures += "  - player type was '"+ playerType +"', expected '"+ PLAYER +"'\n";
+		failures += "  - player type was '"+ playerType +", expected "+ PLAYER +"\n";
 		success = false;
 	}
 
@@ -2453,7 +2488,7 @@ function TestCosmosLiveInGameReturnsPlayerTypePlayer() {
 	}
 }
 
-function TestCosmosLiveInGameReturnsPlayerTypeSpectator() {
+function TestCosmosLiveInGameReturnsPlayerTypeSpectator(username, password) {
 	var functionName = "TestCosmosLiveInGameReturnsPlayerTypeSpectator\n";
 	var failures = "";
 	testsRanCount++;
@@ -2461,7 +2496,7 @@ function TestCosmosLiveInGameReturnsPlayerTypeSpectator() {
 	var requestString = "live";
 
 	var url = server + "/" + requestString;
-	url += "?username=testguest&password=guest";
+	url += "?username="+ username +"&password=" + password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2496,7 +2531,7 @@ function TestSubmitCorrectAnswerValidPlayerValidRound(session_id, question) {
 	var requestString = "liveRegisterAdmin";
 
 	var url = server + "/" + requestString;
-	url += "?username=testguest&password=guest&session_id=" + session_id + "&answer_id=" + question.correct_answer_id;
+	url += "?username="+ test_guest_username +"&password=" + test_guest_password + "&session_id=" + session_id + "&answer_id=" + question.correct_answer_id;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2760,7 +2795,7 @@ function TestCosmosLiveAdminAdvanceRound() {
 
 	var requestString = "live";
 	var url = server + "/" + requestString;
-	url += "?username=testguest&password=guest";
+	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 	roundBefore = response.payload.cosmos_live_session.round;
 
@@ -2785,7 +2820,7 @@ function TestCosmosLiveAdminAdvanceRound() {
 
 	var requestString = "live";
 	var url = server + "/" + requestString;
-	url += "?username=testguest&password=guest";
+	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 	roundAfter = response.payload.cosmos_live_session.round;
 
@@ -2819,15 +2854,16 @@ function UTIL_CREATE_GUEST_PRIVILEGE(dbm, callback) {
 
 function UTIL_CREATE_ADMIN_USER(dbm, callback) {
 	var sql = "insert into users (username, email, password_salt, access_level, added) values (?, ?, ?, ?, now())";
-	var params = ["testadmin", "testadmin@email.com", "admin", 4];
+	var params = [test_admin_username, test_admin_password, "admin", 4];
 	dbm.ParameterizedInsert(sql, params, function (user_id, err) {
+		test_admin_user_id = user_id;
 		callback();
 	});
 }
 
 function UTIL_CREATE_GUEST_USER(dbm, callback) {
 	var sql = "insert into users (username, email, password_salt, access_level, added) values (?, ?, ?, ?, now())";
-	var params = ["testguest", "testguest@email.com", "guest", 5];
+	var params = [test_guest_username, test_guest_password, "guest", 5];
 	dbm.ParameterizedInsert(sql, params, function (user_id, err) {
 		test_guest_user_id = user_id;
 		callback();
@@ -2841,7 +2877,10 @@ function UTIL_CREATE_QUESTIONS(dbm, callback) {
 		UTIL_CREATE_QUESTION(dbm, question, function() {
 			var question = "How many moons does planet Venus have?";
 			UTIL_CREATE_QUESTION(dbm, question, function() {
-				callback();
+				var question = "How many moons does planet Saturn have?";
+				UTIL_CREATE_QUESTION(dbm, question, function() {
+					callback();
+				});
 			});
 		});
 	});
@@ -2958,11 +2997,10 @@ function UTIL_TRUNCATE_SESSION_ANSWERS(dbm, callback) {
 	});	
 }
 
-function UTIL_INSERT_COSMOS_LIVE_ANSWER(dbm, answer_id, callback) {
+function UTIL_INSERT_COSMOS_LIVE_ANSWER(dbm, user_id, answer_id, callback) {
 	var sql = "insert into cosmos_live_answers (session_id, user_id, answer_id, added) values (?, ?, ?, now())";
-	var params = [test_cosmos_live_session_id, test_guest_user_id, answer_id];
-	dbm.ParameterizedInsert(sql, params, function (session_id, err) {
-		test_cosmos_live_session_id = session_id;
+	var params = [test_cosmos_live_session_id, user_id, answer_id];
+	dbm.ParameterizedInsert(sql, params, function (results, err) {
 		callback();
 	});
 }
@@ -2982,6 +3020,11 @@ function GetDBM() {
 	return dbm;
 }
 
+var test_admin_username = "testadmin";
+var test_admin_password = "admin";
+var test_admin_user_id = -1;
+var test_guest_username = "testguest";
+var test_guest_password = "guest";
 var test_guest_user_id = -1;
 var test_attempt_id = -1;
 var test_questions = [];
@@ -3040,43 +3083,57 @@ function TestCosmosLive(callback) {
 			//in game
 			UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_IN_GAME(dbm, function() {
 				TestCosmosLiveInGameReturnsCorrectData();
-				TestCosmosLiveInGameReturnsPlayerTypePlayer();
+				TestCosmosLiveInGameReturnsPlayerTypePlayer(test_guest_username, test_guest_password);
 
-				TestSubmitIncorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[0]);
-				TestCosmosLiveInGameReturnsPlayerTypeSpectator();
+				TestSubmitIncorrectCosmosLiveAnswer(test_guest_username, test_guest_password, test_cosmos_live_session_id, test_questions[0]);
+				TestCosmosLiveInGameReturnsPlayerTypeSpectator(test_guest_username, test_guest_password);
 
 				UTIL_TRUNCATE_SESSION_ANSWERS(dbm, function() {
 					UTIL_ADVANCE_COSMOS_LIVE_ROUND(dbm, 2, function() {
-						TestSubmitCorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[0]);
-						TestCosmosLiveInGameReturnsPlayerTypeSpectator();
+						// testing against submitting answer to old question
+						TestSubmitCorrectCosmosLiveAnswer(test_guest_username, test_guest_password, test_cosmos_live_session_id, test_questions[0]);
+						TestCosmosLiveInGameReturnsPlayerTypeSpectator(test_guest_username, test_guest_password);
 
-						UTIL_INSERT_COSMOS_LIVE_ANSWER(dbm, test_questions[0].correct_answer_id, function() {
-							TestSubmitCorrectCosmosLiveAnswer(test_cosmos_live_session_id, test_questions[1]);
-							TestCosmosLiveInGameReturnsPlayerTypePlayer();
+						UTIL_INSERT_COSMOS_LIVE_ANSWER(dbm, test_guest_user_id, test_questions[0].correct_answer_id, function() {
+							TestCosmosLiveInGameReturnsCorrectPlayerCount(1);
+							UTIL_INSERT_COSMOS_LIVE_ANSWER(dbm, test_admin_user_id, test_questions[0].correct_answer_id, function() {
+								TestCosmosLiveInGameReturnsCorrectPlayerCount(2);
 
-							TestCosmosLiveAdminReturnsResponse();
-							TestCosmosLiveAdminInvalidRequest();
-							TestCosmosLiveAdminInvalidAdminAuthKey();
-							TestCosmosLiveAdminValidAuthKey();
+								TestSubmitCorrectCosmosLiveAnswer(test_guest_username, test_guest_password, test_cosmos_live_session_id, test_questions[1]);
+								TestCosmosLiveInGameReturnsPlayerTypePlayer(test_guest_username, test_guest_password);
 
-							TestCosmosLiveAdminTransitionToClosedState();
-							TestCosmosLiveClosedReturnsCorrectData();
+								TestSubmitIncorrectCosmosLiveAnswer(test_admin_username, test_admin_password, test_cosmos_live_session_id, test_questions[1]);
+								TestCosmosLiveInGameReturnsPlayerTypeSpectator(test_admin_username, test_admin_password);
+								TestCosmosLiveInGameReturnsCorrectPlayerCount(2); //admin is "player" until the next round starts
+								UTIL_ADVANCE_COSMOS_LIVE_ROUND(dbm, 3, function() {
+									TestCosmosLiveInGameReturnsCorrectPlayerCount(1); // pt. 2 - see above, at this point admin is no longer a player
+									TestSubmitIncorrectCosmosLiveAnswer(test_guest_username, test_guest_password, test_cosmos_live_session_id, test_questions[2]);
 
-							TestCosmosLiveAdminTransitionToPreGameLobbyState();
-							TestCosmosLivePreGameLobbyReturnsCorrectData();
+									TestCosmosLiveAdminReturnsResponse();
+									TestCosmosLiveAdminInvalidRequest();
+									TestCosmosLiveAdminInvalidAdminAuthKey();
+									TestCosmosLiveAdminValidAuthKey();
 
-							TestCosmosLiveAdminTransitionToInGameState();
-							TestCosmosLiveInGameReturnsCorrectData();
+									TestCosmosLiveAdminTransitionToClosedState();
+									TestCosmosLiveClosedReturnsCorrectData();
 
-							TestCosmosLiveAdminAdvanceRound();
-							TestCosmosLiveInGameReturnsCorrectData();
+									TestCosmosLiveAdminTransitionToPreGameLobbyState();
+									TestCosmosLivePreGameLobbyReturnsCorrectData();
 
-							TestCosmosLiveAdminTransitionToPostGameLobbyState();
-							TestCosmosLivePostGameLobbyReturnsCorrectData();
+									TestCosmosLiveAdminTransitionToInGameState();
+									TestCosmosLiveInGameReturnsCorrectData();
 
+									TestCosmosLiveAdminAdvanceRound();
+									TestCosmosLiveInGameReturnsCorrectData();
+									TestCosmosLiveInGameReturnsCorrectPlayerCount(0); // pt. 3 - see above, at this point guest is no longer a player
 
-							dbm.Close();
-							callback();
+									TestCosmosLiveAdminTransitionToPostGameLobbyState();
+									TestCosmosLivePostGameLobbyReturnsCorrectData();
+
+									dbm.Close();
+									callback();
+								});
+							});
 						});
 					});
 				});

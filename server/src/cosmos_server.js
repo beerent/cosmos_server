@@ -173,6 +173,14 @@ app.get('/liveAdmin', function (req, res) {
 	cosmosLiveManagerInstance.HandleLiveAdminRequest(req, res, responseBuilder);
 });
 
+app.get('/livePostChat', function (req, res) {
+	var dbm = new DBM(db_connection);
+	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors);
+
+	var responseBuilder = new ResponseBuilder("livePostChat");
+	cosmosLiveManagerInstance.HandleLiveAdminRequest(req, res, responseBuilder);
+});
+
 
 
 app.get('/getMessages', function (req, res) {

@@ -1968,6 +1968,58 @@ function TestGetMessagesNoParameters() {
 }
 
 /* COSMOS LIVE */
+function TestCosmosLivePostChatReturnsRequest() {
+	var functionName = "TestCosmosLivePostChatReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "livePostChat";
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestCosmosLivePostChatInvalidUser() {
+	var functionName = "TestCosmosLivePostChatInvalidUser\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "livePostChat";
+
+	var url = server + "/" + requestString;
+	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"3";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 101) {
+		failures += "  - op was " + response.op + ", expected 101\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
 function TestCosmosLiveReturnsRequest() {
 	var functionName = "TestCosmosLiveReturnsRequest\n";
 	var failures = "";
@@ -3100,6 +3152,10 @@ function Setup(callback) {
 
 function TestCosmosLive(callback) {
 	var dbm = GetDBM();
+
+	TestCosmosLivePostChatReturnsRequest();
+	TestCosmosLivePostChatInvalidUser();
+
 
 	TestCosmosLiveReturnsRequest();
 	TestCosmosLiveInvalidUser();

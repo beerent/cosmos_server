@@ -10,6 +10,7 @@ var QuestionManager = require("./question/QuestionManager.js");
 var QuestionManager = require("./question/QuestionManager.js");
 var ChallengeManager = require("./game/challenge/ChallengeManager.js");
 var CosmosLiveManager = require("./game/live/CosmosLiveManager.js");
+var CosmosLiveChatManager = require("./game/live/chat/CosmosLiveChatManager.js");
 var ResponseBuilder = require("./response/ResponseBuilder.js");
 var UserManager = require("./user/UserManager.js");
 var UserProfileManager = require("./user/UserProfileManager.js");
@@ -175,10 +176,10 @@ app.get('/liveAdmin', function (req, res) {
 
 app.get('/livePostChat', function (req, res) {
 	var dbm = new DBM(db_connection);
-	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors);
+	var cosmosLiveChatManagerInstance = new CosmosLiveChatManager(dbm, errors);
 
 	var responseBuilder = new ResponseBuilder("livePostChat");
-	cosmosLiveManagerInstance.HandleLiveAdminRequest(req, res, responseBuilder);
+	cosmosLiveChatManagerInstance.HandleLivePostChat(req, res, responseBuilder);
 });
 
 

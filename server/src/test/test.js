@@ -1999,7 +1999,7 @@ function TestCosmosLivePostChatInvalidUser() {
 	var requestString = "livePostChat";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"3";
+	url += "?username="+ test_guest_username +"&password="+ test_guest_password +"3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2018,6 +2018,64 @@ function TestCosmosLivePostChatInvalidUser() {
 		failedTests += functionName;
 		testsFailedCount++;
 	}
+}
+
+function TestCosmosLivePostChatValidUserInvalidMessage() {
+	var functionName = "TestCosmosLivePostChatValidUserInvalidMessage\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "livePostChat";
+
+	var url = server + "/" + requestString;
+	url += "?username="+ test_guest_username +"&password="+ test_guest_password + "&message=";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success) {
+		failures += "  - success was true, expected false\n";
+		success = false;
+	}
+
+	if (response.op != 119) {
+		failures += "  - op was " + response.op + ", expected 119\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}	
+}
+
+function TestCosmosLivePostChatValidUserValidMessage() {
+	var functionName = "TestCosmosLivePostChatValidUserValidMessage\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "livePostChat";
+
+	var url = server + "/" + requestString;
+	url += "?username="+ test_guest_username +"&password="+ test_guest_password + "&message=message";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}	
 }
 
 function TestCosmosLiveReturnsRequest() {
@@ -3155,7 +3213,7 @@ function TestCosmosLive(callback) {
 
 	TestCosmosLivePostChatReturnsRequest();
 	TestCosmosLivePostChatInvalidUser();
-
+	TestCosmosLivePostChatValidUserInvalidMessage();
 
 	TestCosmosLiveReturnsRequest();
 	TestCosmosLiveInvalidUser();
@@ -3172,6 +3230,8 @@ function TestCosmosLive(callback) {
 		//pre game lobby
 		UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_PRE_GAME_LOBBY(dbm, function() {
 			TestCosmosLivePreGameLobbyReturnsCorrectData(2);
+
+			TestCosmosLivePostChatValidUserValidMessage();
 
 			//in game
 			UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_IN_GAME(dbm, function() {

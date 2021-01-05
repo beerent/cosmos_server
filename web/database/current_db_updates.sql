@@ -61,3 +61,16 @@ alter table cosmos_live_ping
 alter table cosmos_live_ping
 	add constraint cosmos_live_ping_pk
 		unique (session_id, user_id);
+
+create table cosmos_live_chat
+(
+	id int auto_increment primary key,
+	session_id int not null,
+	user_id int not null,
+	message varchar(300) not null,
+	added datetime not null,
+	constraint cosmos_live_chat_cosmos_live_sessions_id_fk
+		foreign key (session_id) references cosmos_live_sessions (id),
+	constraint cosmos_live_chat_users_id_fk
+		foreign key (user_id) references users (id)
+);

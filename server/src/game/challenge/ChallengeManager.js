@@ -1,6 +1,7 @@
 var QuestionManager = require("../../question/QuestionManager.js");
 var UserManager = require("../../user/UserManager.js");
 var ConfigManager = require("../../config/ConfigManager.js");
+var UserManager = require("../../user/UserManager.js");
 
 var ChallengeLeaderboardManager = require("./ChallengeLeaderboardManager.js");
 
@@ -22,35 +23,12 @@ class ChallengeManager {
 		return query.answer_id != undefined && query.attempt_id != undefined;
 	}
 
-	HandleRequestWithAuth(req, res, responseBuilder, callback) {
-		var userManager = new UserManager(this.dbm);
-
-		var self = this;
-		if (userManager.CredentialFieldsAreValid(req.query) == false) {
-			responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
-			res.json(responseBuilder.Response());
-			res.end();
-			self.dbm.Close();
-			return;
-		}
-
-		userManager.GetUserFromCredentials(req.query.username, req.query.password, function(user) {
-			if (undefined == user) {
-				responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
-				res.json(responseBuilder.Response());
-				res.end();
-				self.dbm.Close();				
-			} else {
-				callback(user);
-			}
-		});
-	}
-
 	HandleNewChallengeRequest(req, res, responseBuilder) {
+		var user_manager = new UserManager(this.dbm, this.errors);
 		var self = this;
 
-		this.HandleRequestWithAuth(req, res, responseBuilder, function(user){
-			self.CreateNewChallenge(user.id, responseBuilder, function(response){
+		user_manager.HandleRequestWithAuth(req, res, responseBuilder, function(user) {
+			self.CreateNewChallenge(user.id, responseBuilder, function(response) {
 				res.json(response);
 				res.end();
 				self.dbm.Close();
@@ -59,10 +37,10 @@ class ChallengeManager {
 	}
 
 	HandleGetChallengeQuestionsRequest(req, res, responseBuilder) {
+		var user_manager = new UserManager(this.dbm, this.errors);
 		var self = this;
 
-		this.HandleRequestWithAuth(req, res, responseBuilder, function(user){
-
+		user_manager.HandleRequestWithAuth(req, res, responseBuilder, function(user) {
 			if (self.GetChallengeQuestionsFieldsAreValid(req.query) == false) {
 				responseBuilder.SetError(self.errors.GET_CHALLENGE_QUESTIONS_ERROR);
 				var response = responseBuilder.Response();
@@ -96,9 +74,10 @@ class ChallengeManager {
 	}
 
 	HandleRegisterChallengeAnswerRequest(req, res, responseBuilder) {
+		var user_manager = new UserManager(this.dbm, this.errors);
 		var self = this;
 
-		this.HandleRequestWithAuth(req, res, responseBuilder, function(user){
+		user_manager.HandleRequestWithAuth(req, res, responseBuilder, function(user){
 			if (self.RegisterChallengeAnswerFieldsAreValid(req.query) == false) {
 				responseBuilder.SetError(self.errors.REGISTER_CHALLENGE_ANSWER_MISSING_ERROR);
 				var response = responseBuilder.Response();

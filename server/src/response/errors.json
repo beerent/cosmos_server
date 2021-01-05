@@ -87,5 +87,15 @@
     "INVALID_LIVE_ADMIN_REQUEST": {
         "id": 118,
         "note": "invalid live admin request"
+    },
+
+    "INVALID_LIVE_POST_CHAT_REQUEST": {
+        "id": 119,
+        "note": "live chat message is missing or invalid"
+    },
+
+    "LIVE_POST_CHAT_SAVE_ERROR": {
+        "id": 120,
+        "note": "failed to save live chat message"
     }
 } 

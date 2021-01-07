@@ -38,21 +38,7 @@ class CosmosLiveManager {
 				}
 
 				self.AddToPingTable(cosmosLiveSession, user, function(callback) {
-					var getPlayerCountFunction = function(callback) {
-						if (cosmosLiveSession.GetState() != "IN_GAME" || (cosmosLiveSession.GetState() == "IN_GAME" && cosmosLiveSession.GetRound() == 1)) {
-							self.GetPlayerCountFromPingTable(cosmosLiveSession, function(player_count) {
-								cosmosLiveSession.SetPlayerCount(player_count);
-								callback();
-							});
-						} else {
-							self.GetActivePlayersFromAnswersTable(cosmosLiveSession, function(player_count) {
-								cosmosLiveSession.SetPlayerCount(player_count);
-								callback();
-							});
-						}
-					};
-
-					getPlayerCountFunction(function() {
+					self.GetPlayerCount(cosmosLiveSession, function() {
 						if (cosmosLiveSession.GetState() != IN_GAME) {
 							payload.cosmos_live_session = cosmosLiveSession.ToPayload();
 							responseBuilder.SetPayload(payload);
@@ -97,6 +83,25 @@ class CosmosLiveManager {
 				});
 			});
 		});
+	}
+
+	GetPlayerCount(cosmosLiveSession, callback) {
+		var self = this;
+
+		var state = cosmosLiveSession.GetState();
+		var round = cosmosLiveSession.GetRound();
+
+		if (state != "IN_GAME" || (state == "IN_GAME" && round == 1)) {
+			self.GetPlayerCountFromPingTable(cosmosLiveSession, function(player_count) {
+				cosmosLiveSession.SetPlayerCount(player_count);
+				callback();
+			});
+		} else {
+			self.GetActivePlayersFromAnswersTable(cosmosLiveSession, function(player_count) {
+				cosmosLiveSession.SetPlayerCount(player_count);
+				callback();
+			});
+		}
 	}
 
 	AddToPingTable(session, user, callback) {

@@ -3,6 +3,7 @@ var UserManager = require("../../user/UserManager.js");
 var QuestionManager = require("../../question/QuestionManager");
 var CosmosLiveSession = require("./CosmosLiveSession.js");
 var ConfigManager = require("../../config/ConfigManager.js");
+var CosmosLiveChatManager = require("./chat/CosmosLiveChatManager.js");
 
 const SPECTATOR = "SPECTATOR";
 const PLAYER = "PLAYER";
@@ -80,6 +81,43 @@ class CosmosLiveManager {
 							});
 						});
 					});
+				});
+			});
+		});
+	}
+
+	HandleLivePostChat(req, res, responseBuilder) {
+		var user_manager = new UserManager(this.dbm, this.errors);
+		var cosmos_live_chat_manager = new CosmosLiveChatManager(this.dbm, this.errors, this.privileges);
+
+		var self = this;
+
+		user_manager.HandleRequestWithAuth(req, res, responseBuilder, function(user) {
+			if (!cosmos_live_chat_manager.IsValidLivePostChatRequest(req.query)) {
+				responseBuilder.SetError(self.errors.INVALID_LIVE_POST_CHAT_REQUEST);
+				res.json(responseBuilder.Response());
+				res.end();
+				self.dbm.Close();
+				return;
+			}
+
+			self.GetCurrentCosmosLiveSession(function(cosmos_live_session) {
+				if (!cosmos_live_session) {
+					responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
+					res.json(responseBuilder.Response());
+					res.end();
+					self.dbm.Close();
+					return;
+				}
+
+				cosmos_live_chat_manager.StoreLiveChat(cosmos_live_session, user,req.query.message, function(success) {
+					if (!success) {
+						responseBuilder.SetError(self.errors.LIVE_POST_CHAT_FAILED_SAVE);
+					}
+
+					res.json(responseBuilder.Response());
+					res.end();
+					self.dbm.Close();
 				});
 			});
 		});

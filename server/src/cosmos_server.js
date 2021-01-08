@@ -176,10 +176,10 @@ app.get('/liveAdmin', function (req, res) {
 
 app.get('/livePostChat', function (req, res) {
 	var dbm = new DBM(db_connection);
-	var cosmosLiveChatManagerInstance = new CosmosLiveChatManager(dbm, errors);
+	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors);
 
 	var responseBuilder = new ResponseBuilder("livePostChat");
-	cosmosLiveChatManagerInstance.HandleLivePostChat(req, res, responseBuilder);
+	cosmosLiveManagerInstance.HandleLivePostChat(req, res, responseBuilder);
 });
 
 

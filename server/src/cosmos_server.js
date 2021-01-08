@@ -152,7 +152,7 @@ app.get('/getChallengeLeaderboard', function (req, res) {
 // COSMOS LIVE
 app.get('/live', function (req, res) {
 	var dbm = new DBM(db_connection);
-	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors);
+	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("live");
 	cosmosLiveManagerInstance.HandleLiveDataRequest(req, res, responseBuilder);
@@ -160,7 +160,7 @@ app.get('/live', function (req, res) {
 
 app.get('/liveRegisterAdmin', function (req, res) {
 	var dbm = new DBM(db_connection);
-	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors);
+	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("liveRegisterAdmin");
 	cosmosLiveManagerInstance.HandleLiveSubmitAnswer(req, res, responseBuilder);
@@ -168,7 +168,7 @@ app.get('/liveRegisterAdmin', function (req, res) {
 
 app.get('/liveAdmin', function (req, res) {
 	var dbm = new DBM(db_connection);
-	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors);
+	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("liveAdmin");
 	cosmosLiveManagerInstance.HandleLiveAdminRequest(req, res, responseBuilder);
@@ -176,7 +176,7 @@ app.get('/liveAdmin', function (req, res) {
 
 app.get('/livePostChat', function (req, res) {
 	var dbm = new DBM(db_connection);
-	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors);
+	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors, privileges);
 
 	var responseBuilder = new ResponseBuilder("livePostChat");
 	cosmosLiveManagerInstance.HandleLivePostChat(req, res, responseBuilder);

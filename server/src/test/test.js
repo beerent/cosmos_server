@@ -2343,10 +2343,10 @@ function TestCosmosLivePreGameLobbyReturnsCorrectData(expected_player_count) {
 			}
 		}
 
-		//if (response.payload.chat == undefined) {
-		//	failures += "  - PRE_GAME_LOBBY state requires chat in the payload\n";
-		//	success = false;
-		//}
+		if (response.payload.chat == undefined) {
+			failures += "  - PRE_GAME_LOBBY state requires chat in the payload\n";
+			success = false;
+		}
 	}
 
 	if (false == success) {

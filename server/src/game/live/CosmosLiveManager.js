@@ -9,6 +9,7 @@ const SPECTATOR = "SPECTATOR";
 const PLAYER = "PLAYER";
 
 const IN_GAME = "IN_GAME";
+const PRE_GAME_LOBBY = "PRE_GAME_LOBBY";
 
 class CosmosLiveManager {
 
@@ -20,12 +21,14 @@ class CosmosLiveManager {
 
 	HandleLiveDataRequest(req, res, responseBuilder) {
 		var user_manager = new UserManager(this.dbm, this.errors);
+		var cosmos_live_chat_manager = new CosmosLiveChatManager(this.dbm, this.errors, this.privileges);
 		var self = this;
 
 		var payload = {
 			cosmos_live_session : null,
 			player : null,
-			question : null
+			question : null,
+			chat : null
 		};
 		
 		user_manager.HandleRequestWithAuth(req, res, responseBuilder, function(user) {
@@ -38,48 +41,62 @@ class CosmosLiveManager {
 					return;
 				}
 
-				self.AddToPingTable(cosmosLiveSession, user, function(callback) {
+				self.AddToPingTable(cosmosLiveSession, user, function() {
 					self.GetPlayerCount(cosmosLiveSession, function() {
-						if (cosmosLiveSession.GetState() != IN_GAME) {
+						var state = cosmosLiveSession.GetState(); 
+
+						if (state != IN_GAME) {
 							payload.cosmos_live_session = cosmosLiveSession.ToPayload();
-							responseBuilder.SetPayload(payload);
-							res.json(responseBuilder.Response());
-							res.end();
-							self.dbm.Close();
-							return;
-						}
 
-						self.GetRoundSecondsRemainingInRound(cosmosLiveSession, function(secondsRemaining) {
-							cosmosLiveSession.SetRoundSecondsRemaining(secondsRemaining);
-							payload.cosmos_live_session = cosmosLiveSession.ToPayload();
-							self.GetPlayerType(cosmosLiveSession, user, function(playerType) {
-								var player = {
-									user : user,
-									type : playerType
-								};
-
-								payload.player = player;
-
-								var currentQuestionId = cosmosLiveSession.GetLatestQuestionId();
-								if (currentQuestionId == null) {
-									responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
-									res.json(responseBuilder.Response());
-									res.end();
-									self.dbm.Close();
-									return;
-								}
-
-								var question_manager = new QuestionManager(self.dbm, self.errors, self.privileges);
-								question_manager.GetQuestionById(currentQuestionId, function(questions) {
-									payload.question = questions[0];
-
+							if (state == PRE_GAME_LOBBY) {
+								cosmos_live_chat_manager.GetLiveChats(cosmosLiveSession, function(chats) {
+									payload.chat = chats;
 									responseBuilder.SetPayload(payload);
 									res.json(responseBuilder.Response());
 									res.end();
 									self.dbm.Close();
+									return;
+								});
+							} else {
+								responseBuilder.SetPayload(payload);
+								res.json(responseBuilder.Response());
+								res.end();
+								self.dbm.Close();
+								return;
+							}
+						} else {
+							self.GetRoundSecondsRemainingInRound(cosmosLiveSession, function(secondsRemaining) {
+								cosmosLiveSession.SetRoundSecondsRemaining(secondsRemaining);
+								payload.cosmos_live_session = cosmosLiveSession.ToPayload();
+								self.GetPlayerType(cosmosLiveSession, user, function(playerType) {
+									var player = {
+										user : user,
+										type : playerType
+									};
+
+									payload.player = player;
+
+									var currentQuestionId = cosmosLiveSession.GetLatestQuestionId();
+									if (currentQuestionId == null) {
+										responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
+										res.json(responseBuilder.Response());
+										res.end();
+										self.dbm.Close();
+										return;
+									}
+
+									var question_manager = new QuestionManager(self.dbm, self.errors, self.privileges);
+									question_manager.GetQuestionById(currentQuestionId, function(questions) {
+										payload.question = questions[0];
+
+										responseBuilder.SetPayload(payload);
+										res.json(responseBuilder.Response());
+										res.end();
+										self.dbm.Close();
+									});
 								});
 							});
-						});
+						}
 					});
 				});
 			});

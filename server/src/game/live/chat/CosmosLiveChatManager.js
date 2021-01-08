@@ -22,6 +22,31 @@ class CosmosLiveChatManager {
 			callback(err == null);
 		});
 	}
+
+	GetLiveChats(session, callback) {
+		var sql = "select u.id, u.username, u.email, u.access_level, message, clc.added from cosmos_live_chat clc join cosmos_live_sessions cls on clc.session_id = cls.id join users u on clc.user_id = u.id join privileges_enum pe on u.access_level = pe.id where cls.id = ? order by clc.added asc";
+		var params = [session.GetId()];
+
+		var chats = [];
+		this.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
+			queryResults.forEach(function (entry) {
+				var user = {};
+				user.id = entry.id;
+				user.username = entry.username;
+				user.email = entry.email;
+				user.access_level = entry.access_level;
+
+				var message = entry.message;
+				var added = entry.added;
+
+				var cosmos_live_chat_entry = new CosmosLiveChatEntry(session, user, message, added);
+
+				chats.push(cosmos_live_chat_entry.ToPayload());
+			});
+	
+			callback(chats);
+		});
+	}
 }
 
 module.exports = CosmosLiveChatManager;

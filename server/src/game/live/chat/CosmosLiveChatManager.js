@@ -24,7 +24,7 @@ class CosmosLiveChatManager {
 	}
 
 	GetLiveChats(session, callback) {
-		var sql = "select u.id, u.username, u.email, u.access_level, message, clc.added from cosmos_live_chat clc join cosmos_live_sessions cls on clc.session_id = cls.id join users u on clc.user_id = u.id join privileges_enum pe on u.access_level = pe.id where cls.id = ? order by clc.added asc";
+		var sql = "select u.id, u.username, u.email, u.access_level, message, clc.added from cosmos_live_chat clc join cosmos_live_sessions cls on clc.session_id = cls.id join users u on clc.user_id = u.id join privileges_enum pe on u.access_level = pe.id where cls.id = ? order by clc.added desc";
 		var params = [session.GetId()];
 
 		var chats = [];

@@ -2274,6 +2274,11 @@ function TestCosmosLiveClosedReturnsCorrectData(expected_player_count) {
 			success = false;
 		}
 
+		if (response.payload.cosmos_live_session.seconds_to_start == undefined) {
+			failures += "  - CLOSED state requires 'seconds_to_start' in the payload's cosmos_live_session\n";
+			success = false;
+		}
+
 		var player_count = response.payload.cosmos_live_session.player_count;
 		if (player_count == undefined) {
 			failures += "  - CLOSED state requires 'player_count' in the payload's cosmos_live_session\n";
@@ -2329,6 +2334,11 @@ function TestCosmosLivePreGameLobbyReturnsCorrectData(expected_player_count) {
 
 		if (response.payload.cosmos_live_session.start == undefined) {
 			failures += "  - PRE_GAME_LOBBY state requires start in the payload's round\n";
+			success = false;
+		}
+
+		if (response.payload.cosmos_live_session.seconds_to_start == undefined) {
+			failures += "  - CLOSED state requires 'seconds_to_start' in the payload's cosmos_live_session\n";
 			success = false;
 		}
 
@@ -2481,6 +2491,11 @@ function TestCosmosLivePostGameLobbyReturnsCorrectData() {
 
 		if (response.payload.cosmos_live_session.start == undefined) {
 			failures += "  - PRE_GAME_LOBBY state requires start in the payload's round\n";
+			success = false;
+		}
+
+		if (response.payload.cosmos_live_session.seconds_to_start == undefined) {
+			failures += "  - CLOSED state requires 'seconds_to_start' in the payload's cosmos_live_session\n";
 			success = false;
 		}
 

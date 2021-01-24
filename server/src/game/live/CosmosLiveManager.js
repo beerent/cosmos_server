@@ -229,13 +229,13 @@ class CosmosLiveManager {
 	GetCurrentCosmosLiveSession(callback) {
 		var self = this;
 
-		var sql = "select id, state, start, asked_questions_ids, added from cosmos_live_sessions order by id desc limit 1";
+		var sql = "select id, state, start, TIME_TO_SEC(TIMEDIFF(start, UTC_TIMESTAMP)) seconds_to_start, asked_questions_ids, added from cosmos_live_sessions order by id desc limit 1";
 
 		this.dbm.Query(sql, function(results, err) {
 			var cosmosLiveSession = null;
 			if (results.length > 0) {
 				var row = results[0];
-				cosmosLiveSession = new CosmosLiveSession(row.id, row.state, row.start, row.asked_questions_ids, row.added);
+				cosmosLiveSession = new CosmosLiveSession(row.id, row.state, row.start, row.seconds_to_start, row.asked_questions_ids, row.added);
 			}
 
 			callback(cosmosLiveSession);

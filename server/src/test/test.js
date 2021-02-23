@@ -3022,6 +3022,15 @@ function UTIL_CREATE_GUEST_USER(dbm, callback) {
 	});
 }
 
+function UTIL_CREATE_INITIAL_RELEASE_BUCKET(dbm, callback) {
+	var sql = "insert into buckets (name, enabled, added) values (?, ?, now())";
+	var params = ["initial_release", 1];
+	dbm.ParameterizedInsert(sql, params, function (bucket_id, err) {
+		test_initial_release_bucket_id = bucket_id;
+		callback();
+	});	
+}
+
 function UTIL_CREATE_QUESTIONS(dbm, callback) {
 	var question = "How many moons does planet Earth have?";
 	UTIL_CREATE_QUESTION(dbm, question, function() {
@@ -3056,7 +3065,13 @@ function UTIL_CREATE_QUESTION(dbm, questionStr, callback) {
 			dbm.ParameterizedInsert(sql, params, function (answer_id, err) {
 				question.correct_answer_id = answer_id;
 				test_questions.push(question);
-				callback();
+
+				var sql = "insert into question_bucket_map (question_id, bucket_id, added) values (?, ?, now())";
+				var params = [question_id, test_initial_release_bucket_id];
+				dbm.ParameterizedInsert(sql, params, function (answer_id, err) {
+					callback();
+				});
+
 			});
 		});
 	});
@@ -3191,6 +3206,7 @@ var test_questions = [];
 var test_cosmos_live_session_id = -1;
 var test_valid_admin_auth_key = "mega_auth_key";
 var test_invalid_admin_auth_key = "mega_auth_key_invalid";
+test_initial_release_bucket_id = -1;
 
 function Setup(callback) {
 	var dbm = GetDBM();
@@ -3199,16 +3215,18 @@ function Setup(callback) {
 		UTIL_CREATE_GUEST_PRIVILEGE(dbm, function() {
 			UTIL_CREATE_ADMIN_USER(dbm, function() {
 				UTIL_CREATE_GUEST_USER(dbm, function() {
-					UTIL_CREATE_QUESTIONS(dbm, function() {
-						UTIL_CREATE_CHALLENGE_ATTEMPT(dbm, function() {
-							UTIL_CREATE_CHALLENGE_MODE_CONFIG_TIMER(dbm, function() {
-								UTIL_CREATE_COSMOS_LIVE_CONFIG_QUESTION_TIMER(dbm, function() {
-									UTIL_CREATE_COSMOS_LIVE_CONFIG_ROUND_TIMER(dbm, function() {
-										UTIL_CREATE_HEALTH_CHECK_KEY(dbm, function() {
-											UTIL_CREATE_ADMIN_AUTH_KEY(dbm, function() {
-												UTIL_CREATE_PING_THRESHOLD(dbm, function() {
-													dbm.Close();
-													callback();
+					UTIL_CREATE_INITIAL_RELEASE_BUCKET(dbm, function() {
+						UTIL_CREATE_QUESTIONS(dbm, function() {
+							UTIL_CREATE_CHALLENGE_ATTEMPT(dbm, function() {
+								UTIL_CREATE_CHALLENGE_MODE_CONFIG_TIMER(dbm, function() {
+									UTIL_CREATE_COSMOS_LIVE_CONFIG_QUESTION_TIMER(dbm, function() {
+										UTIL_CREATE_COSMOS_LIVE_CONFIG_ROUND_TIMER(dbm, function() {
+											UTIL_CREATE_HEALTH_CHECK_KEY(dbm, function() {
+												UTIL_CREATE_ADMIN_AUTH_KEY(dbm, function() {
+													UTIL_CREATE_PING_THRESHOLD(dbm, function() {
+														dbm.Close();
+														callback();
+													});
 												});
 											});
 										});

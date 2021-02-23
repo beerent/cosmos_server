@@ -57,11 +57,12 @@
 		}
 
 		function GetRecentAttempts() {
-			$sql = "select users.username, challenge_answers.attempt_id, count(challenge_answers.id) - 1 as points, date(challenge_attempts.added) as date from challenge_answers";
+			$sql = "select users.username, challenge_answers.attempt_id, count(challenge_answers.id) as points, date(challenge_attempts.added) as date from challenge_answers";
 			$sql .= " join answers on challenge_answers.answer_id = answers.id";
 			$sql .= " join challenge_attempts on challenge_answers.attempt_id = challenge_attempts.id";
 			$sql .= " join users on challenge_attempts.user_id = users.id";
 			$sql .= " where date(challenge_attempts.added) > CURDATE() - 6";
+			$sql .= " and correct = 1";
 			$sql .= " group by challenge_attempts.id order by challenge_attempts.id desc;";
 
 			$results = $this->dbm->query($sql);

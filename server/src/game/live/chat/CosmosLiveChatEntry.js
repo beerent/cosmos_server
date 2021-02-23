@@ -23,13 +23,8 @@ class CosmosLiveChatEntry {
 	}
 
 	ToPayload() {
-		var username = this.user.username;
-		if (this.user.id == 659 || this.user.id == 658) {
-			username = username + " (mod)";
-		}
-
 		var payload = {
-			user : username,
+			user : this.user.username,
 			message : this.message,
 			added : this.added
 		};

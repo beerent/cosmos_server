@@ -2129,7 +2129,7 @@ function TestCosmosLiveInvalidUser() {
 	}
 }
 
-function TestCosmosLiveAdminInvalidAuthKeyBypassesUserAuth() {
+function TestCosmosLiveAdminInvalidAuthKeyDoesNotBypassUserAuth() {
 	var functionName = "TestCosmosLiveAdminInvalidAuthKeyBypassesUserAuth\n";
 	var failures = "";
 	testsRanCount++;
@@ -2394,7 +2394,7 @@ function TestCosmosLiveInGameReturnsCorrectData() {
 		success = false;		
 	} else {
 
-		//ROUND
+		//round
 		if (response.payload.cosmos_live_session == undefined) {
 			failures += "  - response had no 'round' in the payload\n";
 			success = false;
@@ -3224,8 +3224,10 @@ function Setup(callback) {
 											UTIL_CREATE_HEALTH_CHECK_KEY(dbm, function() {
 												UTIL_CREATE_ADMIN_AUTH_KEY(dbm, function() {
 													UTIL_CREATE_PING_THRESHOLD(dbm, function() {
-														dbm.Close();
-														callback();
+														UTIL_CREATE_CLOSED_COSMOS_LIVE_SESSION(dbm, function() {
+															dbm.Close();
+															callback();
+														});
 													});
 												});
 											});
@@ -3253,21 +3255,27 @@ function TestCosmosLive(callback) {
 	TestCosmosLiveSubmitAnswerReturnsRequest();
 	TestCosmosLiveSubmitAnswerInvalidUser();
 
-	//closed
-	UTIL_CREATE_CLOSED_COSMOS_LIVE_SESSION(dbm, function() {
-		TestCosmosLiveClosedReturnsCorrectData(1);
+	//simulate canadaarm3 move to close
+	TestCosmosLiveAdminTransitionToClosedState();
+	TestCosmosLiveClosedReturnsCorrectData(1);
+	TestCosmosLiveAdminInvalidAuthKeyDoesNotBypassUserAuth();
+	TestCosmosLiveAdminValidAuthKeyBypassesUserAuth();
 
-		TestCosmosLiveAdminInvalidAuthKeyBypassesUserAuth();
-		TestCosmosLiveAdminValidAuthKeyBypassesUserAuth();
+	//simulate canadaarm3 move to pre game lobby
+	TestCosmosLiveAdminTransitionToPreGameLobbyState();
+	TestCosmosLivePreGameLobbyReturnsCorrectData(2);
+	TestCosmosLivePostChatValidUserValidMessage();
 
-		//pre game lobby
-		UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_PRE_GAME_LOBBY(dbm, function() {
-			TestCosmosLivePreGameLobbyReturnsCorrectData(2);
+	//simulate canadaarm3 move to in game
+	TestCosmosLiveAdminTransitionToInGameState();
+	TestCosmosLiveInGameReturnsCorrectData();
+	//TestCosmosLiveAdminAdvanceRound();
+	//TestCosmosLiveInGameReturnsCorrectData();
+	//TestCosmosLiveInGameReturnsPlayerTypePlayer(test_guest_username, test_guest_password);
 
-			TestCosmosLivePostChatValidUserValidMessage();
-
-			//in game
-			UTIL_ADVANCE_COSMOS_LIVE_SESSION_TO_IN_GAME(dbm, function() {
+	dbm.Close();
+	callback();
+/*
 				TestCosmosLiveInGameReturnsCorrectData();
 				TestCosmosLiveInGameReturnsPlayerTypePlayer(test_guest_username, test_guest_password);
 
@@ -3325,7 +3333,7 @@ function TestCosmosLive(callback) {
 				});
 			});
 		});
-	});
+	});*/
 }
 
 function runTests() {

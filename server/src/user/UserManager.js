@@ -1,6 +1,7 @@
 var ResponseBuilder = require("../response/ResponseBuilder.js");
+var crypto = require('crypto');
 
-var BASE_USER_QUERY = "select users.id, username, email, privilege as access_level from users join privileges_enum on users.access_level = privileges_enum.id ";
+var BASE_USER_QUERY = "select users.id, device_id, username, email, privilege as access_level from users join privileges_enum on users.access_level = privileges_enum.id ";
 
 class UserManager {
 
@@ -27,7 +28,7 @@ class UserManager {
 			return;
 		}
 
-		this.GetUserFromCredentials(query.username, query.password, function (userObject) {
+		this.GetUserFromCredentials(query.device_uuid, query.username, query.password, function (userObject) {
 			if (userObject == undefined) {
 				responseBuilder.SetError(errors.INVALID_CREDENTIALS);
 			}
@@ -59,15 +60,24 @@ class UserManager {
 			return;
 		}
 
-		this.GetUserFromCredentials(query.username, query.password, function (userObject) {
-
+		this.GetUserFromCredentials(query.device_uuid, query.username, query.password, function (userObject) {
 			if (userObject == undefined) {
-				self.CreateGuestUser(query.username, function(userObject) {
-					if (userObject == undefined) {
+				self.GetOrCreateDevice(query.device_uuid, function(device) {
+					if (device == undefined) {
 						responseBuilder.SetError(errors.GUEST_ACCOUNT_CREATION_FAILURE);
-					}
+						callback(responseBuilder.Response());
+						return;
+					} else {
+						self.CreateGuestUser(device.id, query.username, function(userObject) {
+							responseBuilder.SetPayload({user : userObject});
+							if (userObject == undefined) {
+								responseBuilder.SetError(errors.GUEST_ACCOUNT_CREATION_FAILURE);
+							}
 
-					callback(responseBuilder.Response());
+							callback(responseBuilder.Response());
+							return;
+						});
+					}
 				});
 			} else {
 				if (userObject.access_level != "GUEST") {
@@ -79,24 +89,95 @@ class UserManager {
 		});
 	}
 
-	CreateGuestUser(username, callback) {
+	GetOrCreateDevice(deviceUuid, callback) {
 		var self = this;
 
-		var params = [username, username + "_guest_email", "guest"];
-		var sql = "insert into users (username, email, password_salt, access_level) values (?, ?, ?, (select privileges_enum.id from privileges_enum where privileges_enum.privilege = 'GUEST'));";
-		this.dbm.ParameterizedInsert(sql, params, function (insertId, err) {
+		this.GetDeviceFromDeviceUuid(deviceUuid, function(device) {
+			if (device == undefined) {
+				self.CreateDevice(deviceUuid, function(device) {
+					callback(device);
+					return;
+				});
+			} else {
+				callback(device);
+			}
+		});
+	}
+
+	GetDeviceFromDeviceUuid(deviceUuid, callback) {
+		var self = this;
+
+		this.HashDeviceUuid(deviceUuid, function(deviceUuidHash) {
+			var params = [deviceUuidHash];
+			var sql = "select id, added from devices where device_uuid_hash = ?";
+
+
+			self.dbm.ParameterizedQuery(sql, params, function (queryResults, err) {
+				if (err || queryResults.length == 0) {
+					callback(undefined);
+					return;
+				}
+
+				var device = {};
+				device.id = queryResults[0].id;
+				device.uuid_hash = deviceUuidHash;
+				device.added = queryResults[0].added;
+
+				callback(device);
+			});
+		});
+	}
+
+	CreateDevice(deviceUuid, callback) {
+		var self = this;
+
+		this.HashDeviceUuid(deviceUuid, function(deviceUuidHash) {
+			var params = [deviceUuidHash];
+			var sql = "insert into devices (device_uuid_hash, added) values (?, now())";
+
+			self.dbm.ParameterizedInsert(sql, params, function (deviceId, err) {
+				if (err || deviceId == undefined) {
+					callback(undefined);
+					return;
+				}
+
+				var device = {};
+				device.id = deviceId;
+				device.device_uuid_hash = deviceUuidHash;
+				device.added = "add_me";
+
+				callback(device);
+			});
+		});
+	}
+
+	CreateGuestUser(deviceId, username, callback) {
+		var self = this;
+
+		var guestEmail = "" + deviceId + username + "_guest_email";
+		var guestPassword = "guest";
+		var params = [deviceId, username, guestEmail, guestPassword];
+		var sql = "insert into users (device_id, username, email, password_salt, access_level) values (?, ?, ?, ?, (select privileges_enum.id from privileges_enum where privileges_enum.privilege = 'GUEST'));";
+
+		self.dbm.ParameterizedInsert(sql, params, function (insertId, err) {
 			if (insertId == undefined) {
 				callback(undefined);
 			} else {
-				self.GetUserFromCredentials(username, "guest", function(user) {
+				self.GetUserFromCredentialsWithDeviceId(deviceId, username, "guest", function(user) {
 					callback(user);
 				});
 			}
 		});
 	}
 
+	HashDeviceUuid(deviceUuid, callback) {
+		var hash = crypto.createHash('md5').update(deviceUuid).digest("hex");
+		callback(hash.toUpperCase());
+	}
+
 	CredentialFieldsAreValid(query) {
-		return query.admin_auth_key != undefined || (query.username != undefined && query.password != undefined);
+		return query.admin_auth_key != undefined || 
+			(query.device_uuid != undefined && query.username != undefined && query.password != undefined);
 	}
 
 	HandleRequestWithAuth(req, res, responseBuilder, callback) {
@@ -121,7 +202,7 @@ class UserManager {
 				}				
 			});
 		} else {
-			self.GetUserFromCredentials(req.query.username, req.query.password, function(user) {
+			self.GetUserFromCredentials(req.query.device_uuid, req.query.username, req.query.password, function(user) {
 				if (undefined == user) {
 					responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
 					res.json(responseBuilder.Response());
@@ -155,10 +236,13 @@ class UserManager {
 		});
 	}
 
-	GetUserFromCredentials(username, password, callback) {
-		var params = [username, password];
-		var sql = BASE_USER_QUERY + " where username = ? and password_salt = ?";
-		this.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
+	GetUserFromCredentialsWithDeviceId(deviceId, username, password, callback) {
+		var self = this;
+
+		var params = [deviceId, username, password];
+		var sql = BASE_USER_QUERY + " where device_id = ? and username = ? and password_salt = ?";
+		
+		self.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
 			if (err || queryResults.length == 0) {
 				var user = undefined;
 				callback(user);
@@ -167,11 +251,38 @@ class UserManager {
 
 			var user = {};
 			user.id = queryResults[0].id;
+			user.device_id = queryResults[0].device_id; 
 			user.username = queryResults[0].username;
 			user.email = queryResults[0].email;
 			user.access_level = queryResults[0].access_level;
 
 			callback(user);
+		});
+	}
+
+	GetUserFromCredentials(deviceUuid, username, password, callback) {
+		var self = this;
+
+		this.HashDeviceUuid(deviceUuid, function(deviceUuidHash){
+			var params = [deviceUuidHash, username, password];
+			var sql = BASE_USER_QUERY + " join devices on users.device_id = devices.id where device_uuid_hash = ? and username = ? and password_salt = ?";
+			
+			self.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
+				if (err || queryResults.length == 0) {
+					var user = undefined;
+					callback(user);
+					return;
+				}
+
+				var user = {};
+				user.id = queryResults[0].id;
+				user.device_id = queryResults[0].device_id; 
+				user.username = queryResults[0].username;
+				user.email = queryResults[0].email;
+				user.access_level = queryResults[0].access_level;
+
+				callback(user);
+			});
 		});
 	}
 

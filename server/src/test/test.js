@@ -123,7 +123,7 @@ function TestAuthenticateMissingPassword() {
 
 
 	var url = server + "/authenticate";
-	url += "?username="+ test_admin_username;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -179,7 +179,7 @@ function TestAuthenticateEmptyPassword() {
 
 
 	var url = server + "/authenticate";
-	url += "?username="+ test_admin_username +"&password=";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password=";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -207,7 +207,7 @@ function TestAuthenticateIncorrectUsername() {
 
 
 	var url = server + "/authenticate";
-	url += "?username="+ test_admin_username +"1&password="+ test_admin_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"1&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -235,7 +235,7 @@ function TestAuthenticateIncorrectPassword() {
 
 
 	var url = server + "/authenticate";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"3";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password +"3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -263,7 +263,7 @@ function TestAuthenticateValidUser() {
 
 
 	var url = server + "/authenticate";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -291,7 +291,7 @@ function TestAuthenticateValidGuestUser() {
 
 
 	var url = server + "/authenticate";
-	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -422,13 +422,13 @@ function TestGuestAuthenticateEmptyUsername() {
 	}
 }
 
-function TestGuestAuthenticateValidCreatesUser() {
-	var functionName = "TestGuestAuthenticateValidCreatesUser\n";
+function TestGuestAuthenticateValidCreatesUserNewDevice(device_id, username, password) {
+	var functionName = "TestGuestAuthenticateValidCreatesUserNewDevice\n";
 	var failures = "";
 	testsRanCount++;
 
 	var url = server + "/guestAuthenticate";
-	url += "?username="+ test_admin_username +"&password=" + test_guest_password;
+	url += "?device_uuid="+ device_id +"&username="+ username +"&password=" + password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -440,6 +440,52 @@ function TestGuestAuthenticateValidCreatesUser() {
 	if (response.op != 0) {
 		failures += "  - op was " + response.op + ", expected 0\n";
 		success = false;
+	}
+
+	if (response.payload == undefined) {
+		failures += "  - response is missing payload\n";
+		success = false;	
+	} else if (response.payload.user == undefined) {
+		failures += "  - response is missing user\n";
+		success = false;	
+	} else if (response.payload.user.device_id == test_device_id) {
+		failures += "  - response found device id "+ test_device_id +", expected a new one\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestGuestAuthenticateValidCreatesUserSameDevice(device_id, username, password) {
+	var functionName = "TestGuestAuthenticateValidCreatesUserSameDevice\n";
+	var failures = "";
+	testsRanCount++;
+
+	var url = server + "/guestAuthenticate";
+	url += "?device_uuid="+ device_id +"&username="+ username +"&password=" + password;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (false == response.success) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (response.payload == undefined) {
+		failures += "  - response is missing payload\n";
+		success = false;	
+	} else if (response.payload.user == undefined) {
+		failures += "  - response is missing user\n";
+		success = false;	
 	}
 
 	if (false == success) {
@@ -456,7 +502,7 @@ function TestGuestAuthenticateValidGuestUser() {
 
 
 	var url = server + "/guestAuthenticate";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -578,7 +624,7 @@ function TestNewChallengeMissingPassword() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username="+ test_admin_username;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -644,7 +690,7 @@ function TestNewChallengeEmptyPassword() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username="+ test_admin_username +"&password=";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password=";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -677,7 +723,7 @@ function TestNewChallengeIncorrectUsername() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username="+ test_admin_username +"1&password="+ test_admin_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"1&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -710,7 +756,7 @@ function TestNewChallengeIncorrectPassword() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"3";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password +"3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -743,7 +789,7 @@ function TestNewChallengeValidUser() {
 
 
 	var url = server + "/newChallenge";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -869,7 +915,7 @@ function TestGetChallengeQuestionsMissingPassword() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username="+ test_admin_username;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -925,7 +971,7 @@ function TestGetChallengeQuestionsEmptyPassword() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username="+ test_admin_username +"&password=";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password=";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -953,7 +999,7 @@ function TestGetChallengeQuestionsIncorrectUsername() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username="+ test_admin_username +"1&password="+ test_admin_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"1&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -981,7 +1027,7 @@ function TestGetChallengeQuestionsIncorrectPassword() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"3";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password +"3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1009,7 +1055,7 @@ function TestGetChallengeQuestionsValidUserMissingAttemptId() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1037,7 +1083,7 @@ function TestGetChallengeQuestionsValidUserInvalidAttemptId() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&attempt_id=0";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password +"&attempt_id=0";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1065,7 +1111,7 @@ function TestGetChallengeQuestionsValidUserValidAttemptId() {
 
 
 	var url = server + "/getChallengeQuestions";
-	url += "?username="+ test_guest_username +"&password=" + test_guest_password + "&attempt_id=" + test_attempt_id.toString();
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password=" + test_guest_password + "&attempt_id=" + test_attempt_id.toString();
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1174,7 +1220,7 @@ function TestRegisterChallengeAnswerMissingPassword() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username="+ test_admin_username;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1228,7 +1274,7 @@ function TestRegisterChallengeAnswerEmptyPassword() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username="+ test_admin_username +"&password=";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password=";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1255,7 +1301,7 @@ function TestRegisterChallengeAnswerIncorrectUsername() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username="+ test_admin_username +"1&password="+ test_admin_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"1&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1282,7 +1328,7 @@ function TestRegisterChallengeAnswerIncorrectPassword() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"3";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password +"3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1309,7 +1355,7 @@ function TestRegisterChallengeAnswerValidUserMissingAttemptId() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&answer_id=100";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password +"&answer_id=100";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1336,7 +1382,7 @@ function TestRegisterChallengeAnswerValidUserMissingAnswerId() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&attempt_id=1";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password +"&attempt_id=1";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1363,7 +1409,7 @@ function TestRegisterChallengeAnswerValidUserInvalidAttemptId() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&attempt_id=0&answer_id=100";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password +"&attempt_id=0&answer_id=100";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1390,7 +1436,7 @@ function TestRegisterChallengeAnswerValidUserInvalidAnswerId() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&attempt_id=1&answer_id=0";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password +"&attempt_id=1&answer_id=0";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1417,7 +1463,7 @@ function TestRegisterChallengeAnswerValidUserValid() {
 	testsRanCount++;
 
 	var url = server + "/registerChallengeAnswer";
-	url += "?username="+ test_guest_username +"&password=" + test_guest_password + "&attempt_id=" + test_attempt_id.toString() + "&answer_id=" + test_questions[0].incorrect_answer_id.toString();
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password=" + test_guest_password + "&attempt_id=" + test_attempt_id.toString() + "&answer_id=" + test_questions[0].incorrect_answer_id.toString();
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1559,7 +1605,7 @@ function TestGetUserProfileInvalidSpecifier() {
 
 
 	var url = server + "/getUserProfile";
-	url += "?username="+ test_admin_username +"Stinks";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"Stinks";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1587,7 +1633,7 @@ function TestGetUserProfileValidUserContainsChallengeStats() {
 
 
 	var url = server + "/getUserProfile";
-	url += "?username="+ test_admin_username;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username;
 
 	var response = GetHTTPResponse(url);
 
@@ -1691,7 +1737,7 @@ function TestFlagQuestionValidUser() {
 
 
 	var url = server + "/flagQuestion";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1719,7 +1765,7 @@ function TestFlagQuestionValidUserAndValidQuestion() {
 
 
 	var url = server + "/flagQuestion";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&question_id=28";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password +"&question_id=28";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1801,7 +1847,7 @@ function TestReviewQuestionValidUser() {
 
 
 	var url = server + "/reviewQuestion";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1829,7 +1875,7 @@ function TestReviewQuestionValidUserAndValidQuestionInvalidPrivileges() {
 
 
 	var url = server + "/reviewQuestion";
-	url += "?username="+ test_guest_username +"&password=" + test_guest_password + "&question_id=" + test_questions[0].id.toString();
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password=" + test_guest_password + "&question_id=" + test_questions[0].id.toString();
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1857,7 +1903,7 @@ function TestReviewQuestionValidUserAndValidQuestionValidPrivileges() {
 
 
 	var url = server + "/reviewQuestion";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"&question_id=28";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password +"&question_id=28";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -1999,7 +2045,7 @@ function TestCosmosLivePostChatInvalidUser() {
 	var requestString = "livePostChat";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ test_guest_username +"&password="+ test_guest_password +"3";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password="+ test_guest_password +"3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2028,7 +2074,7 @@ function TestCosmosLivePostChatValidUserInvalidMessage() {
 	var requestString = "livePostChat";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ test_guest_username +"&password="+ test_guest_password + "&message=";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password="+ test_guest_password + "&message=";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2057,7 +2103,7 @@ function TestCosmosLivePostChatValidUserValidMessage() {
 	var requestString = "livePostChat";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ test_guest_username +"&password="+ test_guest_password + "&message=message";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password="+ test_guest_password + "&message=message";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2108,7 +2154,7 @@ function TestCosmosLiveInvalidUser() {
 
 
 	var url = server + "/live";
-	url += "?username="+ test_admin_username +"&password="+ test_admin_password +"3";
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_admin_username +"&password="+ test_admin_password +"3";
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2243,7 +2289,7 @@ function TestCosmosLiveClosedReturnsCorrectData(expected_player_count) {
 	var requestString = "live";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2306,7 +2352,7 @@ function TestCosmosLivePreGameLobbyReturnsCorrectData(expected_player_count) {
 	var requestString = "live";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2374,7 +2420,7 @@ function TestCosmosLiveInGameReturnsCorrectData() {
 	var requestString = "live";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2463,7 +2509,7 @@ function TestCosmosLivePostGameLobbyReturnsCorrectData() {
 	var requestString = "live";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2520,7 +2566,7 @@ function TestSubmitIncorrectCosmosLiveAnswer(username, password, session_id, que
 	var requestString = "liveRegisterAdmin";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ username +"&password="+ password +"&session_id=" + session_id + "&answer_id=" + question.incorrect_answer_id;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ username +"&password="+ password +"&session_id=" + session_id + "&answer_id=" + question.incorrect_answer_id;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2549,7 +2595,7 @@ function TestSubmitCorrectCosmosLiveAnswer(username, password, session_id, quest
 	var requestString = "liveRegisterAdmin";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ username +"&password="+ password +"&session_id=" + session_id + "&answer_id=" + question.correct_answer_id;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ username +"&password="+ password +"&session_id=" + session_id + "&answer_id=" + question.correct_answer_id;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2578,7 +2624,7 @@ function TestCosmosLiveInGameReturnsCorrectPlayerCount(expected_player_count) {
 	var requestString = "live";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2613,7 +2659,7 @@ function TestCosmosLiveInGameReturnsPlayerTypePlayer(username, password) {
 	var requestString = "live";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ username +"&password=" + password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ username +"&password=" + password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2648,7 +2694,7 @@ function TestCosmosLiveInGameReturnsPlayerTypeSpectator(username, password) {
 	var requestString = "live";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ username +"&password=" + password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ username +"&password=" + password;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2683,7 +2729,7 @@ function TestSubmitCorrectAnswerValidPlayerValidRound(session_id, question) {
 	var requestString = "liveRegisterAdmin";
 
 	var url = server + "/" + requestString;
-	url += "?username="+ test_guest_username +"&password=" + test_guest_password + "&session_id=" + session_id + "&answer_id=" + question.correct_answer_id;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password=" + test_guest_password + "&session_id=" + session_id + "&answer_id=" + question.correct_answer_id;
 	var response = GetHTTPResponse(url);
 
 	var success = true;
@@ -2947,7 +2993,7 @@ function TestCosmosLiveAdminAdvanceRound() {
 
 	var requestString = "live";
 	var url = server + "/" + requestString;
-	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 	roundBefore = response.payload.cosmos_live_session.round;
 
@@ -2972,7 +3018,7 @@ function TestCosmosLiveAdminAdvanceRound() {
 
 	var requestString = "live";
 	var url = server + "/" + requestString;
-	url += "?username="+ test_guest_username +"&password=" + test_guest_password;
+	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
 	roundAfter = response.payload.cosmos_live_session.round;
 
@@ -3004,9 +3050,18 @@ function UTIL_CREATE_GUEST_PRIVILEGE(dbm, callback) {
 	});
 }
 
+function UTIL_CREATE_DEVICE(dbm, callback) {
+	var sql = "insert into devices (device_uuid_hash, added) values (?, now())";
+	var params = [test_device_uuid_hash];
+	dbm.ParameterizedInsert(sql, params, function (device_id, err) {
+		test_device_id = device_id;
+		callback();
+	});	
+}
+
 function UTIL_CREATE_ADMIN_USER(dbm, callback) {
-	var sql = "insert into users (username, email, password_salt, access_level, added) values (?, ?, ?, ?, now())";
-	var params = [test_admin_username, test_admin_password, "admin", 4];
+	var sql = "insert into users (device_id, username, email, password_salt, access_level, added) values (?, ?, ?, ?, ?, now())";
+	var params = [test_device_id, test_admin_username, test_admin_password, "admin", 4];
 	dbm.ParameterizedInsert(sql, params, function (user_id, err) {
 		test_admin_user_id = user_id;
 		callback();
@@ -3014,8 +3069,8 @@ function UTIL_CREATE_ADMIN_USER(dbm, callback) {
 }
 
 function UTIL_CREATE_GUEST_USER(dbm, callback) {
-	var sql = "insert into users (username, email, password_salt, access_level, added) values (?, ?, ?, ?, now())";
-	var params = [test_guest_username, test_guest_password, "guest", 5];
+	var sql = "insert into users (device_id, username, email, password_salt, access_level, added) values (?, ?, ?, ?, ?, now())";
+	var params = [test_device_id, test_guest_username, test_guest_password, "guest", 5];
 	dbm.ParameterizedInsert(sql, params, function (user_id, err) {
 		test_guest_user_id = user_id;
 		callback();
@@ -3195,6 +3250,10 @@ function GetDBM() {
 	return dbm;
 }
 
+var test_device_uuid = "test_device_uuid";
+var test_device_uuid_hash = "35E0615A7FD1F919C779F70CB6B803ED";
+var test_device_id = -1;
+
 var test_admin_username = "testadmin";
 var test_admin_password = "admin";
 var test_admin_user_id = -1;
@@ -3213,18 +3272,18 @@ function Setup(callback) {
 
 	UTIL_CREATE_ADMIN_PRIVILEGE(dbm, function() {
 		UTIL_CREATE_GUEST_PRIVILEGE(dbm, function() {
-			UTIL_CREATE_ADMIN_USER(dbm, function() {
-				UTIL_CREATE_GUEST_USER(dbm, function() {
-					UTIL_CREATE_INITIAL_RELEASE_BUCKET(dbm, function() {
-						UTIL_CREATE_QUESTIONS(dbm, function() {
-							UTIL_CREATE_CHALLENGE_ATTEMPT(dbm, function() {
-								UTIL_CREATE_CHALLENGE_MODE_CONFIG_TIMER(dbm, function() {
-									UTIL_CREATE_COSMOS_LIVE_CONFIG_QUESTION_TIMER(dbm, function() {
-										UTIL_CREATE_COSMOS_LIVE_CONFIG_ROUND_TIMER(dbm, function() {
-											UTIL_CREATE_HEALTH_CHECK_KEY(dbm, function() {
-												UTIL_CREATE_ADMIN_AUTH_KEY(dbm, function() {
-													UTIL_CREATE_PING_THRESHOLD(dbm, function() {
-														UTIL_CREATE_CLOSED_COSMOS_LIVE_SESSION(dbm, function() {
+			UTIL_CREATE_DEVICE(dbm, function() {
+				UTIL_CREATE_ADMIN_USER(dbm, function() {
+					UTIL_CREATE_GUEST_USER(dbm, function() {
+						UTIL_CREATE_INITIAL_RELEASE_BUCKET(dbm, function() {
+							UTIL_CREATE_QUESTIONS(dbm, function() {
+								UTIL_CREATE_CHALLENGE_ATTEMPT(dbm, function() {
+									UTIL_CREATE_CHALLENGE_MODE_CONFIG_TIMER(dbm, function() {
+										UTIL_CREATE_COSMOS_LIVE_CONFIG_QUESTION_TIMER(dbm, function() {
+											UTIL_CREATE_COSMOS_LIVE_CONFIG_ROUND_TIMER(dbm, function() {
+												UTIL_CREATE_HEALTH_CHECK_KEY(dbm, function() {
+													UTIL_CREATE_ADMIN_AUTH_KEY(dbm, function() {
+														UTIL_CREATE_PING_THRESHOLD(dbm, function() {
 															dbm.Close();
 															callback();
 														});
@@ -3354,7 +3413,12 @@ function runTests() {
 	TestGuestAuthenticateNoParameters();
 	TestGuestAuthenticateMissingUsername();
 	TestGuestAuthenticateEmptyUsername();
-	TestGuestAuthenticateValidCreatesUser();
+	TestGuestAuthenticateValidCreatesUserNewDevice(test_device_uuid + "2", test_guest_username, test_guest_password);
+	TestGuestAuthenticateValidCreatesUserSameDevice(test_device_uuid + "2", test_guest_username + "2", test_guest_password);
+
+	//test create guest creates new device id
+	//test create guest creates with existing device id
+	//test user request responds with device id
 
 	/* NEW CHALLENGE */
 	TestNewChallengeReturnsRequest();
@@ -3426,7 +3490,8 @@ function runTests() {
 	TestGetMessagesNoParameters();
 
 	/* COSMOS LIVE */
-	TestCosmosLive(PrintResults);
+	//TestCosmosLive(PrintResults);
+	PrintResults();
 }
 
 Setup(runTests);

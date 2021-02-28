@@ -123,7 +123,7 @@ class QuestionManager {
 			return;
 		}
 
-		userManager.GetUserFromCredentials(req.query.username, req.query.password, function(user) {
+		userManager.GetUserFromCredentials(req.query.device_uuid, req.query.username, req.query.password, function(user) {
 			if (undefined == user) {
 				responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
 				res.json(responseBuilder.Response());
@@ -163,7 +163,7 @@ class QuestionManager {
 			return;
 		}
 
-		userManager.GetUserFromCredentials(req.query.username, req.query.password, function(user) {
+		userManager.GetUserFromCredentials(req.query.device_uuid, req.query.username, req.query.password, function(user) {
 			if (undefined == user) {
 				responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
 				res.json(responseBuilder.Response());

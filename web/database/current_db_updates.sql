@@ -26,3 +26,10 @@ alter table users
 alter table users
 	add constraint user_access_unique
 		unique (device_id, username, access_level);
+
+alter table devices
+	add added datetime not null;
+
+alter table users modify device_id int default 1 not null;
+
+alter table devices change device_hash device_uuid_hash varchar(40) not null;

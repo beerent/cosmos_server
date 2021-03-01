@@ -76,7 +76,7 @@
     echo "<tr><td><b>Message</b></td><td><b>Start</b></td><td><b>Expire</b></td></tr>";
     foreach ($messages as $message) {
       $messageElementId = "message_". $message->getId();
-      $singleQuoteEscapedMessageText = $stringUtils->EscapeSingleQuotes($singleQuoteEscapedMessageText);
+      $singleQuoteEscapedMessageText = $stringUtils->EscapeSingleQuotes($message->GetMessage());
 
       echo "<tr?>";
       echo '<td><input type="text" size="60" id="'.$messageElementId.'" value="'.htmlspecialchars($message->GetMessage()).'" maxlength="500" onchange="AddToMessageUpdateQueue(\''.$messageElementId.'\', \''.$message->getId().'\', \''.htmlspecialchars($singleQuoteEscapedMessageText).'\');"></td>';

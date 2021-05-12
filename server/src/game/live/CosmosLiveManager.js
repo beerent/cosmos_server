@@ -2,6 +2,7 @@ var ResponseBuilder = require("../../response/ResponseBuilder.js");
 var UserManager = require("../../user/UserManager.js");
 var QuestionManager = require("../../question/QuestionManager");
 var CosmosLiveSession = require("./CosmosLiveSession.js");
+var CosmosLiveRound = require("./CosmosLiveRound.js");
 var ConfigManager = require("../../config/ConfigManager.js");
 var CosmosLiveChatManager = require("./chat/CosmosLiveChatManager.js");
 
@@ -27,7 +28,7 @@ class CosmosLiveManager {
 		var payload = {
 			cosmos_live_session : null,
 			player : null,
-			question : null,
+			questions : null,
 			chat : null
 		};
 		
@@ -35,7 +36,6 @@ class CosmosLiveManager {
 			self.GetCurrentCosmosLiveSession(function(cosmosLiveSession) {
 				if (cosmosLiveSession == null) {
 					responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
-					console.log("a");
 					res.json(responseBuilder.Response());
 					res.end();
 					self.dbm.Close();
@@ -77,12 +77,14 @@ class CosmosLiveManager {
 
 									payload.player = player;
 
-									var questionIdsInRound = cosmosLiveSession.GetQuestionIdsForCurrentRound();
+									var roundQuestionIds = [];
+									var currentRound = cosmosLiveSession.GetCurrentRound();
+									if (currentRound != null) {
+										roundQuestionIds = currentRound.GetQuestionIds();
+									}
 
-									//var currentQuestionId = cosmosLiveSession.GetLatestQuestionId();
-									if (currentQuestionId == null) {
+									if (roundQuestionIds == null) {
 										responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
-										console.log("b");
 										res.json(responseBuilder.Response());
 										res.end();
 										self.dbm.Close();
@@ -90,8 +92,8 @@ class CosmosLiveManager {
 									}
 
 									var question_manager = new QuestionManager(self.dbm, self.errors, self.privileges);
-									question_manager.GetQuestionById(currentQuestionId, function(questions) {
-										payload.question = questions[0];
+									question_manager.GetQuestionsByIds(roundQuestionIds, function(questions) {
+										payload.questions = questions;
 
 										responseBuilder.SetPayload(payload);
 										res.json(responseBuilder.Response());
@@ -125,7 +127,6 @@ class CosmosLiveManager {
 			self.GetCurrentCosmosLiveSession(function(cosmos_live_session) {
 				if (!cosmos_live_session) {
 					responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
-					console.log("c");
 					res.json(responseBuilder.Response());
 					res.end();
 					self.dbm.Close();
@@ -147,16 +148,11 @@ class CosmosLiveManager {
 
 	GetPlayerCount(cosmosLiveSession, callback) {
 		var self = this;
-
 		var state = cosmosLiveSession.GetState();
 
-		var roundNumber = 0;		
-		var round = cosmosLiveSession.GetCurrentRound();
-		if (round != null) {
-			roundNumber = round.GetRound();
-		}
+		var roundNumber = cosmosLiveSession.GetCurrentRoundNumber();
 
-		if (state != "IN_GAME" || (state == "IN_GAME" && round == 1)) {
+		if (state != "IN_GAME" || (state == "IN_GAME" && roundNumber < 2)) {
 			self.GetPlayerCountFromPingTable(cosmosLiveSession, function(player_count) {
 				cosmosLiveSession.SetPlayerCount(player_count);
 				callback();
@@ -184,13 +180,13 @@ class CosmosLiveManager {
 		var configManager = new ConfigManager(this.dbm);
 
 		var start_time = cosmosLiveSession.GetStart();
-		var current_round = cosmosLiveSession.GetRound();
+		var current_round_number = cosmosLiveSession.GetCurrentRoundNumber();
 
 		configManager.GetConfigValue("live_mode_question_timer_length", function(question_timer_length) {
 			configManager.GetConfigValue("live_mode_round_timer_length", function(round_timer_length) {
 				self.GetCurrentDateTime(function(now_time) {
 					self.GetSecondsDifference(now_time, start_time, function(seconds_difference) {
-						var total_seconds = current_round * round_timer_length - seconds_difference;
+						var total_seconds = current_round_number * round_timer_length - seconds_difference;
 
 						var seconds_remaining = question_timer_length;
 						if (total_seconds <  seconds_remaining) {
@@ -245,34 +241,53 @@ class CosmosLiveManager {
 			var cosmosLiveSession = null;
 			if (results.length > 0) {
 				var row = results[0];
-				var rounds = [];
 
-				cosmosLiveSession = new CosmosLiveSession(row.id, row.state, row.start, row.seconds_to_start, rounds, row.added);
-				self.GetSessionRounds(cosmosLiveSession.GetId(), function(rounds) {
-					cosmosLiveSession.SetRounds(rounds);
+				self.GetSessionRounds(row.id, function(rounds) {
+					cosmosLiveSession = new CosmosLiveSession(row.id, row.state, row.start, row.seconds_to_start, rounds, row.added);
 					callback(cosmosLiveSession);
 				});
+			} else {
+				callback(null);
 			}
 		});
 	}
 
-		GetSessionRounds(session_id, callback) {
+	GetSessionRounds(session_id, callback) {
 		var self = this;
 
 		var sql = "select id, round, questions, added from cosmos_live_rounds where session_id = ?";
 		var params = [session_id];
 		this.dbm.ParameterizedQuery(sql, params, function(results, err) {
-			var rounds = [];
-
-			results.forEach(function(entry) {
-				round = new CosmosLiveRound(entry.id, entry.round, entry.questions, entry.added);
+			self.PopulateRoundsFromQueryRows(results, function(rounds) {
+				callback(rounds);
 			});
-
-			callback(rounds);
 		});
 	}
 
+	PopulateRoundsFromQueryRows(rows, callback) {
+		var rounds = [];
+
+		rows.forEach(function(row) {
+			var round = new CosmosLiveRound(row.id, row.round, row.questions, row.added);
+			rounds.push(round);
+		});
+
+	}
+
 	GetActivePlayersFromAnswersTable(cosmosLiveSession, callback) {
+		// active user:
+		// - if first round 
+		//   - all active
+		// - else
+		//
+
+
+
+
+
+
+
+
 		var sql = "select count(*) as player_count from (select count(*) as correct_count from cosmos_live_answers cla join cosmos_live_sessions cls on cla.session_id = cls.id join answers a on cla.answer_id = a.id where cls.id = ? and a.question_id != ? and correct = 1 group by user_id having correct_count = ?) as sub_query;";
 		var params = [cosmosLiveSession.GetId(), cosmosLiveSession.GetLatestQuestionId(), (cosmosLiveSession.GetRound() - 1)];
 		this.dbm.ParameterizedQuery(sql, params, function(results, err) {
@@ -321,7 +336,7 @@ class CosmosLiveManager {
 			if (incorrectAnswers > 0) {
 				isPlayerActive = false;
 			} else {
-				isPlayerActive = correctAnswers >= (cosmosLiveSession.GetRound() - 1);
+				isPlayerActive = correctAnswers >= (cosmosLiveSession.GetCurrentRoundNumber() - 1);
 			}
 
 			callback(isPlayerActive);
@@ -345,7 +360,6 @@ class CosmosLiveManager {
 			self.GetCurrentCosmosLiveSession(function(cosmosLiveSession) {
 				if (cosmosLiveSession == null || cosmosLiveSession.GetLatestQuestionId() == null) {
 					responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
-					console.log("d");
 					var response = responseBuilder.Response();
 					res.json(response);
 					res.end();
@@ -423,19 +437,25 @@ class CosmosLiveManager {
 	}
 
 	AdvanceSessionRound(cosmosLiveSession, callback) {
+		var questionsPerRound = 5;
 		var self = this;
-
 		var question_manager = new QuestionManager(this.dbm, this.errors, this.privileges);
-		callback();
 
-		//var asked_questions_ids = cosmosLiveSession.GetAskedQuestionsIds();
-		//question_manager.GetUnaskedQuestionIds(asked_questions_ids, 1, function(question_id) {
-		//	var sql = "update cosmos_live_sessions set asked_questions_ids = concat(asked_questions_ids, concat(', ', ?)) WHERE id = ?";
-		//	var params = [question_id, cosmosLiveSession.GetId()];
-		//	self.dbm.ParameterizedInsert(sql, params, function(results, err) {
-		//		callback();
-		//	});
-		//});
+		var asked_questions_ids = cosmosLiveSession.GetAskedQuestionsIds();		
+		question_manager.GetUnaskedQuestionIds(asked_questions_ids, questionsPerRound, function(question_ids) {
+			self.CreateNewRound(cosmosLiveSession, question_ids, callback);
+		});
+	}
+
+	CreateNewRound(cosmosLiveSession, question_ids, callback) {
+		var roundNumber = cosmosLiveSession.GetCurrentRoundNumber() + 1;
+
+		var sql = "insert into cosmos_live_rounds (session_id, round, questions, added) values (?, ?, ?, now())";
+		var params = [cosmosLiveSession.GetId(), roundNumber, question_ids.join(", ")];
+		this.dbm.ParameterizedInsert(sql, params, function(results, err) {
+			callback();
+		});
+
 	}
 
 	HandleLiveAdminRequest(req, res, responseBuilder) {
@@ -456,7 +476,6 @@ class CosmosLiveManager {
 //				if (cosmosLiveSession == null || cosmosLiveSession.GetLatestQuestionId() == null) {
 				if (cosmosLiveSession == null) {
 					responseBuilder.SetError(self.errors.INVALID_COSMOS_LIVE_SESSION);
-					console.log("e");
 					var response = responseBuilder.Response();
 					res.json(response);
 					res.end();

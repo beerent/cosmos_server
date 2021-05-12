@@ -40,10 +40,19 @@ class CosmosLiveSession {
 
 	GetCurrentRound() {
 		if (this.rounds.length > 0) {
-			return this.rounds[rounds.length - 1];
+			return this.rounds[this.rounds.length - 1];
 		}
 
 		return null;
+	}
+
+	GetCurrentRoundNumber() {
+		var currentRound = this.GetCurrentRound();
+		if (currentRound != null) {
+			return currentRound.GetRound();
+		}
+
+		return 0;
 	}
 
 	SetRoundSecondsRemaining(round_seconds_remaining) {
@@ -52,6 +61,20 @@ class CosmosLiveSession {
 
 	GetRoundSecondsRemaining() {
 		return this.round_seconds_remaining;
+	}
+
+	GetAskedQuestionsIds() {
+		var questionIds = [];
+
+		for (var i = 0; i < this.rounds.length; i++) {
+			var round = this.rounds[i];
+			
+			var questions = round.GetQuestionIds();
+			questionIds.push.apply(questionIds, questions);
+
+		}
+
+		return questionIds;
 	}
 
 	SetPlayerCount(player_count) {

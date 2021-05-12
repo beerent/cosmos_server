@@ -155,11 +155,6 @@ class ChallengeManager {
 			}
 
 			question_manager.GetUnaskedQuestionIds(question_skip_list_str, 10, function (ids_list){
-				var ids_list_str = "" + ids_list[0];
-				for (var i = 1; i < ids_list.length; i++) {
-					ids_list_str += ", " + ids_list[i];
-				}
-
 				question_manager.GetQuestionsByIds(ids_list, callback);
 			});
 		});

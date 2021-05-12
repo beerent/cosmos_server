@@ -18,6 +18,17 @@ class CosmosLiveRound {
 		return this.questions;
 	}
 
+	GetQuestionIds() {
+		var questionIds = [];
+		
+		for (var i = 0; i < this.questions.length; i++) {
+			console.log(this.questions[i]);
+			questionIds.push(this.questions[i].GetId());
+		}
+
+		return questionIds;
+	}
+
 	GetAdded() {
 		return this.added;
 	}

@@ -2889,7 +2889,7 @@ function TestCosmosLiveAdminTransitionToClosedState() {
 		functionName += failures;
 		failedTests += functionName;
 		testsFailedCount++;
-	}	
+	}
 }
 
 function TestCosmosLiveAdminTransitionToPreGameLobbyState() {
@@ -2995,6 +2995,7 @@ function TestCosmosLiveAdminAdvanceRound() {
 	var url = server + "/" + requestString;
 	url += "?device_uuid="+ test_device_uuid +"&username="+ test_guest_username +"&password=" + test_guest_password;
 	var response = GetHTTPResponse(url);
+	console.log(response);
 	roundBefore = response.payload.cosmos_live_session.round;
 
 
@@ -3284,8 +3285,10 @@ function Setup(callback) {
 												UTIL_CREATE_HEALTH_CHECK_KEY(dbm, function() {
 													UTIL_CREATE_ADMIN_AUTH_KEY(dbm, function() {
 														UTIL_CREATE_PING_THRESHOLD(dbm, function() {
-															dbm.Close();
-															callback();
+															UTIL_CREATE_CLOSED_COSMOS_LIVE_SESSION(dbm, function() {
+																dbm.Close();
+																callback();
+															});
 														});
 													});
 												});
@@ -3327,8 +3330,8 @@ function TestCosmosLive(callback) {
 
 	//simulate canadaarm3 move to in game
 	TestCosmosLiveAdminTransitionToInGameState();
-	TestCosmosLiveInGameReturnsCorrectData();
-	//TestCosmosLiveAdminAdvanceRound();
+	TestCosmosLiveAdminAdvanceRound();
+	//TestCosmosLiveInGameReturnsCorrectData();
 	//TestCosmosLiveInGameReturnsCorrectData();
 	//TestCosmosLiveInGameReturnsPlayerTypePlayer(test_guest_username, test_guest_password);
 
@@ -3490,8 +3493,7 @@ function runTests() {
 	TestGetMessagesNoParameters();
 
 	/* COSMOS LIVE */
-	//TestCosmosLive(PrintResults);
-	PrintResults();
+	TestCosmosLive(PrintResults);
 }
 
 Setup(runTests);

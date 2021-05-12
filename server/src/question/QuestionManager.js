@@ -79,6 +79,18 @@ class QuestionManager {
 	}
 
 	GetQuestionsByIds(ids_list, callback) {
+
+		var ids_list_str = "-1";
+
+		for (var i = 0; i < ids_list.length; i++) {
+			ids_list_str += ", " + ids_list[i];
+		}
+
+		this.GetQuestionsByCommaSeparatedIds(ids_list_str, callback);
+	}
+
+	GetQuestionsByCommaSeparatedIds(ids_list, callback) {
+
 		var self = this;
 
 		var sql = "SELECT questions.id as qid, questions.question, answers.id as aid, answers.answer, answers.correct FROM questions join answers on questions.id = answers.question_id where questions.enabled = 1 and question_id in ("+ ids_list +");";

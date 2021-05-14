@@ -86,7 +86,7 @@
           }
 
           $app_version = $config_data_manager->GetConfigValue('ios_app_version');
-          echo "<span class=\"badge badge-dark\">version</span><span class=\"badge badge-info\">$app_version</span>";
+          echo " <span class=\"badge badge-dark\">version</span><span class=\"badge badge-info\">$app_version</span>";
 
           echo "</center>";
           echo "<br>";
@@ -113,7 +113,9 @@
 
           echo "<center>";
           echo "<div>";
+          echo "<br>";
           echo "Live Leaderboard";
+          echo "<hr>";
           echo "<table style=\"width: auto;\" class=\"table table-bordered table-sm\">";
           echo "<thead>";
           echo "<tr>";
@@ -134,11 +136,105 @@
           }
           echo "</tbody>";
           echo "</table>";
+          echo "<hr>";
           echo "</div>";
           echo "</center>";
         }
 
         DisplayLeaderboard();
+      ?>
+
+      <?php
+        $include = $_SERVER['DOCUMENT_ROOT']; $include .= "/live/challenge/ChallengeManager.php"; include_once ($include);
+
+        $challenge_manager = new ChallengeManager();
+
+        function DisplayUsageStats() {
+          global $challenge_manager;
+
+          $leaderboard = $challenge_manager->GetLeaderboard();
+          $totalUsers = $challenge_manager->GetTotalUsers();
+          $totalAttempts = $challenge_manager->GetTotalAttempts();
+          $mostDedicated = $challenge_manager->GetMostUserAttempts()[0];
+          $biggestFan = $challenge_manager->GetBiggestFan()[0];
+          $totalCorrectAnswers = $challenge_manager->GetTotalCorrectAnswers();
+          $totalWrongAnswers = $challenge_manager->GetTotalWrongAnswers();
+          $totalChatsSent = $challenge_manager->GetTotalChatsSent();
+          $chatCounts = $challenge_manager->GetChatCounts();
+          $recentChatters = $challenge_manager->GetMostRecentChatVisitor();
+
+          echo "<center>";
+          echo "<div>";
+          echo "<br>";
+          echo "App Usage";
+          echo "<hr>";
+          echo "<table style=\"width: auto;\" class=\"table table-bordered table-sm\">";
+          echo "<tbody>";
+
+          echo "<tr>";
+          echo "<td><font size='2'>Total Users</font></td>";
+          echo "<td><center><font size='2'>" . $totalUsers . "</font></center></td>";
+          echo "</tr>";
+
+          echo "<tr>";
+          echo "<td><font size='2'>Total Games Plays</font></td>";
+          echo "<td><center><font size='2'>" . $totalAttempts . "</font></center></td>";
+          echo "</tr>";
+
+          echo "<tr>";
+          echo "<td><font size='2'>Total Chats Sent</font></td>";
+          echo "<td><center><font size='2'>". $totalChatsSent ."</font></center></td>";
+          echo "</tr>";
+
+          echo "<tr>";
+          echo "<td><font size='2'>Total Times Correct</font></td>";
+          echo "<td><center><font size='2'>" . $totalCorrectAnswers . "</font></center></td>";
+          echo "</tr>";
+
+          echo "<tr>";
+          echo "<td><font size='2'>Total Times Incorrect</font></td>";
+          echo "<td><center><font size='2'>" . $totalWrongAnswers . "</font></center></td>";
+          echo "</tr>";
+
+          echo "<tr>";
+          echo "<td><font size='2'>Correct Answer Average</font></td>";
+          echo "<td><center><font size='2'>" . round($totalWrongAnswers / $totalCorrectAnswers, 5) * 100 . "%</font></center></td>";
+          echo "</tr>";
+
+          echo "</tbody>";
+          echo "</table>";
+
+          echo "<table style=\"width: auto;\" class=\"table table-bordered table-sm\">";
+          echo "<tbody>";
+
+          echo "<tr>";
+          echo "<td><font size='2'>Most Dedicated User</font></td>";
+          echo "<td><center><font size='2'>" . $mostDedicated->GetUsername() . " (" . $mostDedicated->GetAttempts() . " plays) </font></center></td>";
+          echo "</tr>";
+
+          echo "<tr>";
+          echo "<td><font size='2'>Most Frequent User</font></td>";
+          echo "<td><center><font size='2'>" . $biggestFan->GetUsername() . " (" . $biggestFan->GetAttempts() . " days) </font></center></td>";
+          echo "</tr>";
+
+          echo "<tr>";
+          echo "<td><font size='2'>Most Active Chatter</font></td>";
+          echo "<td><center><font size='2'>". $chatCounts[0]->GetUsername() ." (". $chatCounts[0]->GetAttempts() ." chats)</font></center></td>";
+          echo "</tr>";
+
+          echo "<tr>";
+          echo "<td><font size='2'>Most Recent Chat Visitor</font></td>";
+          echo "<td><center><font size='2'>". $recentChatters[0]->GetUsername() ." (". $recentChatters[0]->GetAttempts() ." minutes ago)</font></center></td>";
+          echo "</tr>";
+
+          echo "</tbody>";
+          echo "</table>";
+          echo "<hr>";
+          echo "</div>";
+          echo "</center>";
+        }
+
+        DisplayUsageStats();
       ?>
 
       <?php
@@ -184,9 +280,7 @@
       ?>
       <div>
       <center>
-        <a href="https://trello.com/b/fpAUlCsp/know-your-cosmos">Trello</a><br>
-        <a href="https://github.com/beerent/cosmos_server">Server Github</a><br>
-        <a href="https://github.com/beerent/cosmos_client">Client Github</a>
+        <a href="https://github.com/beerent/cosmos_server">Server Github</a> · <a href="https://github.com/beerent/cosmos_client">Client Github</a>
       </center>
       </div>
     </div>

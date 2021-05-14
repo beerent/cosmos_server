@@ -44,6 +44,18 @@
 			return $leaderboard;
 		}
 
+		function GetTotalUsers() {
+			$sql = "select count(*) as count from users;";
+
+			$results = $this->dbm->query($sql);
+
+			if($row = $results->fetch_assoc()){
+				return $row['count'];
+			}
+
+			return "0";
+		}
+
 		function GetTotalAttempts() {
 			$sql = "select count(*) as count from challenge_attempts;";
 
@@ -56,13 +68,48 @@
 			return "0";
 		}
 
+		function GetTotalChatsSent() {
+			$sql = "select count(*) as count from cosmos_live_chat;";
+
+			$results = $this->dbm->query($sql);
+
+			if($row = $results->fetch_assoc()){
+				return $row['count'];
+			}
+
+			return "0";
+		}
+
+		function GetTotalCorrectAnswers() {
+			$sql = "select count(*) as count from challenge_answers join answers a on challenge_answers.answer_id = a.id where correct = 1;";
+
+			$results = $this->dbm->query($sql);
+
+			if($row = $results->fetch_assoc()){
+				return $row['count'];
+			}
+
+			return "0";
+		}
+
+		function GetTotalWrongAnswers() {
+			$sql = "select count(*) as count from challenge_answers join answers a on challenge_answers.answer_id = a.id where correct = 0;";
+
+			$results = $this->dbm->query($sql);
+
+			if($row = $results->fetch_assoc()){
+				return $row['count'];
+			}
+
+			return "0";
+		}
+
 		function GetRecentAttempts() {
-			$sql = "select users.username, challenge_answers.attempt_id, count(challenge_answers.id) as points, date(challenge_attempts.added) as date from challenge_answers";
+			$sql = "select users.username, challenge_answers.attempt_id, count(challenge_answers.id) - 1 as points, date(challenge_attempts.added) as date from challenge_answers";
 			$sql .= " join answers on challenge_answers.answer_id = answers.id";
 			$sql .= " join challenge_attempts on challenge_answers.attempt_id = challenge_attempts.id";
 			$sql .= " join users on challenge_attempts.user_id = users.id";
 			$sql .= " where date(challenge_attempts.added) > CURDATE() - 6";
-			$sql .= " and correct = 1";
 			$sql .= " group by challenge_attempts.id order by challenge_attempts.id desc;";
 
 			$results = $this->dbm->query($sql);
@@ -78,7 +125,7 @@
 		}
 
 		function GetPlayCount($daysBack) {
-			$sql = "select count(*) as count from challenge_attempts where added > CURDATE() - $daysBack;";
+			$sql = "select count(*) as count from challenge_attempts where added > CURDATE() - INTERVAL $daysBack DAY;";
 			$results = $this->dbm->query($sql);
 
 			if ($row = $results->fetch_assoc()) {
@@ -151,6 +198,58 @@
 			}
 
 			return $attempts;
+		}
+
+		function GetBiggestFan() {
+			$sql = "select username, count(added) count from (select distinct username, date(challenge_attempts.added) added from challenge_attempts join users u on challenge_attempts.user_id = u.id)c where username not in ('beerent', 'Cosmic_Bob') group by username order by count desc;";
+			$results = $this->dbm->query($sql);
+			
+			$attempts = array();
+			while($row = $results->fetch_assoc()){
+				$entry = new ChallengeUserAttempts($row['username'], $row['count']);
+				array_push($attempts, $entry);
+			}
+
+			return $attempts;			
+		}
+
+		function GetChatCounts() {
+			$sql = "select username, count(*) as count from cosmos_live_chat join users u on cosmos_live_chat.user_id = u.id group by user_id order by count desc;";
+			$results = $this->dbm->query($sql);
+			
+			$attempts = array();
+			while($row = $results->fetch_assoc()){
+				$entry = new ChallengeUserAttempts($row['username'], $row['count']);
+				array_push($attempts, $entry);
+			}
+
+			return $attempts;			
+		}
+
+		function GetMostRecentChatter() {
+			$sql = "select username, count(*) as count from cosmos_live_chat join users u on cosmos_live_chat.user_id = u.id group by user_id order by count desc;";
+			$results = $this->dbm->query($sql);
+			
+			$attempts = array();
+			while($row = $results->fetch_assoc()){
+				$entry = new ChallengeUserAttempts($row['username'], $row['count']);
+				array_push($attempts, $entry);
+			}
+
+			return $attempts;			
+		}
+
+		function GetMostRecentChatVisitor() {
+			$sql = "select username, round(TIME_TO_SEC(TIMEDIFF(UTC_TIMESTAMP, ping))/60) minutes from cosmos_live_ping join users u on cosmos_live_ping.user_id = u.id order by ping desc;";
+			$results = $this->dbm->query($sql);
+			
+			$attempts = array();
+			while($row = $results->fetch_assoc()){
+				$entry = new ChallengeUserAttempts($row['username'], $row['minutes']);
+				array_push($attempts, $entry);
+			}
+
+			return $attempts;			
 		}
 
 		function GetNewUsers() {

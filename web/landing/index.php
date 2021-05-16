@@ -222,7 +222,7 @@
 
           echo "<tr>";
           echo "<td><font size='2'>Most Recent Player</font></td>";
-          echo "<td><font size='2'>" . $recentAttempts->GetUsername() . " (" . number_format($recentAttempts->GetAttempts()) . " minutes) </font></td>";
+          echo "<td><font size='2'>" . $recentAttempts->GetUsername() . " (" . number_format($recentAttempts->GetAttempts()) . " minutes ago) </font></td>";
           echo "</tr>";
 
           echo "</tbody>";

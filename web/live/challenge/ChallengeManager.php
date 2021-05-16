@@ -188,7 +188,7 @@
 		}
 
 		function GetMostUserAttempts() {
-			$sql = "select distinct username, count(*) as attempts from challenge_attempts join users u on challenge_attempts.user_id = u.id group by username order by attempts desc;";
+			$sql = "select distinct username, count(*) as attempts from challenge_attempts join users u on challenge_attempts.user_id = u.id group by username order by attempts desc limit 1;";
 			$results = $this->dbm->query($sql);
 			
 			$attempts = array();
@@ -201,12 +201,25 @@
 		}
 
 		function GetBiggestFan() {
-			$sql = "select username, count(added) count from (select distinct username, date(challenge_attempts.added) added from challenge_attempts join users u on challenge_attempts.user_id = u.id)c where username not in ('beerent', 'Cosmic_Bob') group by username order by count desc;";
+			$sql = "select username, count(added) count from (select distinct username, date(challenge_attempts.added) added from challenge_attempts join users u on challenge_attempts.user_id = u.id)c where username not in ('beerent', 'Cosmic_Bob') group by username order by count desc limit 1;";
 			$results = $this->dbm->query($sql);
 			
 			$attempts = array();
 			while($row = $results->fetch_assoc()){
 				$entry = new ChallengeUserAttempts($row['username'], $row['count']);
+				array_push($attempts, $entry);
+			}
+
+			return $attempts;			
+		}
+
+		function GetRecentUser() {
+			$sql = "select username, round(time_to_sec(timediff(utc_timestamp(), challenge_attempts.added))/60) as minutes from challenge_attempts join users u on challenge_attempts.user_id = u.id order by challenge_attempts.added desc limit 1;";
+			$results = $this->dbm->query($sql);
+			
+			$attempts = array();
+			while($row = $results->fetch_assoc()){
+				$entry = new ChallengeUserAttempts($row['username'], $row['minutes']);
 				array_push($attempts, $entry);
 			}
 
@@ -240,7 +253,7 @@
 		}
 
 		function GetMostRecentChatVisitor() {
-			$sql = "select username, round(TIME_TO_SEC(TIMEDIFF(UTC_TIMESTAMP, ping))/60) minutes from cosmos_live_ping join users u on cosmos_live_ping.user_id = u.id order by ping desc;";
+			$sql = "select username, round(TIME_TO_SEC(TIMEDIFF(UTC_TIMESTAMP, ping))/60) minutes from cosmos_live_ping join users u on cosmos_live_ping.user_id = u.id order by ping desc limit 1;";
 			$results = $this->dbm->query($sql);
 			
 			$attempts = array();

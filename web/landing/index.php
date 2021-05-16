@@ -157,6 +157,7 @@
           $totalAttempts = $challenge_manager->GetTotalAttempts();
           $mostDedicated = $challenge_manager->GetMostUserAttempts()[0];
           $biggestFan = $challenge_manager->GetBiggestFan()[0];
+          $recentAttempts = $challenge_manager->GetRecentUser()[0];
           $totalCorrectAnswers = $challenge_manager->GetTotalCorrectAnswers();
           $totalWrongAnswers = $challenge_manager->GetTotalWrongAnswers();
           $totalChatsSent = $challenge_manager->GetTotalChatsSent();
@@ -208,23 +209,28 @@
           echo "<tbody>";
 
           echo "<tr>";
-          echo "<td><font size='2'>Most Dedicated User</font></td>";
-          echo "<td><center><font size='2'>" . $mostDedicated->GetUsername() . " (" . $mostDedicated->GetAttempts() . " plays) </font></center></td>";
+          echo "<td><font size='2'>Most Dedicated Player</font></td>";
+          echo "<td><font size='2'>" . $mostDedicated->GetUsername() . " (" . $mostDedicated->GetAttempts() . " plays) </font></td>";
           echo "</tr>";
 
           echo "<tr>";
-          echo "<td><font size='2'>Most Frequent User</font></td>";
-          echo "<td><center><font size='2'>" . $biggestFan->GetUsername() . " (" . $biggestFan->GetAttempts() . " days) </font></center></td>";
+          echo "<td><font size='2'>Most Frequent Player</font></td>";
+          echo "<td><font size='2'>" . $biggestFan->GetUsername() . " (" . $biggestFan->GetAttempts() . " days) </font></td>";
+          echo "</tr>";
+
+          echo "<tr>";
+          echo "<td><font size='2'>Most Recent Player</font></td>";
+          echo "<td><font size='2'>" . $recentAttempts->GetUsername() . " (" . $recentAttempts->GetAttempts() . " minutes) </font></td>";
           echo "</tr>";
 
           echo "<tr>";
           echo "<td><font size='2'>Most Active Chatter</font></td>";
-          echo "<td><center><font size='2'>". $chatCounts[0]->GetUsername() ." (". $chatCounts[0]->GetAttempts() ." chats)</font></center></td>";
+          echo "<td><font size='2'>". $chatCounts[0]->GetUsername() ." (". $chatCounts[0]->GetAttempts() ." chats)</font></td>";
           echo "</tr>";
 
           echo "<tr>";
           echo "<td><font size='2'>Most Recent Chat Visitor</font></td>";
-          echo "<td><center><font size='2'>". $recentChatters[0]->GetUsername() ." (". $recentChatters[0]->GetAttempts() ." minutes ago)</font></center></td>";
+          echo "<td><font size='2'>". $recentChatters[0]->GetUsername() ." (". $recentChatters[0]->GetAttempts() ." minutes ago)</font></td>";
           echo "</tr>";
 
           echo "</tbody>";

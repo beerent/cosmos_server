@@ -114,7 +114,7 @@
           echo "<center>";
           echo "<div>";
           echo "<br>";
-          echo "Live Leaderboard";
+          echo "Cosmos Quiz Leaderboard";
           echo "<hr>";
           echo "<table style=\"width: auto;\" class=\"table table-bordered table-sm\">";
           echo "<thead>";

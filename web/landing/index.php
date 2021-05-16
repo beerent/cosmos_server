@@ -176,27 +176,27 @@
 
           echo "<tr>";
           echo "<td><font size='2'>Total Users</font></td>";
-          echo "<td><center><font size='2'>" . $totalUsers . "</font></center></td>";
+          echo "<td><center><font size='2'>" . number_format($totalUsers) . "</font></center></td>";
           echo "</tr>";
 
           echo "<tr>";
           echo "<td><font size='2'>Total Games Plays</font></td>";
-          echo "<td><center><font size='2'>" . $totalAttempts . "</font></center></td>";
+          echo "<td><center><font size='2'>" . number_format($totalAttempts) . "</font></center></td>";
           echo "</tr>";
 
           echo "<tr>";
           echo "<td><font size='2'>Total Chats Sent</font></td>";
-          echo "<td><center><font size='2'>". $totalChatsSent ."</font></center></td>";
+          echo "<td><center><font size='2'>". number_format($totalChatsSent) ."</font></center></td>";
           echo "</tr>";
 
           echo "<tr>";
           echo "<td><font size='2'>Total Times Correct</font></td>";
-          echo "<td><center><font size='2'>" . $totalCorrectAnswers . "</font></center></td>";
+          echo "<td><center><font size='2'>" . number_format($totalCorrectAnswers) . "</font></center></td>";
           echo "</tr>";
 
           echo "<tr>";
           echo "<td><font size='2'>Total Times Incorrect</font></td>";
-          echo "<td><center><font size='2'>" . $totalWrongAnswers . "</font></center></td>";
+          echo "<td><center><font size='2'>" . number_format($totalWrongAnswers) . "</font></center></td>";
           echo "</tr>";
 
           echo "<tr>";
@@ -212,17 +212,17 @@
 
           echo "<tr>";
           echo "<td><font size='2'>Most Dedicated Player</font></td>";
-          echo "<td><font size='2'>" . $mostDedicated->GetUsername() . " (" . $mostDedicated->GetAttempts() . " plays) </font></td>";
+          echo "<td><font size='2'>" . $mostDedicated->GetUsername() . " (" . number_format($mostDedicated->GetAttempts()) . " plays) </font></td>";
           echo "</tr>";
 
           echo "<tr>";
           echo "<td><font size='2'>Most Frequent Player</font></td>";
-          echo "<td><font size='2'>" . $biggestFan->GetUsername() . " (" . $biggestFan->GetAttempts() . " days) </font></td>";
+          echo "<td><font size='2'>" . $biggestFan->GetUsername() . " (" . number_format($biggestFan->GetAttempts()) . " days) </font></td>";
           echo "</tr>";
 
           echo "<tr>";
           echo "<td><font size='2'>Most Recent Player</font></td>";
-          echo "<td><font size='2'>" . $recentAttempts->GetUsername() . " (" . $recentAttempts->GetAttempts() . " minutes) </font></td>";
+          echo "<td><font size='2'>" . $recentAttempts->GetUsername() . " (" . number_format($recentAttempts->GetAttempts()) . " minutes) </font></td>";
           echo "</tr>";
 
           echo "</tbody>";
@@ -233,17 +233,17 @@
 
           echo "<tr>";
           echo "<td><font size='2'>Most Active Chatter</font></td>";
-          echo "<td><font size='2'>". $chatCounts[0]->GetUsername() ." (". $chatCounts[0]->GetAttempts() ." chats)</font></td>";
+          echo "<td><font size='2'>". $chatCounts[0]->GetUsername() ." (". number_format($chatCounts[0]->GetAttempts()) ." chats)</font></td>";
           echo "</tr>";
 
           echo "<tr>";
           echo "<td><font size='2'>Most Recent Chatter </font></td>";
-          echo "<td><font size='2'>". $recentChatter[0]->GetUsername() ." (". $recentChatter[0]->GetAttempts() ." minutes ago)</font></td>";
+          echo "<td><font size='2'>". $recentChatter[0]->GetUsername() ." (". number_format($recentChatter[0]->GetAttempts()) ." minutes ago)</font></td>";
           echo "</tr>";
 
           echo "<tr>";
           echo "<td><font size='2'>Most Recent Chat Visitor</font></td>";
-          echo "<td><font size='2'>". $recentChatVisitor[0]->GetUsername() ." (". $recentChatVisitor[0]->GetAttempts() ." minutes ago)</font></td>";
+          echo "<td><font size='2'>". $recentChatVisitor[0]->GetUsername() ." (". number_format($recentChatVisitor[0]->GetAttempts()) ." minutes ago)</font></td>";
           echo "</tr>";
 
           echo "</tbody>";

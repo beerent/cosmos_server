@@ -170,6 +170,7 @@
           echo "<br>";
           echo "App Usage";
           echo "<hr>";
+          echo "<center><font size='2'>Statistics</font></center>";
           echo "<table style=\"width: auto;\" class=\"table table-bordered table-sm\">";
           echo "<tbody>";
 
@@ -205,8 +206,8 @@
 
           echo "</tbody>";
           echo "</table>";
-
           echo "<table style=\"width: auto;\" class=\"table table-bordered table-sm\">";
+          echo "<center><font size='2'>Cosmos Quiz Usage</font></center>";
           echo "<tbody>";
 
           echo "<tr>";
@@ -223,6 +224,12 @@
           echo "<td><font size='2'>Most Recent Player</font></td>";
           echo "<td><font size='2'>" . $recentAttempts->GetUsername() . " (" . $recentAttempts->GetAttempts() . " minutes) </font></td>";
           echo "</tr>";
+
+          echo "</tbody>";
+          echo "</table>";
+          echo "<table style=\"width: auto;\" class=\"table table-bordered table-sm\">";
+          echo "<center><font size='2'>Cosmic Chat Usage</font></center>";
+          echo "<tbody>";
 
           echo "<tr>";
           echo "<td><font size='2'>Most Active Chatter</font></td>";

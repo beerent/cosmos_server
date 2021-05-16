@@ -240,12 +240,12 @@
 		}
 
 		function GetMostRecentChatter() {
-			$sql = "select username, count(*) as count from cosmos_live_chat join users u on cosmos_live_chat.user_id = u.id group by user_id order by count desc;";
+			$sql = "select username, round(TIME_TO_SEC(TIMEDIFF(UTC_TIMESTAMP, cosmos_live_chat.added))/60) minutes from cosmos_live_chat join users u on cosmos_live_chat.user_id = u.id order by cosmos_live_chat.added desc limit 1;";
 			$results = $this->dbm->query($sql);
 			
 			$attempts = array();
 			while($row = $results->fetch_assoc()){
-				$entry = new ChallengeUserAttempts($row['username'], $row['count']);
+				$entry = new ChallengeUserAttempts($row['username'], $row['minutes']);
 				array_push($attempts, $entry);
 			}
 

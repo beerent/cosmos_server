@@ -162,7 +162,8 @@
           $totalWrongAnswers = $challenge_manager->GetTotalWrongAnswers();
           $totalChatsSent = $challenge_manager->GetTotalChatsSent();
           $chatCounts = $challenge_manager->GetChatCounts();
-          $recentChatters = $challenge_manager->GetMostRecentChatVisitor();
+          $recentChatter = $challenge_manager->GetMostRecentChatter();
+          $recentChatVisitor = $challenge_manager->GetMostRecentChatVisitor();
 
           echo "<center>";
           echo "<div>";
@@ -229,8 +230,13 @@
           echo "</tr>";
 
           echo "<tr>";
+          echo "<td><font size='2'>Most Recent Chatter </font></td>";
+          echo "<td><font size='2'>". $recentChatter[0]->GetUsername() ." (". $recentChatter[0]->GetAttempts() ." minutes ago)</font></td>";
+          echo "</tr>";
+
+          echo "<tr>";
           echo "<td><font size='2'>Most Recent Chat Visitor</font></td>";
-          echo "<td><font size='2'>". $recentChatters[0]->GetUsername() ." (". $recentChatters[0]->GetAttempts() ." minutes ago)</font></td>";
+          echo "<td><font size='2'>". $recentChatVisitor[0]->GetUsername() ." (". $recentChatVisitor[0]->GetAttempts() ." minutes ago)</font></td>";
           echo "</tr>";
 
           echo "</tbody>";

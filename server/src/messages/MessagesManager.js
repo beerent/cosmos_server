@@ -24,6 +24,7 @@ class MessagesManager {
 		var currentDate = this.GetCurrentDate();
 		self.GetMessages(function (messages) {
 			messages = messages.filter(message => self.MessageIsActive(message, currentDate));
+			messages = self.shuffle(messages);
 
 			var messagesObj = {};
 			messagesObj.messages = messages;
@@ -37,6 +38,24 @@ class MessagesManager {
 		var expireDate = new Date(message.expire);
 
 		return currentDate >= startDate && currentDate <= expireDate;
+	}
+
+	shuffle(array) {
+	  var currentIndex = array.length,  randomIndex;
+
+	  // While there remain elements to shuffle...
+	  while (0 !== currentIndex) {
+
+	    // Pick a remaining element...
+	    randomIndex = Math.floor(Math.random() * currentIndex);
+	    currentIndex--;
+
+	    // And swap it with the current element.
+	    [array[currentIndex], array[randomIndex]] = [
+	      array[randomIndex], array[currentIndex]];
+	  }
+
+	  return array;
 	}
 
 	GetCurrentDate() {

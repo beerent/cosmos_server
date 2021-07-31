@@ -16,6 +16,24 @@
 
       gtag('config', 'G-E9RX775H6Y');
     </script>
+    <script type="text/javascript">
+      function lookupLeaderboardPosition(targetUsername, leaderboard) {
+        var count = 0;
+        for (const leaderboardEntry of leaderboard) {
+          count++;
+          if (leaderboardEntry.username == targetUsername) {
+            document.getElementById("custom_username_rank").innerText = count;
+            document.getElementById("custom_username_points").innerText = (leaderboardEntry.points * 10);
+            document.getElementById("custom_username_name").style.color = "green";
+            break;
+          } else {
+            document.getElementById("custom_username_rank").innerText = "";
+            document.getElementById("custom_username_points").innerText = "";
+            document.getElementById("custom_username_name").style.color = "red";
+          }
+        }
+      }
+    </script>
     
     <style>
       body { 
@@ -109,7 +127,8 @@
         function DisplayLeaderboard() {
           global $challenge_manager;
 
-          $leaderboard = $challenge_manager->GetLeaderboard();
+          $leaderboard = $challenge_manager->GetFullLeaderboard();
+          $leaderboardAsJson = json_encode($leaderboard);
 
           echo "<center>";
           echo "<div>";
@@ -133,7 +152,17 @@
             echo "<td><font size='2'>" . $entry->GetUsername() . "</font></td>";
             echo "<td><center><font size='2'>" . $entry->GetPoints() * 10 . "</font></center></td>";
             echo "</tr>";
+            if ($count == 11) {
+              break;
+            }
           }
+
+          echo "<tr>";
+          echo "<td><center><font id=\"custom_username_rank\" size='2'>?</font></center></td>";
+          echo '<td><font size="2"><input id="custom_username_name" type=\'text\' placeholder=\'search username...\' oninput=\'lookupLeaderboardPosition(this.value, '. $leaderboardAsJson .')\'></font></td>';
+          echo "<td><center><font id=\"custom_username_points\" size='2'>?</font></center></td>";
+          echo "</tr>";
+
           echo "</tbody>";
           echo "</table>";
           echo "<hr>";

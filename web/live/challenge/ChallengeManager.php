@@ -44,6 +44,26 @@
 			return $leaderboard;
 		}
 
+		function GetFullLeaderboard() {
+			$sql = "select users.username, challenge_answers.attempt_id as attempt_id, count(challenge_answers.id) as points, date(challenge_attempts.added) as date from challenge_answers";
+			$sql .= " join answers on challenge_answers.answer_id = answers.id";
+			$sql .= " join challenge_attempts on challenge_answers.attempt_id = challenge_attempts.id and date(challenge_attempts.added) > date((select value from config where `key` = 'challenge_mode_leaderboard_cutoff_date'))";
+			$sql .= " join users on challenge_attempts.user_id = users.id";
+			$sql .= " where answers.correct = 1";
+			$sql .= " group by challenge_attempts.id order by points desc, challenge_attempts.id;";
+
+			$results = $this->dbm->query($sql);
+
+			$leaderboard = array();
+			while($row = $results->fetch_assoc()){
+				$seconds_per_question = $this->GetSecondsPerQuestion($row['attempt_id']);
+				$entry = new ChallengeLeaderboardEntry($row['username'], $row['points'], $seconds_per_question, $row['date']);
+				array_push($leaderboard, $entry);
+			}
+
+			return $leaderboard;
+		}
+
 		function GetTotalUsers() {
 			$sql = "select count(*) as count from users;";
 

@@ -158,9 +158,9 @@
           }
 
           echo "<tr>";
-          echo "<td><center><font id=\"custom_username_rank\" size='2'>?</font></center></td>";
+          echo "<td><center><font id=\"custom_username_rank\" size='2'></font></center></td>";
           echo '<td><font size="2"><input id="custom_username_name" type=\'text\' placeholder=\'search username...\' oninput=\'lookupLeaderboardPosition(this.value, '. $leaderboardAsJson .')\'></font></td>';
-          echo "<td><center><font id=\"custom_username_points\" size='2'>?</font></center></td>";
+          echo "<td><center><font id=\"custom_username_points\" size='2'></font></center></td>";
           echo "</tr>";
 
           echo "</tbody>";

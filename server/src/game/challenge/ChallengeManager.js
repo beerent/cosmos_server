@@ -98,7 +98,17 @@ class ChallengeManager {
 	HandleGetChallengeLeaderboardRequest(req, res, responseBuilder) {
 		var self = this;
 
-		self.GetChallengeLeaderboard(responseBuilder, function (response) {
+		self.GetChallengeLeaderboard(responseBuilder, 10, function (response) {
+			res.json(response);
+			res.end();
+			self.dbm.Close();
+		});
+	}
+
+	HandleGetFullChallengeLeaderboardRequest(req, res, responseBuilder) {
+		var self = this;
+
+		self.GetChallengeLeaderboard(responseBuilder, 50000, function (response) {
 			res.json(response);
 			res.end();
 			self.dbm.Close();
@@ -180,9 +190,9 @@ class ChallengeManager {
 		});
 	}
 
-	GetChallengeLeaderboard(responseBuilder, callback) {
+	GetChallengeLeaderboard(responseBuilder, limit, callback) {
 		var challenge_leaderboard_manager = new ChallengeLeaderboardManager(this.dbm, this.errors);
-		challenge_leaderboard_manager.GetLeaderboard(responseBuilder, callback);
+		challenge_leaderboard_manager.GetLeaderboard(responseBuilder, limit, callback);
 	}
 
 	RegisterChallengeAnswer(attempt_id, answer_id, responseBuilder, callback) {

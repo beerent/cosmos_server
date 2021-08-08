@@ -17,6 +17,7 @@ var UserProfileManager = require("./user/UserProfileManager.js");
 var HealthCheckManager = require("./health/HealthCheckManager.js");
 var ConfigManager = require("./config/ConfigManager.js");
 var MessagesManager = require("./messages/MessagesManager.js");
+var AlertManager = require("./alert/AlertManager.js");
 
 var environment = GetEnvironment();
 var config_loader = new ConfigLoader(environment);
@@ -183,13 +184,20 @@ app.get('/livePostChat', function (req, res) {
 });
 
 
-
 app.get('/getMessages', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var messagesManagerInstance = new MessagesManager(dbm, errors);
 
 	var responseBuilder = new ResponseBuilder("getMessages");
 	messagesManagerInstance.HandleGetMessagesRequest(req, res, responseBuilder);
+});
+
+app.get('/getAlert', function (req, res) {
+	var dbm = new DBM(db_connection);
+	var alertManagerInstance = new AlertManager(dbm, errors);
+
+	var responseBuilder = new ResponseBuilder("getAlert");
+	alertManagerInstance.HandleGetAlertRequest(req, res, responseBuilder);
 });
 
 app.get('/flagQuestion', function (req, res) {

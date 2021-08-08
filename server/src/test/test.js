@@ -1967,6 +1967,63 @@ function TestGetMessagesNoParameters() {
 	}
 }
 
+/* ALERT */
+function TestGetAlertReturnsRequest() {
+	var functionName = "TestGetAlertReturnsRequest\n";
+	var failures = "";
+	testsRanCount++;
+
+	var requestString = "getAlert";
+
+
+	var url = server + "/" + requestString;
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.request != requestString) {
+		failures += "  - request was '"+ response.request +"', expected '"+ requestString +"'\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
+function TestGetAlertNoParameters() {
+	var functionName = "TestGetAlertNoParameters\n";
+	var failures = "";
+	testsRanCount++;
+
+
+	var url = server + "/getAlert";
+	var response = GetHTTPResponse(url);
+
+	var success = true;
+	if (response.success == false) {
+		failures += "  - success was false, expected true\n";
+		success = false;
+	}
+
+	if (response.op != 0) {
+		failures += "  - op was " + response.op + ", expected 0\n";
+		success = false;
+	}
+
+	if (response.payload.id == undefined) {
+		failures += "  - alert was " + response.payload.id + ", expected data\n";
+		success = false;
+	}
+
+	if (false == success) {
+		functionName += failures;
+		failedTests += functionName;
+		testsFailedCount++;
+	}
+}
+
 /* COSMOS LIVE */
 function TestCosmosLivePostChatReturnsRequest() {
 	var functionName = "TestCosmosLivePostChatReturnsRequest\n";
@@ -3188,6 +3245,14 @@ function UTIL_CREATE_PING_THRESHOLD(dbm, callback) {
 	});
 }
 
+function UTIL_CREATE_ALERT(dbm, callback) {
+	var sql = "insert into alerts (`key`, title, alert) values (?, ?, ?)";
+	var params = ["key", "title",  "lines"];
+	dbm.ParameterizedInsert(sql, params, function (response, err) {
+		callback();
+	});
+}
+
 function GetDBM() {
 	var database_connection = config_loader.GetDatabaseConnectionInfo();
 	var dbm = new DBM(database_connection);
@@ -3224,8 +3289,10 @@ function Setup(callback) {
 											UTIL_CREATE_HEALTH_CHECK_KEY(dbm, function() {
 												UTIL_CREATE_ADMIN_AUTH_KEY(dbm, function() {
 													UTIL_CREATE_PING_THRESHOLD(dbm, function() {
-														dbm.Close();
-														callback();
+														UTIL_CREATE_ALERT(dbm, function() {
+															dbm.Close();
+															callback();
+														});
 													});
 												});
 											});
@@ -3416,6 +3483,10 @@ function runTests() {
 	/* MESSAGES */
 	TestGetMessagesReturnsRequest();
 	TestGetMessagesNoParameters();
+
+	/* ALERTS */
+	TestGetAlertReturnsRequest();
+	TestGetAlertNoParameters();
 
 	/* COSMOS LIVE */
 	TestCosmosLive(PrintResults);

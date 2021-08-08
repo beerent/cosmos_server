@@ -97,5 +97,10 @@
     "LIVE_POST_CHAT_SAVE_ERROR": {
         "id": 120,
         "note": "failed to save live chat message"
+    },
+
+    "ALERT_ERROR": {
+        "id": 121,
+        "note": "there was an error retreiving the alert"
     }
 } 

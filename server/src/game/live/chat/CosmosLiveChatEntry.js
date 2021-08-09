@@ -1,9 +1,9 @@
 class CosmosLiveChatEntry {
-	constructor (session, user, message, added) {
+	constructor (session, user, message, seconds_ago) {
 		this.session = session;
 		this.user = user;
 		this.message = message;
-		this.added = added;
+		this.seconds_ago = seconds_ago;
 	}
 
 	GetSession() {
@@ -18,15 +18,15 @@ class CosmosLiveChatEntry {
 		return this.message;
 	}
 
-	GetAdded() {
-		return this.added;
+	GetSecondsAgo() {
+		return this.seconds_ago;
 	}
 
 	ToPayload() {
 		var payload = {
 			user : this.user.username,
 			message : this.message,
-			added : this.added
+			seconds_ago : this.seconds_ago
 		};
 
 		return payload;

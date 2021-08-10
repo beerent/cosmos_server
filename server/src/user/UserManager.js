@@ -53,6 +53,11 @@ class UserManager {
 		var errors = this.errors;
 		var self = this;
 
+		//remove once we no longer support old auth.
+		if (query.uid == undefined) {
+			query.uid = "N/A";
+		}
+
 		if (this.CredentialFieldsAreValid(query) == false || query.username == "") {
 			responseBuilder.SetError(errors.INVALID_CREDENTIALS);
 			callback(responseBuilder.Response());
@@ -96,7 +101,7 @@ class UserManager {
 	}
 
 	CredentialFieldsAreValid(query) {
-		return query.admin_auth_key != undefined || (/*query.uid != undefined && */query.username != undefined && query.password != undefined);
+		return query.admin_auth_key != undefined || (query.uid != undefined && query.username != undefined && query.password != undefined);
 	}
 
 	HandleRequestWithAuth(req, res, responseBuilder, callback) {
@@ -156,12 +161,8 @@ class UserManager {
 	}
 
 	GetUserFromCredentials(uid, username, password, callback) {
-		if (uid == undefined) {
-			uid = "N/A";
-		}
-
 		var params = [uid, username, password];
-		var sql = BASE_USER_QUERY + " where uid = ? username = ? and password_salt = ?";
+		var sql = BASE_USER_QUERY + " where uid = ? and username = ? and password_salt = ?";
 		this.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
 			if (err || queryResults.length == 0) {
 				var user = undefined;

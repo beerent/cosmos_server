@@ -30,7 +30,6 @@
 			$sql .= " join challenge_attempts on challenge_answers.attempt_id = challenge_attempts.id and date(challenge_attempts.added) > date((select value from config where `key` = 'challenge_mode_leaderboard_cutoff_date'))";
 			$sql .= " join users on challenge_attempts.user_id = users.id";
 			$sql .= " where answers.correct = 1";
-			$sql .= " and access_level = 3";
 			$sql .= " group by challenge_attempts.id order by points desc, challenge_attempts.id limit 10;";
 
 			$results = $this->dbm->query($sql);
@@ -51,7 +50,6 @@
 			$sql .= " join challenge_attempts on challenge_answers.attempt_id = challenge_attempts.id and date(challenge_attempts.added) > date((select value from config where `key` = 'challenge_mode_leaderboard_cutoff_date'))";
 			$sql .= " join users on challenge_attempts.user_id = users.id";
 			$sql .= " where answers.correct = 1";
-			$sql .= " and access_level = 3";
 			$sql .= " group by challenge_attempts.id order by points desc, challenge_attempts.id;";
 
 			$results = $this->dbm->query($sql);
@@ -223,7 +221,7 @@
 		}
 
 		function GetBiggestFan() {
-			$sql = "select username, count(added) count from (select distinct username, date(challenge_attempts.added) added from challenge_attempts join users u on challenge_attempts.user_id = u.id) where access_level = 3 group by username order by count desc limit 1;";
+			$sql = "select username, count(added) count from (select distinct username, date(challenge_attempts.added) added from challenge_attempts join users u on challenge_attempts.user_id = u.id)c where username not in ('beerent', 'Cosmic_Bob') group by username order by count desc limit 1;";
 			$results = $this->dbm->query($sql);
 			
 			$attempts = array();
@@ -236,7 +234,7 @@
 		}
 
 		function GetRecentUser() {
-			$sql = "select username, round(time_to_sec(timediff(utc_timestamp(), challenge_attempts.added))/60) as minutes from challenge_attempts join users u on challenge_attempts.user_id = u.id where access_level = 3 order by challenge_attempts.added desc limit 1;";
+			$sql = "select username, round(time_to_sec(timediff(utc_timestamp(), challenge_attempts.added))/60) as minutes from challenge_attempts join users u on challenge_attempts.user_id = u.id order by challenge_attempts.added desc limit 1;";
 			$results = $this->dbm->query($sql);
 			
 			$attempts = array();
@@ -249,7 +247,7 @@
 		}
 
 		function GetChatCounts() {
-			$sql = "select username, count(*) as count from cosmos_live_chat join users u on cosmos_live_chat.user_id = u.id where access_level = 3 group by user_id order by count desc;";
+			$sql = "select username, count(*) as count from cosmos_live_chat join users u on cosmos_live_chat.user_id = u.id group by user_id order by count desc;";
 			$results = $this->dbm->query($sql);
 			
 			$attempts = array();
@@ -262,7 +260,7 @@
 		}
 
 		function GetMostRecentChatter() {
-			$sql = "select username, round(TIME_TO_SEC(TIMEDIFF(UTC_TIMESTAMP, cosmos_live_chat.added))/60) minutes from cosmos_live_chat join users u on cosmos_live_chat.user_id = u.id where access_level = 3 order by cosmos_live_chat.added desc limit 1;";
+			$sql = "select username, round(TIME_TO_SEC(TIMEDIFF(UTC_TIMESTAMP, cosmos_live_chat.added))/60) minutes from cosmos_live_chat join users u on cosmos_live_chat.user_id = u.id order by cosmos_live_chat.added desc limit 1;";
 			$results = $this->dbm->query($sql);
 			
 			$attempts = array();
@@ -275,7 +273,7 @@
 		}
 
 		function GetMostRecentChatVisitor() {
-			$sql = "select username, round(TIME_TO_SEC(TIMEDIFF(UTC_TIMESTAMP, ping))/60) minutes from cosmos_live_ping join users u on cosmos_live_ping.user_id = u.id where access_level = 3 order by ping desc limit 1;";
+			$sql = "select username, round(TIME_TO_SEC(TIMEDIFF(UTC_TIMESTAMP, ping))/60) minutes from cosmos_live_ping join users u on cosmos_live_ping.user_id = u.id order by ping desc limit 1;";
 			$results = $this->dbm->query($sql);
 			
 			$attempts = array();

@@ -26,7 +26,8 @@ class CosmosLiveChatEntry {
 		var payload = {
 			user : this.user.username,
 			message : this.message,
-			seconds_ago : this.seconds_ago
+			seconds_ago : this.seconds_ago,
+			added : "n/A"
 		};
 
 		return payload;

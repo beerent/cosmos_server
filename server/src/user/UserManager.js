@@ -53,11 +53,6 @@ class UserManager {
 		var errors = this.errors;
 		var self = this;
 
-		//remove once we no longer support old auth.
-		if (query.uid == undefined) {
-			query.uid = "N/A";
-		}
-
 		if (this.CredentialFieldsAreValid(query) == false || query.username == "") {
 			responseBuilder.SetError(errors.INVALID_CREDENTIALS);
 			callback(responseBuilder.Response());
@@ -101,6 +96,11 @@ class UserManager {
 	}
 
 	CredentialFieldsAreValid(query) {
+		//remove once we no longer support old auth.
+		if (query.uid == undefined) {
+			query.uid = "N/A";
+		}
+
 		return query.admin_auth_key != undefined || (query.uid != undefined && query.username != undefined && query.password != undefined);
 	}
 

@@ -27,7 +27,7 @@ class UserManager {
 			return;
 		}
 
-		this.GetUserFromCredentials(query.username, query.password, function (userObject) {
+		this.GetUserFromCredentials(query.uid, query.username, query.password, function (userObject) {
 			if (userObject == undefined) {
 				responseBuilder.SetError(errors.INVALID_CREDENTIALS);
 			}
@@ -59,10 +59,10 @@ class UserManager {
 			return;
 		}
 
-		this.GetUserFromCredentials(query.username, query.password, function (userObject) {
+		this.GetUserFromCredentials(query.uid, query.username, query.password, function (userObject) {
 
 			if (userObject == undefined) {
-				self.CreateGuestUser(query.username, function(userObject) {
+				self.CreateGuestUser(query.uid, query.username, function(userObject) {
 					if (userObject == undefined) {
 						responseBuilder.SetError(errors.GUEST_ACCOUNT_CREATION_FAILURE);
 					}
@@ -79,16 +79,16 @@ class UserManager {
 		});
 	}
 
-	CreateGuestUser(username, callback) {
+	CreateGuestUser(uid, username, callback) {
 		var self = this;
 
-		var params = [username, username + "_guest_email", "guest"];
-		var sql = "insert into users (username, email, password_salt, access_level) values (?, ?, ?, (select privileges_enum.id from privileges_enum where privileges_enum.privilege = 'GUEST'));";
+		var params = [uid, username, username + "_guest_email", "guest"];
+		var sql = "insert into users (uid, username, email, password_salt, access_level) values (?, ?, ?, ?, (select privileges_enum.id from privileges_enum where privileges_enum.privilege = 'GUEST'));";
 		this.dbm.ParameterizedInsert(sql, params, function (insertId, err) {
 			if (insertId == undefined) {
 				callback(undefined);
 			} else {
-				self.GetUserFromCredentials(username, "guest", function(user) {
+				self.GetUserFromCredentials(uid, username, "guest", function(user) {
 					callback(user);
 				});
 			}
@@ -96,7 +96,7 @@ class UserManager {
 	}
 
 	CredentialFieldsAreValid(query) {
-		return query.admin_auth_key != undefined || (query.username != undefined && query.password != undefined);
+		return query.admin_auth_key != undefined || (/*query.uid != undefined && */query.username != undefined && query.password != undefined);
 	}
 
 	HandleRequestWithAuth(req, res, responseBuilder, callback) {
@@ -121,7 +121,7 @@ class UserManager {
 				}				
 			});
 		} else {
-			self.GetUserFromCredentials(req.query.username, req.query.password, function(user) {
+			self.GetUserFromCredentials(req.query.uid, req.query.username, req.query.password, function(user) {
 				if (undefined == user) {
 					responseBuilder.SetError(self.errors.INVALID_CREDENTIALS);
 					res.json(responseBuilder.Response());
@@ -155,9 +155,13 @@ class UserManager {
 		});
 	}
 
-	GetUserFromCredentials(username, password, callback) {
-		var params = [username, password];
-		var sql = BASE_USER_QUERY + " where username = ? and password_salt = ?";
+	GetUserFromCredentials(uid, username, password, callback) {
+		if (uid == undefined) {
+			uid = "N/A";
+		}
+
+		var params = [uid, username, password];
+		var sql = BASE_USER_QUERY + " where uid = ? username = ? and password_salt = ?";
 		this.dbm.ParameterizedQuery(sql, params, function(queryResults, err) {
 			if (err || queryResults.length == 0) {
 				var user = undefined;

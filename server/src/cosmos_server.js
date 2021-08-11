@@ -18,6 +18,7 @@ var HealthCheckManager = require("./health/HealthCheckManager.js");
 var ConfigManager = require("./config/ConfigManager.js");
 var MessagesManager = require("./messages/MessagesManager.js");
 var AlertManager = require("./alert/AlertManager.js");
+var RequestLogManager = require("./request_log/RequestLogManager.js");
 
 var environment = GetEnvironment();
 var config_loader = new ConfigLoader(environment);
@@ -92,24 +93,27 @@ var db_connection = config_loader.GetDatabaseConnectionInfo();
 app.get('/authenticate', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var user_manager = new UserManager(dbm, errors);
-
 	var responseBuilder = new ResponseBuilder("authenticate");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	user_manager.HandleAuthenticationRequest(req, res, responseBuilder);
 });
 
 app.get('/guestAuthenticate', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var user_manager = new UserManager(dbm, errors);
-
 	var responseBuilder = new ResponseBuilder("guestAuthenticate");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	user_manager.HandleGuestAuthenticationRequest(req, res, responseBuilder);
 });
 
 app.get('/getUserProfile', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var user_profile_manager = new UserProfileManager(dbm, errors, privileges);
-
 	var responseBuilder = new ResponseBuilder("getUserProfile");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	user_profile_manager.HandleGetUserProfileRequest(req, res, responseBuilder);
 });
 
@@ -119,32 +123,36 @@ app.get('/getUserProfile', function (req, res) {
 app.get('/newChallenge', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var challengeManagerInstance = new ChallengeManager(dbm, errors, privileges);
-
 	var responseBuilder = new ResponseBuilder("newChallenge");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	challengeManagerInstance.HandleNewChallengeRequest(req, res, responseBuilder);
 });
 
 app.get('/getChallengeQuestions', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var challengeManagerInstance = new ChallengeManager(dbm, errors, privileges);
-
 	var responseBuilder = new ResponseBuilder("getChallengeQuestions");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	challengeManagerInstance.HandleGetChallengeQuestionsRequest(req, res, responseBuilder);
 });
 
 app.get('/registerChallengeAnswer', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var challengeManagerInstance = new ChallengeManager(dbm, errors, privileges);
-
 	var responseBuilder = new ResponseBuilder("registerChallengeAnswer");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	challengeManagerInstance.HandleRegisterChallengeAnswerRequest(req, res, responseBuilder);
 });
 
 app.get('/getChallengeLeaderboard', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var challengeManagerInstance = new ChallengeManager(dbm, errors, privileges);
-
 	var responseBuilder = new ResponseBuilder("getChallengeLeaderboard");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	challengeManagerInstance.HandleGetChallengeLeaderboardRequest(req, res, responseBuilder);
 });
 
@@ -154,32 +162,36 @@ app.get('/getChallengeLeaderboard', function (req, res) {
 app.get('/live', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors, privileges);
-
 	var responseBuilder = new ResponseBuilder("live");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	cosmosLiveManagerInstance.HandleLiveDataRequest(req, res, responseBuilder);
 });
 
 app.get('/liveRegisterAdmin', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors, privileges);
-
 	var responseBuilder = new ResponseBuilder("liveRegisterAdmin");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	cosmosLiveManagerInstance.HandleLiveSubmitAnswer(req, res, responseBuilder);
 });
 
 app.get('/liveAdmin', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors, privileges);
-
 	var responseBuilder = new ResponseBuilder("liveAdmin");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	cosmosLiveManagerInstance.HandleLiveAdminRequest(req, res, responseBuilder);
 });
 
 app.get('/livePostChat', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var cosmosLiveManagerInstance = new CosmosLiveManager(dbm, errors, privileges);
-
 	var responseBuilder = new ResponseBuilder("livePostChat");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	cosmosLiveManagerInstance.HandleLivePostChat(req, res, responseBuilder);
 });
 
@@ -187,40 +199,45 @@ app.get('/livePostChat', function (req, res) {
 app.get('/getMessages', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var messagesManagerInstance = new MessagesManager(dbm, errors);
-
 	var responseBuilder = new ResponseBuilder("getMessages");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	messagesManagerInstance.HandleGetMessagesRequest(req, res, responseBuilder);
 });
 
 app.get('/getAlert', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var alertManagerInstance = new AlertManager(dbm, errors);
-
 	var responseBuilder = new ResponseBuilder("getAlert");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	alertManagerInstance.HandleGetAlertRequest(req, res, responseBuilder);
 });
 
 app.get('/flagQuestion', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var questionManagerInstance = new QuestionManager(dbm, errors, privileges);
-
 	var responseBuilder = new ResponseBuilder("flagQuestion");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	questionManagerInstance.HandleFlagQuestionRequest(req, res, responseBuilder);
 });
 
 app.get('/reviewQuestion', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var questionManagerInstance = new QuestionManager(dbm, errors, privileges);
-
 	var responseBuilder = new ResponseBuilder("reviewQuestion");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	questionManagerInstance.HandleReviewQuestionRequest(req, res, responseBuilder);
 });
 
 app.get('/health', function (req, res) {
 	var dbm = new DBM(db_connection);
 	var healthCheckManagerInstance = new HealthCheckManager(dbm, errors);
-
 	var responseBuilder = new ResponseBuilder("health");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
 	healthCheckManagerInstance.checkHealth(req, res, responseBuilder);
 });
 

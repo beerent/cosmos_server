@@ -7,7 +7,7 @@ $include = $_SERVER['DOCUMENT_ROOT']; $include .="/top.php"; include_once($inclu
 $include = $_SERVER['DOCUMENT_ROOT']; $include .="/alert/AlertManager.php"; include_once($include);
 $include = $_SERVER['DOCUMENT_ROOT']; $include .="/util/StringUtils.php"; include_once($include);
 
-//$message_manager = new Manager();
+$alert_manager = new AlertManager();
 
 function DisplayAddAlert() {
   echo "<center>";
@@ -19,62 +19,30 @@ function DisplayAddAlert() {
   echo "</center>";
 }
 
-function DisplayMessages() {
-  global $message_manager;
+function DisplayAlerts() {
+  global $alert_manager;
   $stringUtils = new StringUtils();
 
-  $date_category = "all";
-  if (isset($_GET['date_category'])) {
-    $date_category = $_GET['date_category'];
-  }
-
-  if ($date_category == "active") {
-    $messages = $message_manager->GetActiveMessages();
-  } else if ($date_category == "expired") {
-    $messages = $message_manager->GetExpiredMessages();
-  } else if ($date_category == "future") {
-    $messages = $message_manager->GetFutureMessages();
-  } else {
-    $messages = $message_manager->GetAllMessages();
-  }
-
+  $alerts = $alert_manager->GetAlerts();
 
   echo "<center>";
   echo "<table border='1'>";
-  echo "<tr><td><b>Message</b></td><td><b>Start</b></td><td><b>Expire</b></td></tr>";
-  foreach ($messages as $message) {
-    $messageElementId = "message_". $message->getId();
-    $singleQuoteEscapedMessageText = $stringUtils->EscapeSingleQuotes($message->GetMessage());
-
-    echo "<tr?>";
-    echo '<td><input type="text" size="60" id="'.$messageElementId.'" value="'.htmlspecialchars($message->GetMessage()).'" maxlength="500" onchange="AddToMessageUpdateQueue(\''.$messageElementId.'\', \''.$message->getId().'\', \''.htmlspecialchars($singleQuoteEscapedMessageText).'\');"></td>';
-
-    $startElementId = "start_". $message->getId();
-    echo '<td><input type="text" size="20" id="'.$startElementId.'" value="'.htmlspecialchars($message->GetStart()).'" maxlength="500" onchange="AddToStartUpdateQueue(\''.$startElementId.'\', \''.$message->getId().'\', \''.$message->GetStart().'\');"></td>';
-
-    $expireElementId = "expire_". $message->getId();      
-    echo '<td><input type="text" size="20" id="'.$expireElementId.'" value="'.htmlspecialchars($message->GetExpire()).'" maxlength="500" onchange="AddToExpireUpdateQueue(\''.$expireElementId.'\', \''.$message->getId().'\', \''.$message->GetExpire().'\');"></td></tr>';
+  echo "<tr><td><b>Key</b></td><td><b>Title</b></td><td><b>Alert</b></td></tr>";
+  foreach ($alerts as $alert) {
+    echo "<tr>";
+    echo "<td>" . $alert->GetKey() . "</td>";
+    echo "<td>" . $alert->GetTitle() . "</td>";
+    echo "<td>" . $alert->GetAlert() . "</td>";
     echo "</tr>";
   }
   echo "</table>";
   echo "</center>";
 }
 
-function DisplayMessagesSubmitButton() {
-  echo "<center>";
-  echo "<button onclick='if (CommitMessagesUpdates() && CommitStartUpdates() && CommitExpireUpdates()){location.reload(); alert(\"Updates Saved!\")}'>Save Changes!</button>";
-  echo "</center>";
-}
-
-  //MESSAGES
 echo "<center><b>Alerts</b></center>";
 echo "<hr>";
 DisplayAddAlert();
-//echo "<br><br>";
-//DisplayMessages();
-//echo "<br><br>";
-//DisplayMessagesSubmitButton();
+echo "<br><br>";
+DisplayAlerts();
 echo "<hr>";
-
-
 ?>

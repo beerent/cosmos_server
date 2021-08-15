@@ -11,5 +11,9 @@
     $alert = $_GET['alert'];
 
     $alert_manager->AddAlert($key, $title, $alert);
+
+  } else if ($option == "delete") {
+    $id = $_GET['id'];
+    $alert_manager->DeleteAlert($id);
   }
 ?>

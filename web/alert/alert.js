@@ -7,3 +7,7 @@ function AddAlert() {
 
   return true;
 }
+
+function DeleteAlert(id) {
+  execute("/alert/AlertHelper.php?option=delete&id=" + id, 'fakediv');
+}

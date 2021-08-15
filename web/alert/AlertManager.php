@@ -18,6 +18,13 @@
 			$this->dbm->insert($sql);	
 		}
 
+		function DeleteAlert($id) {
+			$escapedId = $this->dbm->GetEscapedString($id);
+			$sql = "delete from alerts where id = $escapedId";
+
+			$this->dbm->query($sql);
+		}
+
 		function GetAlerts() {
 			$sql = "select id, `key`, title, alert from alerts order by id desc";
 

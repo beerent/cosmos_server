@@ -15,7 +15,7 @@ function DisplayAddAlert() {
   echo '<input size="20" type="text" placeholder="title" id="add_alert_title" value="" maxlength="300"> ';
   echo '<input size="60" type="text" placeholder="alert" id="add_alert_alert" value="" maxlength="300"> ';
 
-  echo "<button onclick='if (AddAlert()){location.reload(); alert(\"Alert Added!\")}'>Add!</button>";
+  echo "<button onclick='if (AddAlert()){alert(\"Alert Added!\"); location.reload();}'>Add!</button>";
   echo "</center>";
 }
 
@@ -27,12 +27,13 @@ function DisplayAlerts() {
 
   echo "<center>";
   echo "<table border='1'>";
-  echo "<tr><td><b>Key</b></td><td><b>Title</b></td><td><b>Alert</b></td></tr>";
+  echo "<tr><td><b>Key</b></td><td><b>Title</b></td><td><b>Alert</b></td><td><b>Action</b></td></tr>";
   foreach ($alerts as $alert) {
     echo "<tr>";
     echo "<td>" . $alert->GetKey() . "</td>";
     echo "<td>" . $alert->GetTitle() . "</td>";
     echo "<td>" . $alert->GetAlert() . "</td>";
+    echo "<td><button onclick='if(confirm(\"delete \\\"". $alert->GetKey(). "\\\"?\")){DeleteAlert(". $alert->GetId() ."); location.reload();}'>Delete</button></td>";
     echo "</tr>";
   }
   echo "</table>";

@@ -113,14 +113,16 @@ class ChallengeManager {
 		configManager.GetConfigValue(LEADERBOARD_CHANGE_TIMER_MS, function(timerValue) {
 			self.GetChallengeLeaderboard(10, function (challengeLeaderboard) {
 				self.GetTopPlayersLeaderboard(10, function(topPlayerLeaderboard) {
-					var leaderboards = self.shuffle([challengeLeaderboard, topPlayerLeaderboard]);
-					var payload = {};
-					payload.leaderboard_change_timer_ms = timerValue;
-					payload.leaderboards = leaderboards;
-					responseBuilder.SetPayload(payload);
-					res.json(responseBuilder.Response());
-					res.end();
-					self.dbm.Close();
+					self.GetMostFrequentPlayers(10, function(mostFrequentPlayersLeaderboard) {
+						var leaderboards = self.shuffle([challengeLeaderboard, topPlayerLeaderboard, mostFrequentPlayersLeaderboard]);
+						var payload = {};
+						payload.leaderboard_change_timer_ms = timerValue;
+						payload.leaderboards = leaderboards;
+						responseBuilder.SetPayload(payload);
+						res.json(responseBuilder.Response());
+						res.end();
+						self.dbm.Close();
+					});
 				});
 			});
 	    });
@@ -238,6 +240,11 @@ class ChallengeManager {
 	GetTopPlayersLeaderboard(limit, callback) {
 		var challenge_leaderboard_manager = new ChallengeLeaderboardManager(this.dbm, this.errors);
 		challenge_leaderboard_manager.GetTopPlayersLeaderboard(limit, callback);
+	}
+
+	GetMostFrequentPlayers(limit, callback) {
+		var challenge_leaderboard_manager = new ChallengeLeaderboardManager(this.dbm, this.errors);
+		challenge_leaderboard_manager.GetMostFrequentPlayers(limit, callback);
 	}
 
 	RegisterChallengeAnswer(attempt_id, answer_id, responseBuilder, callback) {

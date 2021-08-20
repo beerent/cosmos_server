@@ -459,3 +459,4 @@ alter table request_log
 alter table request_log modify id int auto_increment;
 
 alter table users drop key email_UNIQUE;
+insert into config (`key`, value) values ("leaderboard_change_timer_ms", 8000);

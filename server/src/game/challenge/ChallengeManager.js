@@ -111,39 +111,23 @@ class ChallengeManager {
 		var self = this;
 		var configManager = new ConfigManager(this.dbm);
 		configManager.GetConfigValue(LEADERBOARD_CHANGE_TIMER_MS, function(timerValue) {
-			self.GetChallengeLeaderboard(10, function (challengeLeaderboard) {
-				self.GetTopPlayersLeaderboard(10, function(topPlayerLeaderboard) {
-					self.GetMostFrequentPlayers(10, function(mostFrequentPlayersLeaderboard) {
-						var leaderboards = self.shuffle([challengeLeaderboard, topPlayerLeaderboard, mostFrequentPlayersLeaderboard]);
-						var payload = {};
-						payload.leaderboard_change_timer_ms = timerValue;
-						payload.leaderboards = leaderboards;
-						responseBuilder.SetPayload(payload);
-						res.json(responseBuilder.Response());
-						res.end();
-						self.dbm.Close();
+			self.GetChallengeLeaderboard(10, function (challengeLeaderboardAllTime) {
+				self.GetChallengeLeaderboardSpecific(10, 30, "30 Day Leaderboard", function (challengeLeaderboard30Day) {
+					self.GetChallengeLeaderboardSpecific(10, 7, "7 Day Leaderboard", function (challengeLeaderboard7Day) {
+						self.GetTopPlayersLeaderboard(10, function(topPlayerLeaderboard) {
+							var leaderboards = [challengeLeaderboardAllTime, challengeLeaderboard30Day, challengeLeaderboard7Day, topPlayerLeaderboard];
+							var payload = {};
+							payload.leaderboard_change_timer_ms = timerValue;
+							payload.leaderboards = leaderboards;
+							responseBuilder.SetPayload(payload);
+							res.json(responseBuilder.Response());
+							res.end();
+							self.dbm.Close();
+						});
 					});
 				});
 			});
 	    });
-	}
-
-	shuffle(array) {
-	  var currentIndex = array.length,  randomIndex;
-
-	  // While there remain elements to shuffle...
-	  while (0 !== currentIndex) {
-
-	    // Pick a remaining element...
-	    randomIndex = Math.floor(Math.random() * currentIndex);
-	    currentIndex--;
-
-	    // And swap it with the current element.
-	    [array[currentIndex], array[randomIndex]] = [
-	      array[randomIndex], array[currentIndex]];
-	  }
-
-	  return array;
 	}
 
 	HandleGetFullChallengeLeaderboardRequest(req, res, responseBuilder) {
@@ -237,14 +221,14 @@ class ChallengeManager {
 		challenge_leaderboard_manager.GetLeaderboard(limit, callback);
 	}
 
+	GetChallengeLeaderboardSpecific(limit, lookback_days, title, callback) {
+		var challenge_leaderboard_manager = new ChallengeLeaderboardManager(this.dbm, this.errors);
+		challenge_leaderboard_manager.GetLeaderboardSpecific(limit, lookback_days, title, callback);
+	}
+
 	GetTopPlayersLeaderboard(limit, callback) {
 		var challenge_leaderboard_manager = new ChallengeLeaderboardManager(this.dbm, this.errors);
 		challenge_leaderboard_manager.GetTopPlayersLeaderboard(limit, callback);
-	}
-
-	GetMostFrequentPlayers(limit, callback) {
-		var challenge_leaderboard_manager = new ChallengeLeaderboardManager(this.dbm, this.errors);
-		challenge_leaderboard_manager.GetMostFrequentPlayers(limit, callback);
 	}
 
 	RegisterChallengeAnswer(attempt_id, answer_id, responseBuilder, callback) {

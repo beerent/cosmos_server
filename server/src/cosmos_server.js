@@ -156,6 +156,15 @@ app.get('/getChallengeLeaderboard', function (req, res) {
 	challengeManagerInstance.HandleGetChallengeLeaderboardRequest(req, res, responseBuilder);
 });
 
+app.get('/getLeaderboards', function (req, res) {
+	var dbm = new DBM(db_connection);
+	var challengeManagerInstance = new ChallengeManager(dbm, errors, privileges);
+	var responseBuilder = new ResponseBuilder("getLeaderboards");
+
+	new RequestLogManager(dbm, errors).HandleLogRequest(req, res, responseBuilder);
+	challengeManagerInstance.HandleGetLeaderboardsRequest(req, res, responseBuilder);
+});
+
 
 
 // COSMOS LIVE

@@ -6,6 +6,7 @@ var UserManager = require("../../user/UserManager.js");
 var ChallengeLeaderboardManager = require("./ChallengeLeaderboardManager.js");
 
 var CHALLENGE_MODE_TIMER_LENGTH = "challenge_mode_timer_length";
+var LEADERBOARD_CHANGE_TIMER_MS = "leaderboard_change_timer_ms";
 
 class ChallengeManager {
 
@@ -98,18 +99,57 @@ class ChallengeManager {
 	HandleGetChallengeLeaderboardRequest(req, res, responseBuilder) {
 		var self = this;
 
-		self.GetChallengeLeaderboard(responseBuilder, 10, function (response) {
-			res.json(response);
+		self.GetChallengeLeaderboard(10, function (challengeLeaderboard) {
+			responseBuilder.SetPayload(challengeLeaderboard);
+			res.json(responseBuilder.Response());
 			res.end();
 			self.dbm.Close();
 		});
 	}
 
+	HandleGetLeaderboardsRequest(req, res, responseBuilder) {
+		var self = this;
+		var configManager = new ConfigManager(this.dbm);
+		configManager.GetConfigValue(LEADERBOARD_CHANGE_TIMER_MS, function(timerValue) {
+			self.GetChallengeLeaderboard(10, function (challengeLeaderboard) {
+				self.GetTopPlayersLeaderboard(10, function(topPlayerLeaderboard) {
+					var leaderboards = self.shuffle([challengeLeaderboard, topPlayerLeaderboard]);
+					var payload = {};
+					payload.leaderboard_change_timer_ms = timerValue;
+					payload.leaderboards = leaderboards;
+					responseBuilder.SetPayload(payload);
+					res.json(responseBuilder.Response());
+					res.end();
+					self.dbm.Close();
+				});
+			});
+	    });
+	}
+
+	shuffle(array) {
+	  var currentIndex = array.length,  randomIndex;
+
+	  // While there remain elements to shuffle...
+	  while (0 !== currentIndex) {
+
+	    // Pick a remaining element...
+	    randomIndex = Math.floor(Math.random() * currentIndex);
+	    currentIndex--;
+
+	    // And swap it with the current element.
+	    [array[currentIndex], array[randomIndex]] = [
+	      array[randomIndex], array[currentIndex]];
+	  }
+
+	  return array;
+	}
+
 	HandleGetFullChallengeLeaderboardRequest(req, res, responseBuilder) {
 		var self = this;
 
-		self.GetChallengeLeaderboard(responseBuilder, 50000, function (response) {
-			res.json(response);
+		self.GetChallengeLeaderboard(50000, function (response) {
+			responseBuilder.SetPayload(response);
+			res.json(response.Response());
 			res.end();
 			self.dbm.Close();
 		});
@@ -190,9 +230,14 @@ class ChallengeManager {
 		});
 	}
 
-	GetChallengeLeaderboard(responseBuilder, limit, callback) {
+	GetChallengeLeaderboard(limit, callback) {
 		var challenge_leaderboard_manager = new ChallengeLeaderboardManager(this.dbm, this.errors);
-		challenge_leaderboard_manager.GetLeaderboard(responseBuilder, limit, callback);
+		challenge_leaderboard_manager.GetLeaderboard(limit, callback);
+	}
+
+	GetTopPlayersLeaderboard(limit, callback) {
+		var challenge_leaderboard_manager = new ChallengeLeaderboardManager(this.dbm, this.errors);
+		challenge_leaderboard_manager.GetTopPlayersLeaderboard(limit, callback);
 	}
 
 	RegisterChallengeAnswer(attempt_id, answer_id, responseBuilder, callback) {

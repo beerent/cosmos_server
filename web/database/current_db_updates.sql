@@ -1,0 +1,1 @@
+insert into config (`key`, value) values ("leaderboard_change_timer_ms", 8000);

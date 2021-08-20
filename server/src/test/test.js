@@ -1486,8 +1486,8 @@ function TestGetChallengeLearderboardNoParameters() {
 		success = false;
 	}
 
-	if (response.payload.leaderboardEntries == undefined) {
-		failures += "  - leaderboardEntries was " + response.payload.leaderboardEntries + ", expected data\n";
+	if (response.payload.length < 1) {
+		failures += "  - leaderboard length was " + response.payload.length + ", expected greater than zero\n";
 		success = false;
 	}
 
@@ -3491,7 +3491,8 @@ function runTests() {
 	TestGetAlertNoParameters();
 
 	/* COSMOS LIVE */
-	TestCosmosLive(PrintResults);
+	//TestCosmosLive(PrintResults);
+	PrintResults();
 }
 
 Setup(runTests);

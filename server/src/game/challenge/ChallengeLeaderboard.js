@@ -1,7 +1,8 @@
 var ChallengeLeaderboardEntry = require("./ChallengeLeaderboardEntry.js");
 
 class ChallengeLeaderboard {
-	constructor () {
+	constructor (title) {
+		this.title = title;
 		this.leaderboardEntries = [];
 	}
 
@@ -11,6 +12,20 @@ class ChallengeLeaderboard {
 
 	GetLeaderboard() {
 		return this.leaderboardEntries;
+	}
+
+	GetTitle() {
+		return this.title;
+	}
+
+	ContainsUsername(username) {
+		for (var i = 0; i < this.leaderboardEntries.length; i++) {
+			if (this.leaderboardEntries[i].GetUsername() == username) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 };
 

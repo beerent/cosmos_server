@@ -51,7 +51,7 @@ class ChallengeLeaderboardManager {
 			var attempt_id = undefined;
 			var points = undefined;
 
-			var challengeLeaderboard = new ChallengeLeaderboard("Challenge Leaderboard");
+			var challengeLeaderboard = new ChallengeLeaderboard("All Time Leaderboard");
 			results.forEach(function(entry) {
 				username = entry.username;
 				if (self.UsernameIsClean(username) == false) {
